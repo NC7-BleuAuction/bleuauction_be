@@ -1,0 +1,11 @@
+server:
+  port: 80
+  shutdown: graceful
+
+# TODO : 추후 Cloud로 Database생성시 추가 필요
+spring:
+  datasource:
+    driver-class-name:
+    url:
+    username:
+    password:

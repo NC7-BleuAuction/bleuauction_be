@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    active: local
+    include: sender
+  mvc:
+    static-path-pattern: static/**
+  thymeleaf:
+    prefix: file:src/main/resources/templates/
+  web:
+    resources:
+      static-locations: file:src/main/resources/static/
+      cache-period: 0
+
+
+
+

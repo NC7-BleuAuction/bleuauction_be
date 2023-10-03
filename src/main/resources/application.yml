@@ -1,7 +1,6 @@
 spring:
   profiles:
     active: local
-    include: sender
   mvc:
     static-path-pattern: static/**
   thymeleaf:

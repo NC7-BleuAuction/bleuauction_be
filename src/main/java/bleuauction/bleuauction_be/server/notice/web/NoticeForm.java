@@ -1,4 +1,4 @@
-package bleuauction.bleuauction_be.notice.web;
+package bleuauction.bleuauction_be.server.notice.web;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;

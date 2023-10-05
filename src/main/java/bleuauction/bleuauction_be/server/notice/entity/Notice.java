@@ -1,6 +1,6 @@
-package bleuauction.bleuauction_be.notice.entity;
+package bleuauction.bleuauction_be.server.notice.entity;
 
-//import bleuauction.bleuauction_be.member.entity.Member;
+//import bleuauction.bleuauction_be.server.member.entity.Member;
 //import jakarta.persistence.*;
 //import lombok.Getter;
 //import lombok.Setter;
@@ -52,12 +52,11 @@ package bleuauction.bleuauction_be.notice.entity;
 //
 //}
 
-import bleuauction.bleuauction_be.member.entity.Member;
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 

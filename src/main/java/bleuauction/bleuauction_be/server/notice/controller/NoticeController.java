@@ -1,10 +1,10 @@
-package bleuauction.bleuauction_be.notice.controller;
+package bleuauction.bleuauction_be.server.notice.controller;
 
-import bleuauction.bleuauction_be.member.entity.Member;
-import bleuauction.bleuauction_be.notice.entity.Notice;
-import bleuauction.bleuauction_be.notice.entity.NoticeStatus;
-import bleuauction.bleuauction_be.notice.service.NoticeService;
-import bleuauction.bleuauction_be.notice.web.NoticeForm;
+import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
+import bleuauction.bleuauction_be.server.notice.service.NoticeService;
+import bleuauction.bleuauction_be.server.notice.web.NoticeForm;
 import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

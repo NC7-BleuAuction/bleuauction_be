@@ -1,12 +1,8 @@
-package bleuauction.bleuauction_be.notice.repository;
+package bleuauction.bleuauction_be.server.notice.repository;
 
-import bleuauction.bleuauction_be.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

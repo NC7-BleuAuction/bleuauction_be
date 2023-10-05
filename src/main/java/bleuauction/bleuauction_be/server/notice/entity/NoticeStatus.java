@@ -1,4 +1,4 @@
-package bleuauction.bleuauction_be.notice.entity;
+package bleuauction.bleuauction_be.server.notice.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

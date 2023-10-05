@@ -1,9 +1,8 @@
-package bleuauction.bleuauction_be.member.entity;
+package bleuauction.bleuauction_be.server.member.entity;
 
 
 
-        import bleuauction.bleuauction_be.member.entity.MemberCategory;
-        import bleuauction.bleuauction_be.notice.entity.Notice;
+        import bleuauction.bleuauction_be.server.notice.entity.Notice;
         import jakarta.persistence.*;
 
         import java.time.LocalDateTime;

@@ -1,9 +1,8 @@
-package bleuauction.bleuauction_be.notice.service;
+package bleuauction.bleuauction_be.server.notice.service;
 
-import bleuauction.bleuauction_be.notice.entity.Notice;
-import bleuauction.bleuauction_be.notice.repository.NoticeRepository;
+import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+    <form role="form" action="@{/notice/new}" th:object="${noticeForm}" method="post">
+        <div class="form-group">
+            <label th:for="notice_title">제목</label>
+            <input type="text" th:field="*{notice_title}" class ="form-control"
+                   placeholder="제목">
+        </div>
+
+        <div class="form-group">
+            <label th:for="notice_content">내용</label>
+            <input type="text" th:field="*{notice_content}" class ="form-control"
+                   placeholder="내용">
+        </div>
+        <button type="subit">submit</button>
+
+    </form>
+</div>
+</body>
+</html>

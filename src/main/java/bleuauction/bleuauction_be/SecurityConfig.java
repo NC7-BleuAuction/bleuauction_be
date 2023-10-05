@@ -17,15 +17,27 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 public class SecurityConfig {
     private static String[] tempWhiteListArray = {"/hello", "/health"};
 
+
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+//        http.authorizeHttpRequests(
+//                authorizationManagerRequestMatcherRegistry ->
+//                        authorizationManagerRequestMatcherRegistry.requestMatchers(
+//                                        new MvcRequestMatcher(introspector, "/hello"),
+//                                        new MvcRequestMatcher(introspector, "/health")
+//
+//                                )
+//                                .permitAll()
+//        );
+//        return http.build();
+//    }
+//}
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
-        http.authorizeHttpRequests(
-                authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry.requestMatchers(
-                                        new MvcRequestMatcher(introspector, "/hello"),
-                                        new MvcRequestMatcher(introspector, "/health")
-                                )
-                                .permitAll()
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeRequests(authorizeRequests ->
+                authorizeRequests
+                        .anyRequest().permitAll() // 모든 URL에 대한 접근을 허용
         );
         return http.build();
     }

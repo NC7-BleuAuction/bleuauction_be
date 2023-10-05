@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+    <table>
+        <thead>
+        <tr>
+            <th>제목</th>
+            <th>내용</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="notice : ${notices}">
+            <td th:text="${notice.notice_title}"></td>
+            <td th:text="${notice.notice_content"></td>
+        </tr>
+        </tbody>
+        </thead>
+    </table>
+</div>
+
+</body>
+</html>

@@ -16,7 +16,7 @@ public class TestController {
 
     @GetMapping("/hello")
     public String hello() {
-        log.info("helllllo");
-        return "Hello";
+        log.info("hello");
+        return "자동 CI/CD Test";
     }
 }

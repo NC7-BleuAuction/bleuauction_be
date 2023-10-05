@@ -7,18 +7,16 @@
 <body>
 <div class="container">
         <form role="form" action="/notice/new" th:object="${noticeForm}" method="post">
-            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
-        <div class="form-group">
-            <label th:for="noticeTitle">제목</label>
-            <input type="text" th:field="*{noticeTitle}" class ="form-control"
-                   placeholder="제목">
-        </div>
 
-        <div class="form-group">
-            <label th:for="noticeContent">내용</label>
-            <input type="text" th:field="*{noticeContent}" class ="form-control"
-                   placeholder="내용">
-        </div>
+            <div class="form-group">
+                <label for="noticeTitle">제목</label>
+                <input type="text" th:field="*{noticeTitle}" class="form-control" id="noticeTitle" placeholder="제목">
+            </div>
+
+            <div class="form-group">
+                <label for="noticeContent">내용</label>
+                <input type="text" th:field="*{noticeContent}" class="form-control" id="noticeContent" placeholder="내용">
+            </div>
         <button type="submit">submit</button>
 
     </form>

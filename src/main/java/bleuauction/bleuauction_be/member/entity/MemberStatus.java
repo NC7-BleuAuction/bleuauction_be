@@ -1,12 +1,14 @@
-package bleuauction.bleuauction_be.notice.entity;
+package bleuauction.bleuauction_be.member.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum NoticeStatus {
-  Y("사용"), N("삭제");
+public enum MemberStatus {
+  Y("일반회원"),
+  N("탈퇴회원");
 
   private final String value;
 }
+

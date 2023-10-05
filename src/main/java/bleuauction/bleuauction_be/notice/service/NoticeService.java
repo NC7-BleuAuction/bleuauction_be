@@ -10,14 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class NoticeService {
 
-  @Autowired
-  private NoticeRepository noticeRepository;
+  private final NoticeRepository noticeRepository;
 
-
-  //노티스 등록
   @Transactional
   public Long enroll(Notice notice) {
     noticeRepository.save(notice);
@@ -32,8 +30,8 @@ public class NoticeService {
 
 
   @Transactional(readOnly = true)
-  public Notice findOne(Long notice_no) {
-    return noticeRepository.findOne(notice_no);
+  public Notice findOne(Long noticeNo) {
+    return noticeRepository.findOne(noticeNo);
   }
 
 
@@ -44,6 +42,14 @@ public class NoticeService {
     notice.delete();
   }
 
+  //노티스 수정
+  @Transactional
+  public Notice update(Long noticeNo, String title, String content) {
+    Notice notice = noticeRepository.findOne(noticeNo);
+    notice.setNoticeTitle(title);
+    notice.setNoticeContent(content);
+    return notice;
+  }
 
 
 

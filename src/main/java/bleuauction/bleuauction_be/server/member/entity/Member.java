@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "tbl_member")
+@Table(name = "ba_member")
 public class Member {
 
     @Id

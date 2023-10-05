@@ -8,19 +8,19 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db-inv5u-kr.vpc-pub-cdb.ntruss.com:3306/arttabdb
-    username: hyunwook
-    password: bitcamp!@#123
+    url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
+    username: bleuauction
+    password: bleuauction123!@#
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://localhost:3306/studydb?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
 #    username: study
 #    password: 1111
 
-ncp:
-  endPoint: https://kr.object.ncloudstorage.com
-  regionName: kr-standard
-  accessKey: aYDzbuluiQM2eCQIDmsd
-  secretKey: BTwWtRIJlCJZSLtCxNx9zWi3S4xFUDVm9VtE0ynW
+#ncp:
+#  endPoint: https://kr.object.ncloudstorage.com
+#  regionName: kr-standard
+#  accessKey: aYDzbuluiQM2eCQIDmsd
+#  secretKey: BTwWtRIJlCJZSLtCxNx9zWi3S4xFUDVm9VtE0ynW
 
 
 server:

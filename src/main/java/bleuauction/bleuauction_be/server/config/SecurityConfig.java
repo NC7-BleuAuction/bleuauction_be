@@ -1,4 +1,4 @@
-package bleuauction.bleuauction_be;
+package bleuauction.bleuauction_be.server.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,7 +1,8 @@
 package bleuauction.bleuauction_be.notice.repository;
 
-import bleuauction.bleuauction_be.notice.domain.Notice;
+import bleuauction.bleuauction_be.notice.entity.Notice;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -11,16 +12,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NoticeRepository {
 
-  private final EntityManager em;
+  @PersistenceContext
+  EntityManager em;
 
-  public void save(Notice notice) {em.persist(notice);}// 노티스 저장
+  public Long save(Notice notice) {
+    em.persist(notice);
+    return notice.getNoticeNo();
+  }
 
-  public Notice findOne(int notice_no) {
-    return em.find(Notice.class, notice_no);
+  public Notice findOne(Long noticeNo) {
+    return em.find(Notice.class, noticeNo);
   }
 
   public List<Notice> findAll(){
-    List<Notice> result = em.createQuery("select n from ba_notice n", Notice.class)
+    List<Notice> result = em.createQuery("select n from Notice n", Notice.class)
             .getResultList();
 
     return result;

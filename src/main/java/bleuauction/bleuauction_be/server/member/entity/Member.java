@@ -62,11 +62,11 @@ public class Member {
 
   @CurrentTimestamp
   @Column(name = "reg_datetime")
-  private LocalDateTime reg_datetime;
+  private LocalDateTime regDatetime;
 
   @UpdateTimestamp
   @Column(name = "mdf_datetime")
-  private LocalDateTime mdf_datetime;
+  private LocalDateTime mdfDatetime;
 
   @Enumerated(EnumType.STRING)
   private MemberStatus memberStatus;

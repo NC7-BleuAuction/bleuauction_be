@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-    @GetMapping("/health")
-    public ResponseEntity healthCheck() {
-        return ResponseEntity.ok().build();
-    }
+  @GetMapping("/health")
+  public ResponseEntity healthCheck() {
+    return ResponseEntity.ok().build();
+  }
 
-    @GetMapping("/hello")
-    public String hello() {
-        log.info("hello");
-        return "자동 CI/CD Test";
-    }
+  @GetMapping("/hello")
+  public String hello() {
+    log.info("hello");
+    return "자동 CI/CD Test";
+  }
 }

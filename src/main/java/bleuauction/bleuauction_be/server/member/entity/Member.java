@@ -1,22 +1,22 @@
 package bleuauction.bleuauction_be.server.member.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.CurrentTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+
+        import bleuauction.bleuauction_be.server.notice.entity.Notice;
+        import jakarta.persistence.*;
+
+        import java.time.LocalDateTime;
+        import java.util.ArrayList;
+        import java.util.List;
+
+        import lombok.AccessLevel;
+        import lombok.Getter;
+        import lombok.NoArgsConstructor;
+        import lombok.extern.slf4j.Slf4j;
+        import org.hibernate.annotations.CurrentTimestamp;
+        import org.hibernate.annotations.UpdateTimestamp;
+        import org.jetbrains.annotations.NotNull;
+        import org.jetbrains.annotations.Nullable;
 
 @Entity
 @Getter
@@ -25,50 +25,52 @@ import org.jetbrains.annotations.Nullable;
 @Table(name = "ba_member")
 public class Member {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_no")
-    private Long memberNo;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "member_no")
+  private Long memberNo;
 
-    @NotNull
-    private String memberEmail;
+  @NotNull
+  private String memberEmail;
 
-    @NotNull
-    private String memberPwd;
+  @NotNull
+  private String memberPwd;
 
-    @NotNull
-    private String memberName;
+  @NotNull
+  private String memberName;
 
-    @NotNull
-    private String memberZipcode;
+  @NotNull
+  private String memberZipcode;
 
-    @NotNull
-    private String memberAddr;
+  @NotNull
+  private String memberAddr;
 
-    @NotNull
-    private String memberDetailAddr;
+  @NotNull
+  private String memberDetailAddr;
 
-    @NotNull
-    private String memberPhone;
+  @NotNull
+  private String memberPhone;
 
-    @Nullable
-    private String memberBank;
+  @Nullable
+  private String memberBank;
 
-    @Nullable
-    private String memberAccount;
+  @Nullable
+  private String memberAccount;
 
-    @Enumerated(EnumType.STRING)
-    private MemberCategory memberCategory;
+  @Enumerated(EnumType.STRING)
+  private MemberCategory memberCategory;
 
-    @CurrentTimestamp
-    @Column(name = "reg_datetime")
-    private LocalDateTime reg_datetime;
+  @CurrentTimestamp
+  @Column(name = "reg_datetime")
+  private LocalDateTime reg_datetime;
 
-    @UpdateTimestamp
-    @Column(name = "mdf_datetime")
-    private LocalDateTime mdf_datetime;
+  @UpdateTimestamp
+  @Column(name = "mdf_datetime")
+  private LocalDateTime mdf_datetime;
 
-    @Enumerated(EnumType.STRING)
-    private MemberStatus memberStatus;
+  @Enumerated(EnumType.STRING)
+  private MemberStatus memberStatus;
 
+  @OneToMany(mappedBy = "member")
+  private List<Notice> notices = new ArrayList<>();
 }

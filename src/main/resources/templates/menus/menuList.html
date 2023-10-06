@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+    <table>
+        <thead>
+        <tr>
+            <th>가게</th>
+            <th>메뉴이름</th>
+            <th>메뉴사이즈</th>
+            <th>메뉴가격</th>
+            <th>메뉴설명</th>
+            <th>사용여부</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="menu : ${menus}">
+<!--            <td th:text="${notice.noticeTitle}"></td>-->
+            <td th:text="${menu.store.storeName}"></td>
+            <td><a th:href="@{/menu/detail/{menuNo}(menuNo=${menu.menuNo})}" th:text="${menu.menuName}"></a></td>
+            <td th:text="${menu.menuSize}"></td>
+            <td th:text="${menu.menuPrice}"></td>
+            <td th:text="${menu.menuContent}"></td>
+            <td th:text="${menu.menuStatus}"></td>
+            <td>
+                <form th:action="@{/menu/delete/{id}(id=${menu.menuNo})}" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?');">
+                    <input type="hidden" name="_method" value="delete">
+                    <button type="submit">삭제</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+        </thead>
+    </table>
+</div>
+
+</body>
+</html>

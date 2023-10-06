@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CurrentTimestamp;
@@ -19,10 +19,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Entity
-@Getter
+@Data
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "tbl_member")
+@Table(name = "ba_member")
 public class Member {
 
     @Id
@@ -62,11 +62,11 @@ public class Member {
 
     @CurrentTimestamp
     @Column(name = "reg_datetime")
-    private LocalDateTime reg_datetime;
+    private LocalDateTime regDatetime;
 
     @UpdateTimestamp
     @Column(name = "mdf_datetime")
-    private LocalDateTime mdf_datetime;
+    private LocalDateTime mdfDatetime;
 
     @Enumerated(EnumType.STRING)
     private MemberStatus memberStatus;

@@ -38,8 +38,8 @@ public class MenuController {
   @Transactional
   public String menu(@Valid MenuForm form) {
     Menu menu = new Menu();
-    Store store = entityManager.find(Store.class, 1L);
-    menu.setStore(store);//테스트용 1번가게
+    Store storeNo = entityManager.find(Store.class, 1L);
+    menu.setStoreNo(storeNo);//테스트용 1번가게
     menu.setMenuName(form.getMenuName());
     menu.setMenuSize(form.getMenuSize());
     menu.setMenuPrice(form.getMenuPrice());

@@ -10,6 +10,7 @@
         <thead>
         <tr>
             <th>가게</th>
+            <th>가게주소</th>
             <th>메뉴이름</th>
             <th>메뉴사이즈</th>
             <th>메뉴가격</th>
@@ -20,7 +21,8 @@
         <tbody>
         <tr th:each="menu : ${menus}">
 <!--            <td th:text="${notice.noticeTitle}"></td>-->
-            <td th:text="${menu.store.storeName}"></td>
+            <td th:text="${menu.storeNo.storeName}"></td>
+            <td th:text="${menu.storeNo.storeAddr}"></td>
             <td><a th:href="@{/menu/detail/{menuNo}(menuNo=${menu.menuNo})}" th:text="${menu.menuName}"></a></td>
             <td th:text="${menu.menuSize}"></td>
             <td th:text="${menu.menuPrice}"></td>

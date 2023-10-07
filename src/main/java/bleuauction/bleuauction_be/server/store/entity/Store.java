@@ -67,7 +67,7 @@ public class Store {
   @Enumerated(EnumType.STRING)
   private StoreStatus storeStatus;
 
-  @OneToMany(mappedBy = "store")
+  @OneToMany(mappedBy = "storeNo")
   private List<Menu> menus = new ArrayList<>();
 
 }

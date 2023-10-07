@@ -20,32 +20,25 @@ import java.time.LocalDateTime;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name="menu_no")
   private Long menuNo;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name ="store_no")
-  private Store store;
+  private Store storeNo;
 
-  @Column(name="menu_name")
   private String menuName;
 
   @Enumerated(EnumType.STRING)
-  @Column(name="menu_size")
   private MenuSize menuSize;
 
-  @Column(name="menu_price")
   private String menuPrice;
 
-  @Column(name="menu_content")
   private String menuContent;
 
   @CreationTimestamp
-  @Column(name="reg_datetime")
   private LocalDateTime regDatetime;
 
   @UpdateTimestamp
-  @Column(name="mdf_datetime")
   private LocalDateTime mdfDatetime;
 
   @Enumerated(EnumType.STRING)

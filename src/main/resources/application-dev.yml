@@ -5,16 +5,7 @@ server:
 # TODO : 추후 Cloud로 Database생성시 추가 필요
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
-    username: bleuauction
-    password: bleuauction123!@#
-
-jpa:
-  show-sql: false
-  properties:
-    hibernate:
-      default_batch_fetch_size: 100
-      dialect: org.hibernate.dialect.MySQLDialect
-  hibernate:
-    ddl-auto: none
+    driver-class-name:
+    url:
+    username:
+    password:

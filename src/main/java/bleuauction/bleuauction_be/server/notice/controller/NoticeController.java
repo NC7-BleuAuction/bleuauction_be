@@ -79,7 +79,7 @@ public class NoticeController {
   }
 
   // 수정 처리
-  @PostMapping("/update/{noticeNo}")
+  @PostMapping("/notice/update/{noticeNo}")
   public String updateNotice(
           @PathVariable("noticeNo") Long noticeNo,
           @ModelAttribute("notice") @Valid NoticeForm form,

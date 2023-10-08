@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #review_div_list {
+            margin-top: 800px;
+            text-align: center;
+        }
+
+        .review_div {
+            padding-top: 20px;
+            text-align: center;
+            width: 600px;
+            height: 50px;
+            border: solid 1px black;
+            margin: 10px auto;
+        }
+    </style>
+    <!-- jQuery CDN 링크 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/js/common.js"></script>
+</head>
+<body>
+<div id="review_div_list">
+    <div class="review_div" data-th-each="review : ${reviewSubList}"
+         data-th-text="${review != null ? review.reviewContent : '리뷰내용'}"></div>
+    <input id="review_list_size" type="text" data-th-value="${reviewListSize}">
+</div>
+<script>
+    function reviewDelete(reviewNo) {
+        console.log(reviewNo);
+        sendAjaxRequest("/review/delete/sendAjax?reviewNo=" + reviewNo, 'GET', null,
+            (data) => {
+                let status = JSON.parse(data).status;
+                if (status === 'success') {
+                    alert("리뷰가 정상적으로 삭제되었습니다!");
+                } else if (status === 'fail') {
+                    alert("리뷰 삭제에 실패하였습니다. 잠시 후 다시 시도해 주세요.");
+                } else {
+                    alert("해당 리뷰를 찾을 수 없습니다.");
+                }
+                location.reload();
+            },
+            () => {
+                console.error();
+            }
+        );
+    }
+
+    $(document).ready(function () {
+        $(window).scroll(function () {
+            console.log('window height(): ' + $(window).scrollTop());
+            console.log('window scrollTop(): ' + document.documentElement.scrollHeight);
+            console.log('document height() : ' + $(document).height());
+
+
+            if ((($(window).height() + $(window).scrollTop()) + 10) >= $(document).height()) {
+                console.log("스크롤 계산 정상");
+                let reviewDivLength = $(".review_div").length;
+                let reviewListSize = $("#review_list_size").val();
+                console.log("reviewDivLength: " + reviewDivLength);
+                console.log("reviewListSize: " + reviewListSize);
+
+                if (reviewDivLength <= reviewListSize) {
+                    sendAjaxRequest("/review/list/sendAjax?reviewLength=" + reviewDivLength, 'GET', null,
+                        (data) => {
+                            console.log('성공');
+                            console.log(data);
+                            let reviewSubList = JSON.parse(data).reviewSubList;
+                            for (let i = 0; i < reviewSubList.length; i++) {
+                                let review = reviewSubList[i];
+                                let freshness;
+
+                                if (review.reviewFreshness === 'L') {
+                                    freshness = '낮음';
+                                } else if (review.reviewFreshness === 'M') {
+                                    freshness = '중간';
+                                } else {
+                                    freshness = '높음';
+                                }
+                                $(".review_div:last").after("<div class='review_div'>" + '신선도: ' + freshness + ' / ' + review.reviewContent
+                                    + "<input type='text' value=" + review.reviewNo + ">"
+                                    + '<button onclick=reviewDelete($(this).parent().find(\'input\').val())>리뷰삭제</button>' + "</div>");
+                            }
+                        },
+                        () => {
+                            console.error();
+                        });
+                }
+            }
+        });
+    });
+
+
+</script>
+</body>
+</html>

@@ -42,3 +42,11 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+### .yml ###
+/application-local.yml
+
+
+### .html ###
+*.html

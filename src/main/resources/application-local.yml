@@ -18,39 +18,33 @@ spring:
     #    console: # H2 DB를 웹에서 관리할 수 있는 기능
     #      enabled: true           # H2 Console 사용 여부
     #      path: /h2-console       # H2 Console 접속 주소
-    #
-    #  # JPA 설정
-    #  jpa:
-#        database-platform: org.hibernate.dialect.H2Dialect
-#        hibernate:
-#          ddl-auto: create        # DB 초기화 전략 (none, create, create-drop, update, validate)
-#        properties:
-#          hibernate:
-#            dialect: org.hibernate.dialect.H2Dialect
-#            format_sql: true      # 쿼리 로그 포맷 (정렬)
-#            show_sql: true        # 쿼리 로그 출력
-
-#        #BleuAuction
-#        driver-class-name: com.mysql.cj.jdbc.Driver
-#        url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
-#        username: bleuauction
-#        password: bleuauction123!@#
 
     #    #MySQl
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/bleuauction_test?useUnicode=true&serverTimezone=UTC
+#    username: hyunwook
+#    password: dnrdl1324!!
+    #        #BleuAuction
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/bleuauction_test?useUnicode=true&serverTimezone=UTC
-    username: hyunwook
-    password: dnrdl1324!!
+    url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
+    username: bleuauction
+    password: bleuauction123!@#
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+      show-sql: true
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+server:
+  port: 8080
+  shutdown: graceful
 
 #ncp:
 #  endPoint: https://kr.object.ncloudstorage.com
 #  regionName: kr-standard
 #  accessKey: aYDzbuluiQM2eCQIDmsd
 #  secretKey: BTwWtRIJlCJZSLtCxNx9zWi3S4xFUDVm9VtE0ynW
-
-server:
-  port: 8080
-  shutdown: graceful
 
 #ncp:
 #  end:

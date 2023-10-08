@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class MemberController {
 
@@ -47,7 +47,7 @@ public class MemberController {
         member.setMemberPwd(encryptedPassword);
         // 회원 저장
         memberRepository.save(member);
-        return "redirect:form";  // URL 수정: "form" → "/form"
+        return "redirect:form";
     }
 
     @GetMapping("/member/delete")

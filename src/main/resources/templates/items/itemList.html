@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>품목 리스트</h1>
+<div class="container">
+    <table>
+        <thead>
+        <tr>
+            <th>코드</th>
+            <th>원산지</th>
+            <th>지역이름</th>
+            <th>품목이름</th>
+            <th>품목사이즈</th>
+            <th>자연산/양식 여부</th>
+            <th>사용여부</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${items}">
+            <td th:text="${item.itemCode.value}"></td>
+            <td th:text="${item.OriginStatus.value}"></td>
+            <td th:text="${item.OriginPlaceStatus.value}"></td>
+            <td><a th:href="@{/item/detail/{itemNo}(itemNo=${item.itemNo})}" th:text="${item.itemName}"></a></td>
+            <td th:text="${item.itemSize.value}"></td>
+            <td th:text="${item.wildFarmStatus.value}"></td>
+            <td th:text="${item.itemStatus}"></td>
+            <td>
+                <form th:action="@{/item/delete/{id}(id=${item.itemNo})}" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?');">
+                    <input type="hidden" name="_method" value="delete">
+                    <button type="submit">삭제</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+        </thead>
+    </table>
+</div>
+
+</body>
+</html>

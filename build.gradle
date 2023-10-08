@@ -31,10 +31,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'com.google.code.gson:gson:2.8.9'
 	implementation 'mysql:mysql-connector-java:8.0.33'
+
+//	//예외처리
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	// 이메일 라이브러리
 	implementation 'com.sun.mail:javax.mail:1.6.2'
@@ -44,7 +46,9 @@ dependencies {
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.530'
 
 	// https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
-	implementation 'com.mysql:mysql-connector-j:8.0.33'
+	// DB
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 	// 결제
 	implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'

@@ -7,28 +7,20 @@ spring:
       enabled: true
 
   datasource:
-    #    driver-class-name: org.h2.Driver
-    #    url: 'jdbc:h2:mem:test'   # H2 DB 연결 주소 (In-Memory Mode)
-    #    #url: 'jdbc:h2:~/test'    # H2 DB 연결 주소 (Embedded Mode)
-    #    username: sa        # H2 DB 접속 ID (사용자 지정)
-    #    password:        # H2 DB 접속 PW (사용자 지정)
-    #
-    #  # H2 Console 설정
-    #  h2:
-    #    console: # H2 DB를 웹에서 관리할 수 있는 기능
-    #      enabled: true           # H2 Console 사용 여부
-    #      path: /h2-console       # H2 Console 접속 주소
-
-    #    #MySQl
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/bleuauction_test?useUnicode=true&serverTimezone=UTC
-#    username: hyunwook
-#    password: dnrdl1324!!
-    #        #BleuAuction
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
     username: bleuauction
     password: bleuauction123!@#
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/studydb?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+#    username: study
+#    password: 1111
+
+#ncp:
+#  endPoint: https://kr.object.ncloudstorage.com
+#  regionName: kr-standard
+#  accessKey: aYDzbuluiQM2eCQIDmsd
+#  secretKey: BTwWtRIJlCJZSLtCxNx9zWi3S4xFUDVm9VtE0ynW
 
   jpa:
     hibernate:
@@ -39,12 +31,6 @@ spring:
 server:
   port: 8080
   shutdown: graceful
-
-#ncp:
-#  endPoint: https://kr.object.ncloudstorage.com
-#  regionName: kr-standard
-#  accessKey: aYDzbuluiQM2eCQIDmsd
-#  secretKey: BTwWtRIJlCJZSLtCxNx9zWi3S4xFUDVm9VtE0ynW
 
 #ncp:
 #  end:

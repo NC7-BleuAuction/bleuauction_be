@@ -19,27 +19,27 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @Configuration
 public class SecurityConfig {
 
-    private static String[] tempWhiteListArray = {"/hello", "/health"};
+  private static String[] tempWhiteListArray = {"/hello", "/health"};
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http,
-            HandlerMappingIntrospector introspector) throws Exception {
-        http.authorizeHttpRequests(
-                        authorizationManagerRequestMatcherRegistry ->
-                                authorizationManagerRequestMatcherRegistry
-                                        .anyRequest()
-                                        .permitAll()
-                )
-                .logout(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(
-                        FrameOptionsConfig::sameOrigin)
-                );
-        return http.build();
-    }
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return PasswordEncoderFactories
-                .createDelegatingPasswordEncoder();
-    }
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http,
+                                         HandlerMappingIntrospector introspector) throws Exception {
+    http.authorizeHttpRequests(
+                    authorizationManagerRequestMatcherRegistry ->
+                            authorizationManagerRequestMatcherRegistry
+                                    .anyRequest()
+                                    .permitAll()
+            )
+            .logout(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable)
+            .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(
+                    FrameOptionsConfig::sameOrigin)
+            );
+    return http.build();
+  }
+  @Bean
+  public PasswordEncoder passwordEncoder(){
+    return PasswordEncoderFactories
+            .createDelegatingPasswordEncoder();
+  }
 }

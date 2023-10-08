@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .store_div {
+            padding-top: 200px;
+            text-align: center;
+            height: 300px;
+            border: solid 1px black;
+        }
+
+
+    </style>
+    <!-- jQuery CDN 링크 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Axios CDN 링크 -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="/static/js/common.js"></script>
+</head>
+<body>
+<div id="store_list_div">
+    <div class="store_div" data-th-unless="${storeSubList}">존재하는 가게가 없습니다.</div>
+    <div class="store_div" data-th-if="${store != null && not empty store}" data-th-each="store : ${storeSubList}" data-th-text="${store.storeName}"></div>
+
+</div>
+<input id="store_list_size" type="hidden" data-th-value="${storeListSize}">
+<script>
+    $(window).scroll(function () {
+        // console.log('window height(): ' + $(window).scrollTop());
+        // console.log('window scrollTop(): ' + document.documentElement.scrollHeight);
+        // console.log('document height() : ' + $(document).height());
+
+        if ((($(window).height() + $(window).scrollTop()) + 10) >= $(document).height()) {
+            console.log("스크롤 계산 정상");
+            let storeDivLength = $(".store_div").length;
+            let storeListSize = $("#store_list_size").val();
+            console.log("storeDivLength: " + storeDivLength);
+            console.log("storeListSize: " + storeListSize);
+
+            if (storeDivLength <= storeListSize) {
+                sendAxiosRequest('/store/ajaxList?storeLength=' + storeDivLength, 'get', null,
+                    response => {
+                        console.log(response.data);
+                        for (let i = 0; i < response.data.length; i++) {
+                            let store = response.data[i];
+                            let storeListDiv = document.getElementById("store_list_div");
+                            let newStoreDiv = document.createElement('div');
+                            newStoreDiv.textContent = store.storeName;
+                            newStoreDiv.className = 'store_div';
+                            storeListDiv.append(newStoreDiv);
+                        }
+                    },
+                    error => console.log(error)
+                )
+            }
+        }
+    });
+</script>
+</body>
+</html>

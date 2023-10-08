@@ -60,7 +60,6 @@ CREATE TABLE `ba_store` (
 CREATE TABLE `ba_item` (
                            `item_no` bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
                            `item_code` varchar(10) NOT NULL COMMENT 'S:생선/횟감, F:생선/비횟감,  C:갑각류,  M:패류  E:기타',
-                           `origin_country_no` bigint NOT NULL,
                            `item_name` varchar(30) NOT NULL,
                            `item_size` varchar(1) NOT NULL COMMENT 'S:소, M:중, L:대',
                            `origin_status` varchar(1) NOT NULL COMMENT 'D:국내산,  I:수입산',

@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -85,7 +86,7 @@ public class MenuController {
     }
 
     menuService.update(menuNo, form.getMenuName(), form.getMenuSize(), form.getMenuPrice(), form.getMenuContent());
-
+    redirectAttributes.addFlashAttribute("successMessage", "메뉴가 수정되었습니다.");
     return "redirect:/menulist";
   }
 

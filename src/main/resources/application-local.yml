@@ -12,8 +12,8 @@ spring:
     username: bleuauction
     password: bleuauction123!@#
 #    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/bleu_auction_db
-#    username: root
+#    url: jdbc:mysql://localhost:3306/studydb?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+#    username: study
 #    password: 1111
 
 #ncp:

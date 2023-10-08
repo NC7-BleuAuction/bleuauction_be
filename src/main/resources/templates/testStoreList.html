@@ -22,8 +22,9 @@
 </head>
 <body>
 <div id="store_list_div">
-    <div class="store_div" data-th-each="store : ${storeSubList}"
-         data-th-text="${store.storeName}"></div>
+    <div class="store_div" data-th-unless="${storeSubList}">존재하는 가게가 없습니다.</div>
+    <div class="store_div" data-th-if="${store != null && not empty store}" data-th-each="store : ${storeSubList}" data-th-text="${store.storeName}"></div>
+
 </div>
 <input id="store_list_size" type="hidden" data-th-value="${storeListSize}">
 <script>

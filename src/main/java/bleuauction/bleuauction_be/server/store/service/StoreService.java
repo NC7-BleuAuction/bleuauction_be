@@ -18,7 +18,7 @@ public class StoreService {
     return storeRepository.findAll();
   }
 
-  public Optional<Store> findByStoreNo(Long storeNo) {
+  public Optional<Store> selectStore(Long storeNo) {
     return storeRepository.findBystoreNo(storeNo);
   }
 }

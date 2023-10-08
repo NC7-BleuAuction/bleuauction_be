@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -25,16 +26,17 @@ public class StoreController {
   public String list(Model model) {
     log.info("/store/list");
 
+
     List<Store> storeList = storeService.selectStoreList();
-
-    List<Store> storeSubList = storeList.subList(0, 2);
-
     log.info("storeList: " + storeList);
-    log.info("storeSubList: " + storeSubList);
 
-    model.addAttribute("storeListSize", storeList.size());
-    model.addAttribute("storeSubList", storeSubList);
+    if (storeList != null && storeList.size() > 0) {
+      List<Store> storeSubList = storeList.subList(0, storeList.size() >= 2 ? 2 : storeList.size());
+      log.info("storeSubList: " + storeSubList);
 
+      model.addAttribute("storeListSize", storeList.size());
+      model.addAttribute("storeSubList", storeSubList);
+    }
 
 //        return "/store/list GET 요청 Test: " + storeList;
     return "testStoreList";
@@ -66,10 +68,12 @@ public class StoreController {
   @GetMapping("/detail")
   public String detail(Model model, @RequestParam(name = "storeNo", defaultValue = "1") Long storeNo) {
     log.info("/store/detail");
-    Store store = storeService.selectStore(storeNo);
+    Optional<Store> store = storeService.selectStore(storeNo);
     log.info("storeNo가 " + storeNo + "인 가게" + store);
 
-    model.addAttribute("store", store);
+    if (store.isPresent()) {
+      model.addAttribute("store", store);
+    }
 
     return "testStoreDetail";
   }

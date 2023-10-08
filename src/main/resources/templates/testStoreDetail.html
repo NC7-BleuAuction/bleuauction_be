@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .store_div {
+            padding-top: 200px;
+            text-align: center;
+            height: 300px;
+            border: solid 1px black;
+        }
+
+
+    </style>
+    <!-- jQuery CDN 링크 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div>
+    <div class="store_div" data-th-text="${store}"></div>
+    <form id="reviewForm">
+        <input type="text" name="storeNo" data-th-value="${store.storeNo}">
+        <label>신선도</label>
+        <input type="radio" name="reviewFreshness" value="L">낮음
+        <input type="radio" name="reviewFreshness" value="M">중간
+        <input type="radio" name="reviewFreshness" value="H">높음
+        <textarea name="reviewContent"></textarea>
+        <button id="submitBtn" type="button">리뷰 작성</button>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#submitBtn").click(function () {
+            let formData = $("#reviewForm").serialize();
+            console.log(formData);
+
+            $.ajax({
+                type: "POST",
+                url: "/review/add",
+                data:formData,
+                success: function (data) {
+                    console.log("리뷰작성 성공");
+                    console.log(data);
+                },
+                error: function () {
+                    console.error();
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

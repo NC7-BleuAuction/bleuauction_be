@@ -52,7 +52,7 @@ CREATE TABLE `ba_store` (
                             `weekday_end_time`	TIME	NULL,
                             `weekend_start_time`	TIME	NULL,
                             `weekend_end_time`	TIME	NULL,
-                            `order_type`	VARCHAR(1)	NULL	COMMENT 'Q:퀵 배송, T:포장',
+                            `unsupported_type`	VARCHAR(1)	NULL	COMMENT 'Q:퀵 배송, T:포장',
                             `store_status`	VARCHAR(1)	NULL	DEFAULT 'Y'	COMMENT 'Y:운영중 , N:폐업'
 );
 

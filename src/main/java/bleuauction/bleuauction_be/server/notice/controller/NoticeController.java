@@ -12,9 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import java.util.List;
@@ -82,18 +80,9 @@ public class NoticeController {
   @PostMapping("/notice/update/{noticeNo}")
   public String updateNotice(
           @PathVariable("noticeNo") Long noticeNo,
-          @ModelAttribute("notice") @Valid NoticeForm form,
-          BindingResult bindingResult,
-          RedirectAttributes redirectAttributes
+          @ModelAttribute("notice") @Valid NoticeForm form
   ) {
-    if (bindingResult.hasErrors()) {
-      return "notices/detail"; // 폼 검증 에러가 있는 경우 다시 수정 폼으로 돌아갑니다.
-    }
-
-    // 공지사항 업데이트를 서비스 메서드를 통해 수행합니다.
     noticeService.update(noticeNo, form.getNoticeTitle(), form.getNoticeContent());
-
-    redirectAttributes.addFlashAttribute("successMessage", "공지사항이 수정되었습니다.");
     return "redirect:/notices";
   }
 

@@ -1,5 +1,7 @@
 package bleuauction.bleuauction_be.server.store.entity;
 
+import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -57,9 +61,13 @@ public class Store {
   private Time weekendEndTime; // 주말 종료시간
 
   @Enumerated(EnumType.STRING)
+  @Column(name="order_type")
   private UnsupportedType unsupportedType; // 주문 불가 유형
 
   @Enumerated(EnumType.STRING)
   private StoreStatus storeStatus;
+
+  @OneToMany(mappedBy = "storeNo")
+  private List<Menu> menus = new ArrayList<>();
 
 }

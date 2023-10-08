@@ -13,17 +13,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import java.util.List;
 
 @Slf4j
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class NoticeController {
 
@@ -90,7 +87,7 @@ public class NoticeController {
           RedirectAttributes redirectAttributes
   ) {
     if (bindingResult.hasErrors()) {
-      return "notices/update"; // 폼 검증 에러가 있는 경우 다시 수정 폼으로 돌아갑니다.
+      return "notices/detail"; // 폼 검증 에러가 있는 경우 다시 수정 폼으로 돌아갑니다.
     }
 
     // 공지사항 업데이트를 서비스 메서드를 통해 수행합니다.

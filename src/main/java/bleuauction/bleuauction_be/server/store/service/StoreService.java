@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StoreService {
@@ -22,4 +23,7 @@ public class StoreService {
     return storeRepository.findAll();
   }
 
+  public Optional<Store> findByStoreNo(Long storeNo) {
+    return storeRepository.findBystoreNo(storeNo);
+  }
 }

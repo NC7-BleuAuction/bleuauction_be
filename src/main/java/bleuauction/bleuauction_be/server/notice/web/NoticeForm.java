@@ -10,8 +10,8 @@ import lombok.Setter;
 public class NoticeForm {
 
   @NotEmpty(message = "제목과 내용은 필수입니다.")
-  @Column(name="notice_title")
-  public String noticeTitle;
+@Column(name="notice_title")
+public String noticeTitle;
   @Column(name="notice_content")
   public String noticeContent;
 

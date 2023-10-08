@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>메뉴 수정</title>
+</head>
+<body>
+<div class="container">
+    <h1>메뉴 수정</h1>
+        <form th:object="${menu}" th:action="@{/menu/update/{menuNo}(menuNo=${menu.menuNo})}" method="post">
+        <input type="hidden" th:field="*{menuNo}">
+        <label for="menuName">메뉴이름:</label>
+        <input type="text" id="menuName" th:field="*{menuName}">
+        <br>
+            <label for="menuSize">메뉴사이즈</label>
+            <select th:field="*{menuSize}" class="form-control" id="menuSize">
+                <option value="S">소</option>
+                <option value="M">중</option>
+                <option value="L">대</option>
+            </select>
+        <br>
+        <label for="menuPrice">메뉴가격</label>
+            <input type="text" id="menuPrice" th:field="*{menuPrice}">
+
+        <br>
+
+            <label for="menuContent">메뉴설명</label>
+            <input type="text" th:field="*{menuContent}" class="form-control" id="menuContent" placeholder="메뉴설명">
+
+
+            <br>
+        <button type="submit">저장</button>
+    </form>
+</div>
+</body>
+</html>

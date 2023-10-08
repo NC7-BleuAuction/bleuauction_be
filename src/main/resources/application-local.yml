@@ -7,13 +7,37 @@ spring:
       enabled: true
 
   datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
+#    username: bleuauction
+#    password: bleuauction123!@#
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
-    username: bleuauction
-    password: bleuauction123!@#
+    url: jdbc:mysql://localhost:3306/bleu_auction_db
+    username: root
+    password: 1111
+
+#ncp:
+#  endPoint: https://kr.object.ncloudstorage.com
+#  regionName: kr-standard
+#  accessKey: aYDzbuluiQM2eCQIDmsd
+#  secretKey: BTwWtRIJlCJZSLtCxNx9zWi3S4xFUDVm9VtE0ynW
 
   jpa:
     hibernate:
       ddl-auto: none
       show-sql: true
     database-platform: org.hibernate.dialect.MySQLDialect
+
+server:
+  port: 8080
+  shutdown: graceful
+
+#ncp:
+#  end:
+#    point: https://kr.object.ncloudstorage.com
+#  region:
+#    name: kr-standard
+#  access:
+#    key: 76nZbCgEGrJWIt72Sduf
+#  secret:
+#    key: NuGLWQXQW9t69dCfRHwvuo5nsvGitpcE2BbufNMr

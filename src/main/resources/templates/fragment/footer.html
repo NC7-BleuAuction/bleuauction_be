@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<footer th:fragment="footerFragment">
+    <body>
+    <div class="footer" style="width: 1800px; text-align: center; display: flex; justify-content: center; align-items: center;">
+        <div class="main" style="display: flex; align-items: center; ">
+<!--            margin-right: 150px;-->
+            <div class="content" style='font-size: small; text-align: center;'>
+                <!--<img src="/static/images/logo.JPG" style="width: 100px; height: 100px; ">-->
+                <div style="text-align: center;">
+                    <h2 style="text-align: center; color: #F86338;">ArtTab</h2>
+                </div>
+                <ul style='font-size: small; text-align: center;'>
+                    <li style="display: inline; margin-left: -50px; margin-right: 20px;"><a data-th-href="@{/other/terms}" style="text-decoration: none; color: inherit;">Agreement</a></li>
+                    <li style="display: inline; margin-right: 20px;"><a data-th-href="@{/other/rule}" style="text-decoration: none; color: inherit;">Privacy Policy</a></li>
+                    <li style="display: inline;"><a data-th-href="@{/other/intro}" style="text-decoration: none; color: inherit;">Contact</a></li>
+                </ul>
+                <br>
+                <p>대표 주현욱 | 사업자 등록번호 888-81-7777</p>
+                <p>사업장 소재지 | 서울시 강남구 강남대로94길 20, 삼오빌딩 6층</p>
+                <p>고객센터 | 대표전화 : 1577-8888 | E-mail : arttab@gmail.com</p>
+            </div>
+        </div>
+    </div>
+    </body>
+</footer>
+</html>

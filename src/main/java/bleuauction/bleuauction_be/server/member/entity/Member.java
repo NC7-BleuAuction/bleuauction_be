@@ -1,27 +1,33 @@
 package bleuauction.bleuauction_be.server.member.entity;
 
 
+import jakarta.annotation.Nullable;
+import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.CurrentTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-        import bleuauction.bleuauction_be.server.notice.entity.Notice;
-        import jakarta.persistence.*;
 
-        import java.time.LocalDateTime;
-        import java.util.ArrayList;
-        import java.util.List;
-
-        import lombok.AccessLevel;
-        import lombok.Getter;
-        import lombok.NoArgsConstructor;
-        import lombok.extern.slf4j.Slf4j;
-        import org.hibernate.annotations.CurrentTimestamp;
-        import org.hibernate.annotations.UpdateTimestamp;
-        import org.jetbrains.annotations.NotNull;
-        import org.jetbrains.annotations.Nullable;
 
 @Entity
-@Getter
+@Data
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+
 @Table(name = "ba_member")
 public class Member {
 
@@ -60,6 +66,7 @@ public class Member {
   @Enumerated(EnumType.STRING)
   private MemberCategory memberCategory;
 
+
   @CurrentTimestamp
   @Column(name = "reg_datetime")
   private LocalDateTime regDatetime;
@@ -74,3 +81,4 @@ public class Member {
   @OneToMany(mappedBy = "member")
   private List<Notice> notices = new ArrayList<>();
 }
+

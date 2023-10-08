@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/index.css">
+
+    <!-- Bootstrap JS 및 Popper.js (필요한 경우) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- 추가 CSS (선택 사항) -->
+    <style>
+        /* 슬라이드 높이 조절 및 이미지 확대/축소 */
+        .carousel-item {
+            height: 100vh; /* 화면 높이의 100%로 조절 */
+        }
+
+        .carousel-item img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+
+        h1{
+            font-size:32px;
+            font-weight:bold;
+            margin-bottom: 47px;
+            }
+    </style>
+    </style>
+</head>
+
+<br>
+<div data-th-replace="fragment/header :: headerFragment"></div>
+
+<body style="width: 1800px; margin: 0 auto;">
+<br>
+
+
+<!-- 슬라이드 쇼 시작 -->
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+    <!-- 슬라이드 이미지 -->
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="/static/images/art3.jpg" alt="슬라이드 1">
+            <div class="carousel-caption">
+                <h3>꽃소녀</h3>
+                <p>김철수 作</p>
+
+
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="/static/images/art2.jpg" alt="슬라이드 2">
+            <div class="carousel-caption">
+                <h3>형형색색</h3>
+                <p>이숙자 作</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="/static/images/art7.jpg" alt="슬라이드 3">
+            <div class="carousel-caption">
+                <h3>분홍</h3>
+                <p>Robert Park 作</p>
+            </div>
+    </div>
+        <div class="carousel-item">
+            <img src="/static/images/art6.jpg" alt="슬라이드 4">
+            <div class="carousel-caption">
+                <h3>두꺼운 터치</h3>
+                <p>Thomas Lee 作</p>
+            </div>
+        </div>
+    </div>
+    <!-- 슬라이드 컨트롤 -->
+    <a class="carousel-control-prev" href="#myCarousel" data-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </a>
+    <a class="carousel-control-next" href="#myCarousel" data-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </a>
+</div>
+<!-- 슬라이드 쇼 끝 -->
+
+<br><br><br><br><br><br><br><br>
+</body>
+<div data-th-replace="fragment/footer :: footerFragment"></div>
+</html>

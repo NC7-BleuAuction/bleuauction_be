@@ -29,7 +29,12 @@
 
 
             <br>
-        <button type="submit">저장</button>
+            <div class="form-group">
+                <label for="menuImage">메뉴 이미지</label>
+                <img th:if="${menu.menuAttaches.size() > 0}" th:src="|https:kr.object.ncloudstorage.com/bleuauction-bucket/menu/${menu.menuAttaches[0].saveFilename}|" class="img-fluid" alt="메뉴 이미지" id="menuImage">
+            </div>
+
+            <button type="submit">저장</button>
     </form>
 </div>
 </body>

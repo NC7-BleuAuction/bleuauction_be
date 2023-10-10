@@ -25,7 +25,7 @@ public class MemberService {
 
     // email로 회원찾기
     public Optional<Member> findByMemberEmail(String memberEmail) {
-        return memberRepository.findBymemberEmail(memberEmail);
+        return memberRepository.findByMemberEmail(memberEmail);
     }
 
     // email과 pwd로 회원 찾기
@@ -45,7 +45,7 @@ public class MemberService {
 
     // 이메일 중복검사
     private void validateDuplicateMember(Member member) {
-        Optional<Member> findMembers = memberRepository.findBymemberEmail(member.getMemberEmail());
+        Optional<Member> findMembers = memberRepository.findByMemberEmail(member.getMemberEmail());
         if (!findMembers.isEmpty()) {
             throw new IllegalStateException("이미 존재하는 이메일입니다.");
         }

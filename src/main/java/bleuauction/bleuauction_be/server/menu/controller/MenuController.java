@@ -1,9 +1,11 @@
 package bleuauction.bleuauction_be.server.menu.controller;
 
+import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.service.MenuService;
 import bleuauction.bleuauction_be.server.menu.web.MenuForm;
+import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;
@@ -14,16 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class MenuController {
 
   private final MenuService menuService;
+  private final NcpObjectStorageService ncpObjectStorageService;
   private final EntityManager entityManager;
 
   //등록페이지
@@ -37,7 +42,7 @@ public class MenuController {
   //등록처리
   @PostMapping("/menu/new")
   @Transactional
-  public String menu(@Valid MenuForm form) {
+  public String menu(@Valid MenuForm form,@RequestParam("menuImage") MultipartFile menuImage) {
     Menu menu = new Menu();
     Store storeNo = entityManager.find(Store.class, 1L);
     menu.setStoreNo(storeNo);//테스트용 1번가게
@@ -46,6 +51,14 @@ public class MenuController {
     menu.setMenuPrice(form.getMenuPrice());
     menu.setMenuContent(form.getMenuContent());
     menu.setMenuStatus(MenuStatus.Y);
+
+    if (menuImage != null && menuImage.getSize() > 0) {
+      Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
+              "bleuauction-bucket", "menu/", menuImage);
+      menu.addAttach(attach);
+    }
+
+
     menu=entityManager.merge(menu);
     menuService.enroll(menu);
     log.info("menu/postnew");
@@ -71,7 +84,15 @@ public class MenuController {
   @GetMapping("/menu/detail/{menuNo}")
   public String detailMenu(@PathVariable("menuNo") Long menuNo, Model model) {
     Menu menu = menuService.findOne(menuNo);
+
+    // Attach 객체를 가져오거나 생성하여 filePath를 설정합니다.
+    // 예를 들어, Menu 객체에 Attach 정보가 있을 경우:
+    Attach attach = menu.getMenuAttaches().isEmpty() ? null : menu.getMenuAttaches().get(0);
+
+
     model.addAttribute("menu", menu);
+    model.addAttribute("attach", attach);
+
     return "/menus/detail";
   }
 

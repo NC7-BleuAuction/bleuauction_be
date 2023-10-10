@@ -16,7 +16,7 @@ spring:
     username: study
     password: 1111
 
-#ncp:
+ncp:
   endPoint: https://kr.object.ncloudstorage.com
   regionName: kr-standard
   accessKey: A3YFyEA5Ulxf3Lw71ZQs

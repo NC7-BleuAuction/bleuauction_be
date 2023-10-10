@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum AttachStatus {
+public enum FileStatus {
     Y("사용중"),
     N("삭제건");
 

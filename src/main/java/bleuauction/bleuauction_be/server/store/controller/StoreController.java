@@ -64,7 +64,6 @@ public class StoreController {
     return storeSubList;
   }
 
-
   @GetMapping("/detail")
   public String detail(Model model, @RequestParam(name = "storeNo", defaultValue = "1") Long storeNo) {
     log.info("/store/detail");

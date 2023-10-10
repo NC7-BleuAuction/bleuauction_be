@@ -1,11 +1,15 @@
 package bleuauction.bleuauction_be.server.store.entity;
 
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +20,11 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @ToString
 @Slf4j
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "ba_store")
 public class Store {
@@ -48,16 +55,16 @@ public class Store {
   @NotNull
   private String storeDetailAddr;
 
-  @NotNull
+  //@NotNull
   private Time weekdayStartTime; // 평일 시작시간
 
-  @NotNull
+  //@NotNull
   private Time weekdayEndTime; // 평일 종료시간
 
-  @NotNull
+  //@NotNull
   private Time weekendStartTime; // 주말 시작시간
 
-  @NotNull
+  //@NotNull
   private Time weekendEndTime; // 주말 종료시간
 
   @Enumerated(EnumType.STRING)
@@ -67,6 +74,7 @@ public class Store {
   @Enumerated(EnumType.STRING)
   private StoreStatus storeStatus;
 
+  @Builder.Default
   @OneToMany(mappedBy = "storeNo")
   private List<Menu> menus = new ArrayList<>();
 

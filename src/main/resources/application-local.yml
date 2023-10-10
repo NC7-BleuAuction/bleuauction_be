@@ -7,26 +7,39 @@ spring:
       enabled: true
 
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
-    username: bleuauction
-    password: bleuauction123!@#
 #    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/studydb?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
-#    username: study
-#    password: 1111
+#    url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
+#    username: bleuauction
+#    password: bleuauction123!@#
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/bleuauction_test?useUnicode=true&serverTimezone=UTC
+      username: hyunwook
+      password: dnrdl1324!!
+  #    driver-class-name: com.mysql.cj.jdbc.Driver
+  #    url: jdbc:mysql://localhost:3306/studydb?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+  #    username: study
+  #    password: 1111
 
-#ncp:
-#  endPoint: https://kr.object.ncloudstorage.com
-#  regionName: kr-standard
-#  accessKey: aYDzbuluiQM2eCQIDmsd
-#  secretKey: BTwWtRIJlCJZSLtCxNx9zWi3S4xFUDVm9VtE0ynW
+  #ncp:
+  #  endPoint: https://kr.object.ncloudstorage.com
+  #  regionName: kr-standard
+  #  accessKey: aYDzbuluiQM2eCQIDmsd
+  #  secretKey: BTwWtRIJlCJZSLtCxNx9zWi3S4xFUDVm9VtE0ynW
 
   jpa:
+    show-sql: true
+    properties:
+        format_sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
       show-sql: true
+      # DDL(CREATE TABLE) 등의 문구를 직접 보기 위한 설정
+      generate-ddl: true
+      # sql init mode를 활용시 해당 설정이 필요하다.
+      defer-datasource-initialization: true
+      open-in-view: off
     database-platform: org.hibernate.dialect.MySQLDialect
+
 
 server:
   port: 8080

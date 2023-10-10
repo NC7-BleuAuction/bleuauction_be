@@ -1,31 +1,37 @@
 package bleuauction.bleuauction_be.server.member.controller;
 
+import bleuauction.bleuauction_be.server.member.dto.StoreSignUpRequest;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.exception.MemberNotFoundException;
 import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
+import bleuauction.bleuauction_be.server.store.entity.Store;
+import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberRepository memberRepository;
+    private final StoreRepository storeRepository;
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -39,15 +45,27 @@ public class MemberController {
         return "member/signup";
     }
 
+    // 일반사용자 회원가입
     @PostMapping("/member/signup")
-    public String signUp(Member member) throws Exception {
+    public Member signUp(@RequestBody Member member) throws Exception {
         log.error("Email:[{}], Password:[{}]", member.getMemberEmail(), member.getMemberPwd());
         // 비밀번호를 암호화하여 저장
         String encryptedPassword = passwordEncoder.encode(member.getMemberPwd());
         member.setMemberPwd(encryptedPassword);
         // 회원 저장
-        memberRepository.save(member);
-        return "redirect:form";
+        return memberRepository.save(member);
+    }
+    // 가게 회원가입
+    @PostMapping("/store/signup")
+    public Store storeSignUp(@RequestBody @Valid StoreSignUpRequest request) throws Exception {
+        String memberEmail = request.getMemberEmail();
+        String memberPwd = request.getMemberPwd();
+        log.error("Email:[{}], Password:[{}]", memberEmail, memberPwd);
+
+        //회원가입
+        Member member = memberService.signUp(request.getMemberEntity());
+        Store store = request.getStoreEntity(member);
+        return storeRepository.save(store);
     }
 
     @GetMapping("/member/delete")
@@ -89,9 +107,10 @@ public class MemberController {
             cookie.setMaxAge(0);
             response.addCookie(cookie);
         }
-        Member loginUser = memberRepository.findByMemberEmail(memberEmail).orElseThrow(()-> new MemberNotFoundException("사용자가 존재하지 않습니다."));
+        Member loginUser = memberRepository.findByMemberEmail(memberEmail)
+                .orElseThrow(() -> new MemberNotFoundException("사용자가 존재하지 않습니다."));
         log.error("사용자 정보는 있나? >>> {}", loginUser.toString());
-        log.error("동일 한가 ? >>>{}}" , passwordEncoder.matches(memberPwd, loginUser.getMemberPwd()));
+        log.error("동일 한가 ? >>>{}}", passwordEncoder.matches(memberPwd, loginUser.getMemberPwd()));
         if (!passwordEncoder.matches(memberPwd, loginUser.getMemberPwd())) {
             model.addAttribute("refresh", "2;url=/member/form");
             throw new Exception("회원 정보가 일치하지 않습니다.");

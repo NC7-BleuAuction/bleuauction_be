@@ -25,12 +25,12 @@ public class TestController {
     @Autowired
     StoreService storeService;
 
-    @GetMapping("/health")
+    @GetMapping("/api/health")
     public ResponseEntity healthCheck() {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/hello")
+    @GetMapping("/api/hello")
     public String hello() {
         log.info("hello");
         return "자동 CI/CD Test";

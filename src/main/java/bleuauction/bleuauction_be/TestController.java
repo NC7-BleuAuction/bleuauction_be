@@ -30,7 +30,7 @@ public class TestController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/api/hello")
+    @GetMapping("/api/test")
     public String hello() {
         log.info("hello");
         return "자동 CI/CD Test";

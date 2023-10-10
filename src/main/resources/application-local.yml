@@ -17,10 +17,10 @@ spring:
     password: 1111
 
 #ncp:
-#  endPoint: https://kr.object.ncloudstorage.com
-#  regionName: kr-standard
-#  accessKey: aYDzbuluiQM2eCQIDmsd
-#  secretKey: BTwWtRIJlCJZSLtCxNx9zWi3S4xFUDVm9VtE0ynW
+  endPoint: https://kr.object.ncloudstorage.com
+  regionName: kr-standard
+  accessKey: A3YFyEA5Ulxf3Lw71ZQs
+  secretKey: d7dSoeeIhZP3P0mTx6syycp0rZ8IVIzTkUz523aT
 
   jpa:
     hibernate:
@@ -32,12 +32,3 @@ server:
   port: 8080
   shutdown: graceful
 
-#ncp:
-#  end:
-#    point: https://kr.object.ncloudstorage.com
-#  region:
-#    name: kr-standard
-#  access:
-#    key: 76nZbCgEGrJWIt72Sduf
-#  secret:
-#    key: NuGLWQXQW9t69dCfRHwvuo5nsvGitpcE2BbufNMr

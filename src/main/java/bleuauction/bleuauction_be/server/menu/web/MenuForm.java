@@ -5,10 +5,13 @@ import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
 public class MenuForm {
+
+  public MultipartFile menuImage;
 
   @NotEmpty(message = "내용은 필수입니다.")
   @Column(name="menu_name")

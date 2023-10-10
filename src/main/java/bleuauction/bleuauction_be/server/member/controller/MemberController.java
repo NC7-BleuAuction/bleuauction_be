@@ -89,7 +89,7 @@ public class MemberController {
             cookie.setMaxAge(0);
             response.addCookie(cookie);
         }
-        Member loginUser = memberRepository.findByMemberEmail(memberEmail).orElseThrow(()-> new MemberNotFoundException("사용자가 존재하지 않습니다."));
+        Member loginUser = memberRepository.findBymemberEmail(memberEmail).orElseThrow(()-> new MemberNotFoundException("사용자가 존재하지 않습니다."));
         log.error("사용자 정보는 있나? >>> {}", loginUser.toString());
         log.error("동일 한가 ? >>>{}}" , passwordEncoder.matches(memberPwd, loginUser.getMemberPwd()));
         if (!passwordEncoder.matches(memberPwd, loginUser.getMemberPwd())) {

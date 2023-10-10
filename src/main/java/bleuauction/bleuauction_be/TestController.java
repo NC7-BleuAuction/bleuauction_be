@@ -25,7 +25,7 @@ public class TestController {
     @Autowired
     StoreService storeService;
 
-    @GetMapping("/api/health")
+    @GetMapping("/health")
     public ResponseEntity healthCheck() {
         return ResponseEntity.ok().build();
     }

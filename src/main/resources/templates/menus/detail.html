@@ -7,7 +7,7 @@
 <body>
 <div class="container">
     <h1>메뉴 수정</h1>
-        <form th:object="${menu}" th:action="@{/menu/update/{menuNo}(menuNo=${menu.menuNo})}" method="post">
+        <form th:object="${menu}" th:action="@{/menu/update/{menuNo}(menuNo=${menu.menuNo})}" method="post" enctype="multipart/form-data">
         <input type="hidden" th:field="*{menuNo}">
         <label for="menuName">메뉴이름:</label>
         <input type="text" id="menuName" th:field="*{menuName}">
@@ -23,13 +23,20 @@
             <input type="text" id="menuPrice" th:field="*{menuPrice}">
 
         <br>
-
             <label for="menuContent">메뉴설명</label>
             <input type="text" th:field="*{menuContent}" class="form-control" id="menuContent" placeholder="메뉴설명">
-
-
             <br>
-        <button type="submit">저장</button>
+
+            <label for ="newMenuImage"> 이미지 등록</label>
+            <div data-th-each="attach : ${menu.menuAttaches}">
+                <a data-th-href="|https:kr.object.ncloudstorage.com/bleuauction-bucket/menu/${attach.saveFilename}|"
+                   data-th-text="${attach.originFilename}">ok.jpg</a>
+                [<a data-th-href="|/menu/deletefile/${menu.menuNo}/${attach.fileNo}|">삭제</a>]<br>
+            </div>
+            <input type="file" id="newMenuImage" name="newMenuImage" multiple><br><br>
+
+
+            <button type="submit">저장</button>
     </form>
 </div>
 </body>

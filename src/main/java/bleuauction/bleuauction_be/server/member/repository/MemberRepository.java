@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
   Optional<Member> findByMemberEmailAndMemberPwd(String memberEmail, String memberPwd);
-
   List<Member> findAll();
 
     Optional<Member> findByMemberEmail(String memberEmail);

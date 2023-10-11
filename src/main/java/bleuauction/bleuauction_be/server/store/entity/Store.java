@@ -3,6 +3,7 @@ package bleuauction.bleuauction_be.server.store.entity;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -86,5 +87,8 @@ public class Store {
   @Builder.Default
   @OneToMany(mappedBy = "storeNo")
   private List<Menu> menus = new ArrayList<>();
+
+  @OneToMany(mappedBy = "storeNo")
+  private List<Order> orders = new ArrayList<>();
 
 }

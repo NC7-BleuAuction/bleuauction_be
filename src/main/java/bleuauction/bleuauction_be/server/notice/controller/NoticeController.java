@@ -26,7 +26,7 @@ public class NoticeController {
   private final EntityManager entityManager;
 
   //등록
-    @GetMapping("/notice/new")
+  @GetMapping("/api/notice/new")
   public String creatForm(Model model) {
       model.addAttribute("noticeForm", new NoticeForm());
     log.info("notice/new");
@@ -34,7 +34,7 @@ public class NoticeController {
   }
 
   // 등록 처리
-  @PostMapping("/notice/new")
+  @PostMapping("/api/notice/new")
   @Transactional
   public String notice(@Valid NoticeForm form) {
     Notice notice = new Notice();
@@ -54,7 +54,7 @@ public class NoticeController {
 
 
   //목록조회
-  @GetMapping("/notices")
+  @GetMapping("/api/notices")
   public String list(Model model) {
     List<Notice> notices = noticeService.findNotices();
     model.addAttribute("notices", notices);
@@ -62,14 +62,14 @@ public class NoticeController {
   }
 
   //삭제
-  @PostMapping("/notices/delete/{noticeNo}")
+  @PostMapping("/api/notices/delete/{noticeNo}")
   public String deleteNotice(@PathVariable("noticeNo") Long noticeNo) {
     noticeService.deleteNotice(noticeNo);
     return "redirect:/notices";
   }
 
   //수정
-  @GetMapping("/notice/detail/{noticeNo}")
+  @GetMapping("/api/notice/detail/{noticeNo}")
   public String detailNotice(@PathVariable("noticeNo") Long noticeNo, Model model) {
     Notice notice = noticeService.findOne(noticeNo);
     model.addAttribute("notice", notice);
@@ -77,7 +77,7 @@ public class NoticeController {
   }
 
   // 수정 처리
-  @PostMapping("/notice/update/{noticeNo}")
+  @PostMapping("/api/notice/update/{noticeNo}")
   public String updateNotice(
           @PathVariable("noticeNo") Long noticeNo,
           @ModelAttribute("notice") @Valid NoticeForm form

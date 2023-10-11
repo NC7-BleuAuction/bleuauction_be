@@ -6,7 +6,7 @@
 </head>
 <body>
 <div class="container">
-    <form role="form" action="/menu/new" th:object="${menuForm}" method="post">
+    <form role="form" action="/menu/new" th:object="${menuForm}" method="post" enctype="multipart/form-data">
         가게는 1번으로 고정
         <div class="form-group">
             <label for="menuName">메뉴이름</label>
@@ -30,6 +30,11 @@
         <div class="form-group">
             <label for="menuContent">메뉴설명</label>
             <input type="text" th:field="*{menuContent}" class="form-control" id="menuContent" placeholder="메뉴설명">
+        </div>
+
+        <div class="form-group">
+            <label for="files">메뉴 이미지 업로드</label>
+            <input type="file" name="files" class="form-control-file" id="files"  multiple>
         </div>
 
         <button type="submit">submit</button>

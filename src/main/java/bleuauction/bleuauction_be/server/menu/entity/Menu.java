@@ -16,38 +16,38 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+  @Entity
   @Getter
   @Setter
   @Table(name = "ba_menu")
   public class Menu {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long menuNo;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long menuNo;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name ="store_no")
-  private Store storeNo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_no")
+    private Store storeNo;
 
-  private String menuName;
+    private String menuName;
 
-  @Enumerated(EnumType.STRING)
-  private MenuSize menuSize;
+    @Enumerated(EnumType.STRING)
+    private MenuSize menuSize;
 
-  private String menuPrice;
+    private String menuPrice;
 
-  private String menuContent;
+    private String menuContent;
 
-  @CreationTimestamp
-  private LocalDateTime regDatetime;
+    @CreationTimestamp
+    private LocalDateTime regDatetime;
 
-  @UpdateTimestamp
-  private LocalDateTime mdfDatetime;
+    @UpdateTimestamp
+    private LocalDateTime mdfDatetime;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name="menu_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
-  private MenuStatus menuStatus; // 상태 [Y,N]
+    @Enumerated(EnumType.STRING)
+    @Column(name = "menu_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
+    private MenuStatus menuStatus; // 상태 [Y,N]
 
   @OneToMany(mappedBy = "menuNo")
   private List<Order> orders = new ArrayList<>();

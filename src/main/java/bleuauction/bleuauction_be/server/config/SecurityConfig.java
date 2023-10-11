@@ -18,7 +18,6 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-
   private static String[] tempWhiteListArray = {"/hello", "/health"};
 
   @Bean

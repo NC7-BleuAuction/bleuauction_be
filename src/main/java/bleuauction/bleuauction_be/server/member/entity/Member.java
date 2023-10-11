@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.member.entity;
 
 
+import bleuauction.bleuauction_be.server.store.entity.Store;
 import jakarta.annotation.Nullable;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import jakarta.persistence.*;
@@ -16,7 +17,6 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,13 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-
-
 @Entity
 @Data
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-
 @Table(name = "ba_member")
 public class Member {
 
@@ -69,7 +66,6 @@ public class Member {
   @Enumerated(EnumType.STRING)
   private MemberCategory memberCategory;
 
-
   @CurrentTimestamp
   @Column(name = "reg_datetime")
   private LocalDateTime regDatetime;
@@ -83,5 +79,6 @@ public class Member {
 
   @OneToMany(mappedBy = "member")
   private List<Notice> notices = new ArrayList<>();
+
 }
 

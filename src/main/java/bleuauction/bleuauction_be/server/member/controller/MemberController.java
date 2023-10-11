@@ -8,13 +8,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,16 +34,42 @@ public class MemberController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
+    @GetMapping("{memberNo}")
+    public ResponseEntity<Object> detail(@PathVariable Long memberNo) throws Exception {
+        Optional<Member> memberOptional = memberRepository.findById(memberNo);
+                if (memberOptional.isPresent()) {
+            Member member = memberOptional.get();
+            return ResponseEntity.ok().body(member);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping("/signup")
-    public String signUpForm() {
-        return "member/signup";
+    @GetMapping("/list")
+    public ResponseEntity<List<Member>> list () throws Exception {
+        List<Member> members = memberRepository.findAll();
+        return ResponseEntity.ok().body(members);
     }
 
+    @GetMapping("/form")
+    public ResponseEntity<Map<String, String>> form(@CookieValue(required = false) String memberEmail) {
+        Map<String, String> response = new HashMap<>();
+        response.put("memberEmail", memberEmail);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/delete")
+    public void delete(Long memberNo) throws Exception {
+        memberRepository.findById(memberNo).ifPresentOrElse(
+                memberRepository::delete,
+                () -> new MemberNotFoundException("해당 번호의 회원이 없습니다."));
+    }
+    @GetMapping("/logout")
+    public ResponseEntity<String> logout(HttpSession session) throws Exception {
+        session.invalidate();
+        log.info("Call logout");
+        return ResponseEntity.ok().body("{\"message\": \"Logout successful\"}");
+    }
     // 일반사용자 회원가입
     @PostMapping("/signup")
     public Member signUp(@RequestBody Member member) throws Exception {
@@ -53,31 +80,6 @@ public class MemberController {
         // 회원 저장
         return memberRepository.save(member);
     }
-
-    @GetMapping("/delete")
-    public void delete(Long memberNo) throws Exception {
-        memberRepository.findById(memberNo).ifPresentOrElse(
-                memberRepository::delete,
-                () -> new MemberNotFoundException("해당 번호의 회원이 없습니다."));
-    }
-
-    @GetMapping("{memberNo}")
-    public String detail(@PathVariable Long memberNo, Model model) throws Exception {
-        model.addAttribute("member", memberRepository.findById(memberNo));
-        return "member/detail";
-    }
-
-    @GetMapping("/list")
-    public void list(Model model) throws Exception {
-        model.addAttribute("member/list", memberRepository.findAll());
-    }
-
-    @GetMapping("/form")
-    public String form(@CookieValue(required = false) String memberEmail, Model model) {
-        model.addAttribute("memberEmail", memberEmail);
-        return "member/form";
-    }
-
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> loginRequest,
             HttpSession session,
@@ -112,10 +114,4 @@ public class MemberController {
         return ResponseEntity.ok(responseMap);
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpSession session) throws Exception {
-        session.invalidate();
-        log.info("Call logout");
-        return "redirect:/";
-    }
 }

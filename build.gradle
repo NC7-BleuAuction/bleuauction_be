@@ -47,7 +47,7 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
 	// DB
-	runtimeOnly 'com.mysql:mysql-connector-j'
+//	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 	// 결제

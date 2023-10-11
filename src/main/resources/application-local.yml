@@ -16,17 +16,19 @@ spring:
 #    username: study
 #    password: 1111
 
+  jpa:
+    hibernate:
+      ddl-auto: none
+      show-sql: true
+    database-platform: org.hibernate.dialect.MySQLDialect
+
 ncp:
   endPoint: https://kr.object.ncloudstorage.com
   regionName: kr-standard
   accessKey: A3YFyEA5Ulxf3Lw71ZQs
   secretKey: d7dSoeeIhZP3P0mTx6syycp0rZ8IVIzTkUz523aT
 
-  jpa:
-    hibernate:
-      ddl-auto: none
-      show-sql: true
-    database-platform: org.hibernate.dialect.MySQLDialect
+
 
 server:
   port: 8080

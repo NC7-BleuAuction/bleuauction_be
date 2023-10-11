@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Slf4j
@@ -19,7 +18,6 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-  private final CorsConfigurationSource corsConfigurationSource;
   private static String[] tempWhiteListArray = {"/hello", "/health"};
 
   @Bean
@@ -33,7 +31,6 @@ public class SecurityConfig {
             )
             .logout(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource))
             .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(
                     FrameOptionsConfig::sameOrigin)
             );

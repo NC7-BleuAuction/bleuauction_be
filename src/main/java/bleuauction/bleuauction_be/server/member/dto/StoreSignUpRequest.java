@@ -5,8 +5,10 @@ import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
-import jakarta.validation.constraints.Email;
+
 import jakarta.validation.constraints.NotEmpty;
+import java.sql.Time;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,27 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class StoreSignUpRequest {
 
-    @Email
-    @NotEmpty(message = "Email이 입력되지 않았습니다.")
-    private String memberEmail;
-
-    @NotEmpty(message = "패스워드가 입력되지 않았습니다.")
-    private String memberPwd;
-
-    @NotEmpty(message = "사용자 이름이 입력되지 않았습니다.")
-    private String memberName;
-
-    @NotEmpty(message = "대표번호가 입력되지 않았습니다.")
-    private String memberPhone;
-
-    @NotEmpty(message = "은행명이 입력되지 않았습니다.")
-    private String memberBank; //은행명
-
-    @NotEmpty(message = "계좌번호가 입력되지 않았습니다.")
-    private String memberAccount; //계좌번호
-
     private MemberCategory memberCategory = MemberCategory.S;
-
     private MemberStatus memberStatus = MemberStatus.Y;
 
     @NotEmpty(message = "시장명이 입력되지 않았습니다.")
@@ -57,26 +39,13 @@ public class StoreSignUpRequest {
     @NotEmpty(message = "우편번호가 입력되지 않았습니다.")
     private String storeZipCode;
 
-    /**
-     * Request로 받은 정보를 바탕으로 Member Entity 반환
-     * @return
-     */
-    public Member getMemberEntity() {
-        Member member = new Member();
-        member.setMemberEmail(this.memberEmail);
-        member.setMemberPwd(this.memberPwd);
-        member.setMemberName(this.memberName);
-        member.setMemberZipcode(this.storeZipCode);
-        member.setMemberAddr(this.storeAddr);
-        member.setMemberDetailAddr(this.storeDetailAddr);
-        member.setMemberPhone(this.memberPhone);
-        member.setMemberBank(this.memberBank);
-        member.setMemberAccount(this.memberAccount);
-        member.setMemberCategory(this.memberCategory);
-        member.setMemberStatus(this.memberStatus);
+    private Time weekdayStartTime;
 
-        return member;
-    }
+    private Time weekdayEndTime;
+
+    private Time weekendStartTime;
+
+    private Time weekendEndTime;
 
     public Store getStoreEntity(Member signUpMemberEntity) {
         return Store.builder()
@@ -88,6 +57,10 @@ public class StoreSignUpRequest {
                 .storeAddr(this.storeAddr)
                 .storeDetailAddr(this.storeDetailAddr)
                 .storeStatus(StoreStatus.Y)
+                .weekdayStartTime(this.weekdayStartTime)
+                .weekdayEndTime(this.weekdayEndTime)
+                .weekendStartTime(this.weekendStartTime)
+                .weekendEndTime(this.weekendEndTime)
                 .build();
     }
 }

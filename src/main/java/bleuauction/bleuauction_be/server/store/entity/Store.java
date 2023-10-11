@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Time;
@@ -56,15 +57,23 @@ public class Store {
   private String storeDetailAddr;
 
   //@NotNull
+//  @UpdateTimestamp
+//  @Column(columnDefinition = "TIME DEFAULT '09:00:00'")
   private Time weekdayStartTime; // 평일 시작시간
 
   //@NotNull
+//  @UpdateTimestamp
+//  @Column(columnDefinition = "TIME DEFAULT '09:00:00'")
   private Time weekdayEndTime; // 평일 종료시간
 
   //@NotNull
+//  @UpdateTimestamp
+//  @Column(columnDefinition = "TIME DEFAULT '00:00:00'")
   private Time weekendStartTime; // 주말 시작시간
 
   //@NotNull
+//  @UpdateTimestamp
+//  @Column(columnDefinition = "TIME DEFAULT '00:00:00'")
   private Time weekendEndTime; // 주말 종료시간
 
   @Enumerated(EnumType.STRING)

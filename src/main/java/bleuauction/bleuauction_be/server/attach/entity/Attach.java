@@ -48,4 +48,5 @@ public class Attach {
     @Enumerated(EnumType.STRING)
     private FileStatus fileStatus;
 
+
 }

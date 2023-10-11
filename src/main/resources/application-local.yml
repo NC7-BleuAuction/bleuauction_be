@@ -7,20 +7,14 @@ spring:
       enabled: true
 
   datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
-#    username: bleuauction
-#    password: bleuauction123!@#
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/studydb?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
-    username: study
-    password: 1111
-
-ncp:
-  endPoint: https://kr.object.ncloudstorage.com
-  regionName: kr-standard
-  accessKey: A3YFyEA5Ulxf3Lw71ZQs
-  secretKey: d7dSoeeIhZP3P0mTx6syycp0rZ8IVIzTkUz523aT
+    url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
+    username: bleuauction
+    password: bleuauction123!@#
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/studydb?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+#    username: study
+#    password: 1111
 
   jpa:
     hibernate:
@@ -28,7 +22,14 @@ ncp:
       show-sql: true
     database-platform: org.hibernate.dialect.MySQLDialect
 
+ncp:
+  endPoint: https://kr.object.ncloudstorage.com
+  regionName: kr-standard
+  accessKey: A3YFyEA5Ulxf3Lw71ZQs
+  secretKey: d7dSoeeIhZP3P0mTx6syycp0rZ8IVIzTkUz523aT
+
+
+
 server:
   port: 8080
   shutdown: graceful
-

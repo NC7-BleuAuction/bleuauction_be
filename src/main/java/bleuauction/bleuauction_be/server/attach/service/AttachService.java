@@ -3,11 +3,12 @@ package bleuauction.bleuauction_be.server.attach.service;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.repository.AttachRepository;
-import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.menu.entity.MenuSize;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -24,4 +25,7 @@ public class AttachService {
     return attach;
   }
 
+  public List<Attach> addAttachs(ArrayList<Attach> attaches) {
+    return attachRepository.saveAll(attaches);
+  }
 }

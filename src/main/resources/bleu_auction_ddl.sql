@@ -1,5 +1,4 @@
 CREATE TABLE `ba_member` (
-
                              `member_no`	BIGINT	NOT NULL	AUTO_INCREMENT PRIMARY KEY,
                              `member_email`	VARCHAR(30)	NOT NULL	UNIQUE,
                              `member_pwd`	VARCHAR(100)	NOT NULL,

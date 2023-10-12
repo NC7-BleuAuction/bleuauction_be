@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: local
+    include:
+      - auth
   mvc:
     static-path-pattern: static/**
   thymeleaf:
@@ -9,6 +11,7 @@ spring:
     resources:
       static-locations: file:src/main/resources/static/
       cache-period: 0
+
 
 
 

@@ -1,26 +1,36 @@
 package bleuauction.bleuauction_be.server.store.controller;
 
+import bleuauction.bleuauction_be.server.store.dto.StoreSignUpRequest;
+import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
+import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
-import com.google.gson.Gson;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/store")
 public class StoreController {
 
   @Autowired
   StoreService storeService;
+
+  @Autowired
+  MemberService memberService;
+
+  @Autowired
+  StoreRepository storeRepository;
 
   @GetMapping("/list")
   public String list(Model model) {
@@ -43,9 +53,9 @@ public class StoreController {
   }
 
   @ResponseBody
-  @GetMapping("/ajaxList")
-  public List<Store> ajaxList(@RequestParam(name = "storeLength", defaultValue = "0") int storeLength) {
-    log.info("/store/ajaxList");
+  @GetMapping("/list/axios")
+  public List<Store> listAxios(@RequestParam(name = "storeLength", defaultValue = "0") int storeLength) {
+    log.info("/store/list/axios");
     log.info("storeLength: " + storeLength);
 
     List<Store> storeList = storeService.selectStoreList();
@@ -64,19 +74,14 @@ public class StoreController {
     return storeSubList;
   }
 
-
-  @GetMapping("/detail")
-  public String detail(Model model, @RequestParam(name = "storeNo", defaultValue = "1") Long storeNo) {
-    log.info("/store/detail");
-    Optional<Store> store = storeService.selectStore(storeNo);
-    log.info("storeNo가 " + storeNo + "인 가게" + store);
-
-    if (store.isPresent()) {
-      model.addAttribute("store", store);
+  // 가게 회원가입
+  @PostMapping("/signup")
+  public Store storeSignUp(HttpSession session, @RequestBody @Valid StoreSignUpRequest request) throws Exception {
+    Member loginUser = (Member) session.getAttribute("loginUser");
+    if (loginUser == null) {
+      throw new Exception("로그인한 회원 정보를 찾을 수 없습니다.");
     }
-
-    return "testStoreDetail";
+    Long memberNo = loginUser.getMemberNo(); // 세션이든 뭐든 지금 로그인 되어있는 멤버의 아이디를 가져온다
+    return storeRepository.save(storeService.signup(request, memberNo));
   }
-
-
 }

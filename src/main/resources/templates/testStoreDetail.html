@@ -10,43 +10,44 @@
             height: 300px;
             border: solid 1px black;
         }
-
-
     </style>
-    <!-- jQuery CDN 링크 -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Axios CDN 링크 -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/static/js/common.js"></script>
 </head>
 <body>
 <div>
-    <div class="store_div" data-th-text="${store}"></div>
-    <form id="reviewForm">
-        <input type="text" name="storeNo" data-th-value="${store.storeNo}">
-        <label>신선도</label>
-        <input type="radio" name="reviewFreshness" value="L">낮음
-        <input type="radio" name="reviewFreshness" value="M">중간
-        <input type="radio" name="reviewFreshness" value="H">높음
-        <textarea name="reviewContent"></textarea>
-        <button id="submitBtn" type="button">리뷰 작성</button>
-    </form>
+    <div class="store_div" data-th-unless="${store}">존재하지 않는 가게입니다.</div>
+    <div class="store_div" data-th-if="${store}">
+        <form id="reviewInsertForm">
+            가게번호<input type="text" name="storeNo" data-th-value="${store.storeNo}">
+            <label>신선도</label>
+            <input type="radio" name="reviewFreshness" value="L">낮음
+            <input type="radio" name="reviewFreshness" value="M">중간
+            <input type="radio" name="reviewFreshness" value="H">높음
+            <textarea name="reviewContent"></textarea>
+            <button id="submitBtn" type="button">리뷰 작성</button>
+        </form>
+    </div>
 </div>
 <script>
-    $(document).ready(function () {
-        $("#submitBtn").click(function () {
-            let formData = $("#reviewForm").serialize();
-            console.log(formData);
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("submitBtn").addEventListener("click", function() {
+            const formData = new FormData(document.getElementById("reviewInsertForm"));
+            const jsonObject = {};
 
-            $.ajax({
-                type: "POST",
-                url: "/review/add",
-                data:formData,
-                success: function (data) {
-                    console.log("리뷰작성 성공");
-                    console.log(data);
+            for (let [key, value] of formData.entries()) {
+                jsonObject[key] = value;
+            }
+            console.log(jsonObject);
+            sendAxiosRequest("/review/add/sendAxios", "POST", jsonObject,
+                response => {
+                    console.log(response.data);
+                    alert("리뷰를 성공적으로 작성하였습니다!");
+                    location.reload();
                 },
-                error: function () {
-                    console.error();
-                }
-            });
+                error => console.log(error)
+            )
         });
     });
 </script>

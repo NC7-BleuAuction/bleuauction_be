@@ -2,9 +2,9 @@ package bleuauction.bleuauction_be.server.member.service;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
+import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +17,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final StoreRepository storeRepository;
 
     // no로 회원찾기
     public Optional<Member> findByMemberNo(Long memberNo) {
@@ -27,20 +28,21 @@ public class MemberService {
     public Optional<Member> findByMemberEmail(String memberEmail) {
         return memberRepository.findByMemberEmail(memberEmail);
     }
-
+    // pwd로 회원찾기
+    public Optional<Member> findByMemberPwd(String memberPwd) {
+        return memberRepository.findByMemberPwd(memberPwd);
+    }
     // email과 pwd로 회원 찾기
     public Optional<Member> findByMemberEmailAndMemberPwd(String memberEmail, String memberPwd) {
         return memberRepository.findByMemberEmailAndMemberPwd(memberEmail, memberPwd);
     }
 
     // 회원가입
-    public Long signUp(Member member) {
+    public Member signUp(Member member) {
         validateDuplicateMember(member);
         // Encrypt the password
-        String encryptedPassword = passwordEncoder.encode(member.getMemberPwd());
-        member.setMemberPwd(encryptedPassword);
-        memberRepository.save(member);
-        return member.getMemberNo();
+        member.setMemberPwd(passwordEncoder.encode(member.getMemberPwd()));
+        return memberRepository.save(member);
     }
 
     // 이메일 중복검사
@@ -50,12 +52,6 @@ public class MemberService {
             throw new IllegalStateException("이미 존재하는 이메일입니다.");
         }
     }
-
-    // 회원 수정
-    public void updateMember(Member member) {
-        memberRepository.save(member);
-    }
-
     // 회원 목록 조희
     public List<Member> list() {
         return memberRepository.findAll();

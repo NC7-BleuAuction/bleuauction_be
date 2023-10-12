@@ -25,9 +25,9 @@ import java.util.List;
   @Table(name = "ba_menu")
   public class Menu {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long menuNo;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long menuNo;
 
   @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)

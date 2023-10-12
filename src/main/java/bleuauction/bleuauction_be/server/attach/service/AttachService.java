@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -24,4 +27,7 @@ public class AttachService {
     return attach;
   }
 
+  public List<Attach> addAttachs(ArrayList<Attach> attaches) {
+    return attachRepository.saveAll(attaches);
+  }
 }

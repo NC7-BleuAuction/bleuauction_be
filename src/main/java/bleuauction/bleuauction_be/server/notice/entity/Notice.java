@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.notice.entity;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class Notice {
 
   private String noticeContent;
 
+  @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name ="member_no")
   private Member member;
@@ -34,6 +36,7 @@ public class Notice {
   @CreationTimestamp
   private LocalDateTime regDatetime;
 
+  @JsonIgnore
   @UpdateTimestamp
   private LocalDateTime mdfDatetime;
 

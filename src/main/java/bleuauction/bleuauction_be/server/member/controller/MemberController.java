@@ -1,18 +1,22 @@
 package bleuauction.bleuauction_be.server.member.controller;
 
+import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.exception.MemberNotFoundException;
 import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
+import bleuauction.bleuauction_be.server.member.service.UpdateMemberService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -113,5 +118,19 @@ public class MemberController {
         log.info("Call login");
         return ResponseEntity.ok(responseMap);
     }
-
+    @PutMapping("/update")
+    public ResponseEntity<String> updateMember(HttpSession session, @Valid @RequestBody UpdateMemberRequest updateMemberRequest) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        try {
+            UpdateMemberService service = new UpdateMemberService(memberRepository);
+            service.updateMember(loginUser.getMemberNo(), updateMemberRequest);
+            log.info("회원 정보가 업데이트되었습니다. 업데이트된 회원 정보: {}", updateMemberRequest);
+            return ResponseEntity.ok("회원 정보가 업데이트되었습니다.");
+        } catch (MemberNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원을 찾을 수 없습니다.");
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package bleuauction.bleuauction_be.server.member.dto;
+package bleuauction.bleuauction_be.server.store.dto;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;

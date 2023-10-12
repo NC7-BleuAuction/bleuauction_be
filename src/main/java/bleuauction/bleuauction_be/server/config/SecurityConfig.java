@@ -11,7 +11,13 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,6 +37,19 @@ public class SecurityConfig {
             )
             .logout(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
+            .cors(httpSecurityCorsConfigurer -> {
+              CorsConfiguration configuration = new CorsConfiguration();
+
+              configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+              configuration.setAllowedMethods(Arrays.asList("HEAD","POST","GET","DELETE","PUT"));
+              configuration.setAllowedHeaders(Arrays.asList("*"));
+              configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+              configuration.setAllowCredentials(true);
+
+              UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+              source.registerCorsConfiguration("/**", configuration);
+              httpSecurityCorsConfigurer.configurationSource(source);
+            })
             .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(
                     FrameOptionsConfig::sameOrigin)
             );
@@ -41,4 +60,4 @@ public class SecurityConfig {
     return PasswordEncoderFactories
             .createDelegatingPasswordEncoder();
   }
-}
+ }

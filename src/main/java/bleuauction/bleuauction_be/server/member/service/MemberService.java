@@ -52,12 +52,6 @@ public class MemberService {
             throw new IllegalStateException("이미 존재하는 이메일입니다.");
         }
     }
-
-    // 회원 수정
-    public void updateMember(Member member) {
-        memberRepository.save(member);
-    }
-
     // 회원 목록 조희
     public List<Member> list() {
         return memberRepository.findAll();

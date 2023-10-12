@@ -1,6 +1,6 @@
 package bleuauction.bleuauction_be.server.store.service;
 
-import bleuauction.bleuauction_be.server.member.dto.StoreSignUpRequest;
+import bleuauction.bleuauction_be.server.store.dto.StoreSignUpRequest;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.exception.MemberNotFoundException;

@@ -7,23 +7,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
-import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
+  private final CorsConfigurationSource corsConfigurationSource;
+
+  // TODO : 추후 WhiteList 항목 코드 변경 필요
   private static String[] tempWhiteListArray = {"/hello", "/health"};
 
   @Bean
@@ -37,23 +35,7 @@ public class SecurityConfig {
             )
             .logout(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(httpSecurityCorsConfigurer -> {
-              CorsConfiguration configuration = new CorsConfiguration();
-
-              configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-              configuration.setAllowedMethods(Arrays.asList("HEAD","POST","GET","DELETE","PUT"));
-              configuration.setAllowedHeaders(Arrays.asList("*"));
-//              configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-              configuration.setAllowedOrigins(List.of("http://bleuauction.co.kr:80"));
-              configuration.setAllowCredentials(true);
-
-              UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-              source.registerCorsConfiguration("/**", configuration);
-              httpSecurityCorsConfigurer.configurationSource(source);
-            })
-            .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(
-                    FrameOptionsConfig::sameOrigin)
-            );
+            .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource)); //CORS Spring Boot 설정
     return http.build();
   }
   @Bean

@@ -1,7 +1,7 @@
 package bleuauction.bleuauction_be.server.attach.entity;
 
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -23,10 +23,13 @@ public class Attach {
     @Column(name = "file_no")
     private Long fileNo;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menuNo")
     private Menu menuNo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "memberNo")
+    private Member memberNo;
 
     @NotNull
     private String filePath;

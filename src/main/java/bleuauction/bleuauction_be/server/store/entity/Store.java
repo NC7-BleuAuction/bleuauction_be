@@ -1,8 +1,6 @@
 package bleuauction.bleuauction_be.server.store.entity;
 
-import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -13,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Time;
@@ -57,24 +54,12 @@ public class Store {
   @NotNull
   private String storeDetailAddr;
 
-  //@NotNull
-//  @UpdateTimestamp
-//  @Column(columnDefinition = "TIME DEFAULT '09:00:00'")
   private Time weekdayStartTime; // 평일 시작시간
 
-  //@NotNull
-//  @UpdateTimestamp
-//  @Column(columnDefinition = "TIME DEFAULT '09:00:00'")
   private Time weekdayEndTime; // 평일 종료시간
 
-  //@NotNull
-//  @UpdateTimestamp
-//  @Column(columnDefinition = "TIME DEFAULT '00:00:00'")
   private Time weekendStartTime; // 주말 시작시간
 
-  //@NotNull
-//  @UpdateTimestamp
-//  @Column(columnDefinition = "TIME DEFAULT '00:00:00'")
   private Time weekendEndTime; // 주말 종료시간
 
   @Enumerated(EnumType.STRING)
@@ -88,6 +73,7 @@ public class Store {
   @OneToMany(mappedBy = "storeNo")
   private List<Menu> menus = new ArrayList<>();
 
+  @Builder.Default
   @OneToMany(mappedBy = "storeNo")
   private List<Order> orders = new ArrayList<>();
 

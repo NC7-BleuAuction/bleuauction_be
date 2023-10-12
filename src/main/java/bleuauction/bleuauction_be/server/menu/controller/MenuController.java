@@ -14,6 +14,9 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -26,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class MenuController {
 
@@ -35,54 +38,54 @@ public class MenuController {
   private final AttachService attachService;
   private final EntityManager entityManager;
 
-  //등록페이지
-  @GetMapping("/menu/new")
-  public String createForm(Model model) {
-    model.addAttribute("menuForm", new MenuForm());
-    log.info("menu/new");
-    return "/menus/new";
+  //등록
+  @GetMapping("/api/menu/new")
+  public MenuForm createForm() {
+    MenuForm menuForm = new MenuForm();
+    return menuForm;
   }
 
   //등록처리
-  @PostMapping("/menu/new")
+  @PostMapping("/api/menu/new")
   @Transactional
-  public String menu(@Valid MenuForm form, MultipartFile[] files) {
-    Menu menu = new Menu();
+  public ResponseEntity<String> menu(Menu menu, @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
     Store storeNo = entityManager.find(Store.class, 1L);
     menu.setStoreNo(storeNo);//테스트용 1번가게
-    menu.setMenuName(form.getMenuName());
-    menu.setMenuSize(form.getMenuSize());
-    menu.setMenuPrice(form.getMenuPrice());
-    menu.setMenuContent(form.getMenuContent());
-    menu.setMenuStatus(MenuStatus.Y);
 
-    ArrayList<Attach> attaches = new ArrayList<>();
-    for (MultipartFile part : files) {
-      if (part.getSize() > 0) {
-        Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
-                "bleuauction-bucket", "menu/", part);
-        menu.addAttach(attach);
+    if (multipartFiles != null && multipartFiles.size() > 0) {
+      ArrayList<Attach> attaches = new ArrayList<>();
+      for (MultipartFile multipartFile : multipartFiles) {
+        if (multipartFile.getSize() > 0) {
+          Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
+                  "bleuauction-bucket", "menu/", multipartFile);
+          menu.addAttach(attach);
+        }
       }
     }
-      menu = entityManager.merge(menu);
-      menuService.enroll(menu);
-      log.info("menu/postnew");
-      return "redirect:/menulist";
-    }
+
+    menu = entityManager.merge(menu);
+    menuService.enroll(menu);
+    log.info("menu/postnew");
+    return ResponseEntity.status(HttpStatus.CREATED).body("Menu created successfully");
+  }
 
 
 
   //목록 조회
-  @GetMapping("/menulist")
-  public String list(Model model) {
-    List<Menu> menus = menuService.findmenus();
-    model.addAttribute("menus", menus);
-    return "/menus/menuList";
+  @GetMapping(value = "/api/menu", produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<Menu> findmenus() throws Exception {
+    try {
+      List<Menu> menus = menuService.findmenus();
+      return menus;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
   }
 
   //삭제
-  @PostMapping("/menu/delete/{menuNo}")
-  public String deleteMenu(@PathVariable("menuNo") Long menuNo) {
+  @PostMapping("/api/menu/delete/{menuNo}")
+  public ResponseEntity<String> deleteNotice(@PathVariable("menuNo") Long menuNo) {
     Menu menu = menuService.findOne(menuNo);
 
     // 사진 상태를 'N'으로 변경
@@ -90,61 +93,58 @@ public class MenuController {
       attachService.update(attach.getFileNo());
     }
     menuService.deleteMenu(menuNo);
+    return ResponseEntity.ok("Menu deleted successfully");
+    }
 
-    return "redirect:/menulist";
-  }
 
   //사진삭제
-  @GetMapping("/menu/deletefile/{menuNo}/{fileNo}")
-  public String fileDelete(@PathVariable Long menuNo, @PathVariable Long fileNo, Model model) {
-    Menu menu = menuService.findOne(menuNo);
-    model.addAttribute("menu", menu);
+  @DeleteMapping("/api/menu/deletefile/{fileNo}")
+  public ResponseEntity<String> fileDelete(@PathVariable Long fileNo) {
 
-    Attach attachToDelete = null;
-    for (Attach attach : menu.getMenuAttaches()) {
-      if (attach.getFileNo().equals(fileNo)) {
-        attachToDelete = attach;
-        break;
+    attachService.update(fileNo);
+
+    return ResponseEntity.ok("File deleted successfully");
+  }
+
+
+
+  //디테일(수정)
+  @GetMapping("/api/menu/detail/{menuNo}")
+  @ResponseBody
+  public ResponseEntity<Menu> detailMenu(@PathVariable("menuNo") Long menuNo) {
+    Menu menu = menuService.findOne(menuNo);
+    // 예를 들어, Menu 객체에 Attach 정보가 있을 경우:
+    //Attach attach = menu.getMenuAttaches().isEmpty() ? null : menu.getMenuAttaches().get(0);
+
+    // Menu 엔티티와 Attach 엔티티를 함께 반환
+    menu.setMenuAttaches(menu.getMenuAttaches());
+    return ResponseEntity.ok(menu);
+  }
+
+  @PostMapping("/api/menu/update/{menuNo}")
+  public ResponseEntity<String> updateMenu(Menu menu,
+          @PathVariable("menuNo") Long menuNo,
+          @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
+
+    Menu updatedMenu = menuService.findOne(menuNo);
+    // 사진 상태를 'N'으로 변경
+//    for (Attach attach : menu.getMenuAttaches()) {
+//      attachService.update(attach.getFileNo());
+//    }
+
+    if (multipartFiles != null && multipartFiles.size() > 0) {
+      ArrayList<Attach> attaches = new ArrayList<>();
+      for (MultipartFile multipartFile : multipartFiles) {
+        if (multipartFile.getSize() > 0) {
+          Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
+                  "bleuauction-bucket", "menu/", multipartFile);
+          updatedMenu.addAttach(attach);
+        }
       }
     }
 
-    // 변경된 내용을 저장
-    attachService.update(fileNo);
-
-    return "redirect:/menulist";
+    menuService.update(menu);
+    log.info("menu/update");
+    return ResponseEntity.ok("Menu updated successfully");
   }
-
-
-
-  //수정
-  @GetMapping("/menu/detail/{menuNo}")
-  public String detailMenu(@PathVariable("menuNo") Long menuNo, Model model) {
-    Menu menu = menuService.findOne(menuNo);
-
-    // 예를 들어, Menu 객체에 Attach 정보가 있을 경우:
-    Attach attach = menu.getMenuAttaches().isEmpty() ? null : menu.getMenuAttaches().get(0);
-
-    model.addAttribute("menu", menu);
-    model.addAttribute("attach", attach);
-
-    return "/menus/detail";
-  }
-
-  @PostMapping("/menu/update/{menuNo}")
-  public String updateMenu(
-          @PathVariable("menuNo") Long menuNo,
-          @ModelAttribute("menu") @Valid MenuForm form, @RequestParam("newMenuImage") MultipartFile newMenuImage) {
-
-    Menu menu = menuService.findOne(menuNo);
-
-    if (newMenuImage != null && newMenuImage.getSize() > 0) {
-      Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
-              "bleuauction-bucket", "menu/", newMenuImage);
-      menu.addAttach(attach);
-    }
-
-    menuService.update(menuNo, form.getMenuName(), form.getMenuSize(), form.getMenuPrice(), form.getMenuContent());
-    return "redirect:/menulist";
-  }
-
 }

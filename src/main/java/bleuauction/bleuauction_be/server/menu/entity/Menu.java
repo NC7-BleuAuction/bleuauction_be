@@ -4,10 +4,12 @@ import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.store.entity.Store;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+import org.hibernate.annotations.CurrentTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,9 +18,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+  @Entity
   @Getter
   @Setter
+  @DynamicInsert
   @Table(name = "ba_menu")
   public class Menu {
 
@@ -26,6 +29,7 @@ import java.util.List;
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long menuNo;
 
+  @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name ="store_no")
   private Store storeNo;
@@ -35,23 +39,25 @@ import java.util.List;
   @Enumerated(EnumType.STRING)
   private MenuSize menuSize;
 
-  private String menuPrice;
+  private int menuPrice;
 
   private String menuContent;
 
-  @CreationTimestamp
+  @CurrentTimestamp
   private LocalDateTime regDatetime;
 
-  @UpdateTimestamp
+  @CurrentTimestamp
   private LocalDateTime mdfDatetime;
 
   @Enumerated(EnumType.STRING)
   @Column(name="menu_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
   private MenuStatus menuStatus; // 상태 [Y,N]
 
+  @JsonIgnore
   @OneToMany(mappedBy = "menuNo")
   private List<Order> orders = new ArrayList<>();
 
+  @JsonIgnore
   @OneToMany(mappedBy = "menuNo", cascade=CascadeType.ALL)
   private List<Attach> menuAttaches = new ArrayList<>();
 

@@ -14,20 +14,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-  @Entity
-  @Getter
-  @Setter
-  @DynamicInsert
-  @Table(name = "ba_menu")
-  public class Menu {
+@Entity
+@Getter
+@Setter
+@DynamicInsert
+@Table(name = "ba_menu")
+public class Menu {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long menuNo;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long menuNo;
 
   @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
@@ -43,11 +44,11 @@ import java.util.List;
 
   private String menuContent;
 
-  @CurrentTimestamp
-  private LocalDateTime regDatetime;
+  @CreationTimestamp
+  private Timestamp regDatetime;
 
-  @CurrentTimestamp
-  private LocalDateTime mdfDatetime;
+  @UpdateTimestamp
+  private Timestamp mdfDatetime;
 
   @Enumerated(EnumType.STRING)
   @Column(name="menu_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")

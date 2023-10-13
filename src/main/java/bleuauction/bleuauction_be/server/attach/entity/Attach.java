@@ -58,11 +58,9 @@ public class Attach {
     private String saveFilename;
 
     @CurrentTimestamp
-    @Column(name = "reg_datetime")
     private Timestamp regDatetime;
 
     @UpdateTimestamp
-    @Column(name = "mdf_datetime")
     private Timestamp mdfDatetime;
 
     @Enumerated(EnumType.STRING)

@@ -23,7 +23,7 @@ public class AttachService {
     return attach;
   }
   //삭제
-  public boolean deleteAttachment(Attach attach) {
+  public boolean deleteProfileImage(Attach attach) {
     try {
       // 파일 삭제 관련 로직을 구현
       attach.setFileStatus(FileStatus.N);
@@ -35,6 +35,11 @@ public class AttachService {
       return false;
     }
   }
+
+  public Attach getProfileImageByFileNo(Long fileNo) {
+    return attachRepository.findByFileNo(fileNo);
+  }
+
   public List<Attach> addAttachs(ArrayList<Attach> attaches) {
     return attachRepository.saveAll(attaches);
   }

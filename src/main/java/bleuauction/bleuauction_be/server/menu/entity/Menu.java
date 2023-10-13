@@ -4,54 +4,61 @@ import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.store.entity.Store;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+import org.hibernate.annotations.CurrentTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-  @Entity
-  @Getter
-  @Setter
-  @Table(name = "ba_menu")
-  public class Menu {
+@Entity
+@Getter
+@Setter
+@DynamicInsert
+@Table(name = "ba_menu")
+public class Menu {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long menuNo;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long menuNo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_no")
-    private Store storeNo;
+  @JsonIgnore
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name ="store_no")
+  private Store storeNo;
 
-    private String menuName;
+  private String menuName;
 
-    @Enumerated(EnumType.STRING)
-    private MenuSize menuSize;
+  @Enumerated(EnumType.STRING)
+  private MenuSize menuSize;
 
-    private String menuPrice;
+  private int menuPrice;
 
-    private String menuContent;
+  private String menuContent;
 
-    @CreationTimestamp
-    private LocalDateTime regDatetime;
+  @CreationTimestamp
+  private Timestamp regDatetime;
 
-    @UpdateTimestamp
-    private LocalDateTime mdfDatetime;
+  @UpdateTimestamp
+  private Timestamp mdfDatetime;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "menu_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
-    private MenuStatus menuStatus; // 상태 [Y,N]
+  @Enumerated(EnumType.STRING)
+  @Column(name="menu_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
+  private MenuStatus menuStatus; // 상태 [Y,N]
 
+  @JsonIgnore
   @OneToMany(mappedBy = "menuNo")
   private List<Order> orders = new ArrayList<>();
 
+  @JsonIgnore
   @OneToMany(mappedBy = "menuNo", cascade=CascadeType.ALL)
   private List<Attach> menuAttaches = new ArrayList<>();
 

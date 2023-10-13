@@ -77,7 +77,7 @@ public class Member {
   @Enumerated(EnumType.STRING)
   private MemberStatus memberStatus;
 
-  @OneToMany(mappedBy = "member")
+  @OneToMany(mappedBy = "memberNo")
   private List<Notice> notices = new ArrayList<>();
 
 }

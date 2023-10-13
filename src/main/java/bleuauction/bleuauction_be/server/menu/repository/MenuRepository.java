@@ -1,7 +1,6 @@
 package bleuauction.bleuauction_be.server.menu.repository;
 
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,8 +13,9 @@ public class MenuRepository {
 
   private final EntityManager em;
 
-  public void save(Menu menu) {
+  public Menu save(Menu menu) {
     em.persist(menu);
+    return menu;
   }
 
   public Menu findOne(Long menuNo) {

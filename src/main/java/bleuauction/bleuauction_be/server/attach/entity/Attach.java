@@ -2,15 +2,16 @@ package bleuauction.bleuauction_be.server.attach.entity;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.review.entity.Review;
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.jetbrains.annotations.NotNull;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -30,6 +31,10 @@ public class Attach {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberNo")
     private Member memberNo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewNo")
+    private Review reviewNo;
 
     @NotNull
     private String filePath;

@@ -8,6 +8,8 @@ import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -51,9 +53,9 @@ public class StoreController {
   }
 
   @ResponseBody
-  @GetMapping("/ajaxList")
-  public List<Store> ajaxList(@RequestParam(name = "storeLength", defaultValue = "0") int storeLength) {
-    log.info("/store/ajaxList");
+  @GetMapping("/list/axios")
+  public List<Store> listAxios(@RequestParam(name = "storeLength", defaultValue = "0") int storeLength) {
+    log.info("/store/list/axios");
     log.info("storeLength: " + storeLength);
 
     List<Store> storeList = storeService.selectStoreList();
@@ -70,19 +72,6 @@ public class StoreController {
     log.info("storeSubList: " + storeSubList);
 
     return storeSubList;
-  }
-
-  @GetMapping("/detail")
-  public String detail(Model model, @RequestParam(name = "storeNo", defaultValue = "1") Long storeNo) {
-    log.info("/store/detail");
-    Optional<Store> store = storeService.selectStore(storeNo);
-    log.info("storeNo가 " + storeNo + "인 가게" + store);
-
-    if (store.isPresent()) {
-      model.addAttribute("store", store);
-    }
-
-    return "testStoreDetail";
   }
 
   // 가게 회원가입

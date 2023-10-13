@@ -63,7 +63,6 @@ public class Store {
   private Time weekendEndTime; // 주말 종료시간
 
   @Enumerated(EnumType.STRING)
-  @Column(name="order_type")
   private UnsupportedType unsupportedType; // 주문 불가 유형
 
   @Enumerated(EnumType.STRING)

@@ -9,91 +9,339 @@
             text-align: center;
         }
 
+        .answer-div-list {
+            margin-top: 30px;
+            border: 1px solid black;
+        }
+
         .review_div {
             padding-top: 20px;
             text-align: center;
-            width: 600px;
-            height: 50px;
+            width: 800px;
             border: solid 1px black;
             margin: 10px auto;
         }
+
+        .answer-div {
+            padding-top: 10px;
+            text-align: center;
+            width: 700px;
+            border: solid 1px black;
+            margin: 10px auto;
+        }
+
+        .store_div {
+            padding-top: 200px;
+            text-align: center;
+            height: 300px;
+            border: solid 1px black;
+        }
     </style>
-    <!-- jQuery CDN 링크 -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Axios CDN 링크 -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/static/js/common.js"></script>
 </head>
 <body>
 <div id="review_div_list">
-    <div class="review_div" data-th-each="review : ${reviewSubList}"
-         data-th-text="${review != null ? review.reviewContent : '리뷰내용'}"></div>
+    <div>
+        <div class="store_div" data-th-unless="${store}">존재하지 않는 가게입니다.</div>
+        <div class="store_div" data-th-if="${store}">
+            <form id="reviewAddForm">
+                가게번호<input type="text" name="storeNo" data-th-value="${store.storeNo}">
+                <label>신선도</label>
+                <input type="radio" name="reviewFreshness" value="L">낮음
+                <input type="radio" name="reviewFreshness" value="M">중간
+                <input type="radio" name="reviewFreshness" value="H">높음
+                <textarea name="reviewContent"></textarea>
+                <button type="button" onclick="reviewAdd()">리뷰 작성</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="review_div" data-th-each="review, reviewIdx : ${reviewSubList}">
+        <form id="reviewUpdateForm">
+            리뷰번호<input id="reviewNo" type="text" name="reviewNo" data-th-value="${review.reviewNo}">
+            <input type="radio" name="reviewFreshness" value="L"
+                   data-th-checked="${review.reviewFreshness == 'L'}">낮음
+            <input type="radio" name="reviewFreshness" value="M"
+                   data-th-checked="${review.reviewFreshness == 'M'}">중간
+            <input type="radio" name="reviewFreshness" value="H"
+                   data-th-checked="${review.reviewFreshness == 'H'}">높음
+            <textarea name="reviewContent" data-th-text="${review.reviewContent}"></textarea>
+            <button type="button" onclick="reviewUpdate()">리뷰수정</button>
+            <button type="button" onclick="reviewDelete()">리뷰삭제</button>
+        </form>
+
+        <button type="button" onclick="showAnswerForm(this.value)"
+                data-th-value="${reviewIdx.index}">답글보기
+        </button>
+        <div class="answer-div-list"
+             data-th-attr="data-custom-id=${'answerDivList' + reviewIdx.index}" hidden="">
+            <form id="answerAddForm">
+                <input type="hidden" name="reviewNo" data-th-value="${review.reviewNo}">
+                <textarea name="answerContent"></textarea>
+                <button type="button" onclick="answerAdd()">답글 작성</button>
+            </form>
+        </div>
+    </div>
+
     <input id="review_list_size" type="text" data-th-value="${reviewListSize}">
 </div>
 <script>
-    function reviewDelete(reviewNo) {
-        console.log(reviewNo);
-        sendAjaxRequest("/review/delete/sendAjax?reviewNo=" + reviewNo, 'GET', null,
-            (data) => {
-                let status = JSON.parse(data).status;
-                if (status === 'success') {
-                    alert("리뷰가 정상적으로 삭제되었습니다!");
-                } else if (status === 'fail') {
-                    alert("리뷰 삭제에 실패하였습니다. 잠시 후 다시 시도해 주세요.");
-                } else {
-                    alert("해당 리뷰를 찾을 수 없습니다.");
-                }
+    function reviewAdd() {
+        const jsonObj = formToJson(document.getElementById("reviewAddForm"));
+        console.log(jsonObj);
+        sendAxiosRequest("/review/add/sendAxios", "POST", jsonObj,
+            response => {
+                console.log(response.data);
+                alert("리뷰를 성공적으로 작성하였습니다!");
                 location.reload();
             },
-            () => {
-                console.error();
-            }
+            error => console.log(error)
+        )
+    }
+
+    function answerAdd() {
+        const jsonObj = formToJson(document.getElementById("answerAddForm"));
+        console.log(jsonObj);
+        sendAxiosRequest("/answer/add/sendAxios", "POST", jsonObj,
+            response => {
+                console.log(response.data);
+                alert("답글을 성공적으로 작성하였습니다!");
+                location.reload();
+
+            },
+            error => console.log(error)
+        )
+    }
+
+    function reviewUpdate() {
+        const jsonObj = formToJson(document.getElementById("reviewUpdateForm"));
+        console.log(jsonObj);
+        sendAxiosRequest("/review/update/sendAxios", 'POST', jsonObj,
+            response => {
+                console.log(response.data);
+                alert("리뷰가 정상적으로 수정되었습니다.");
+                location.reload();
+            },
+            error => console.log(error)
         );
     }
 
-    $(document).ready(function () {
-        $(window).scroll(function () {
-            console.log('window height(): ' + $(window).scrollTop());
-            console.log('window scrollTop(): ' + document.documentElement.scrollHeight);
-            console.log('document height() : ' + $(document).height());
+    function answerUpdate(updateForm) {
+        console.log(updateForm);
+        const jsonObj = formToJson(updateForm);
+        console.log(jsonObj);
+        sendAxiosRequest("/answer/update/sendAxios", 'POST', jsonObj,
+            response => {
+                console.log(response.data);
+                alert("답글이 정상적으로 수정되었습니다.");
+            },
+            error => console.log(error)
+        );
+    }
+
+    function reviewDelete() {
+        const reviewNo = document.getElementById("reviewNo").value;
+        console.log(reviewNo);
+        sendAxiosRequest("/review/delete/sendAxios?reviewNo=" + reviewNo, 'GET', null,
+            response => {
+                console.log(response.data);
+                alert("리뷰가 정상적으로 삭제되었습니다!")
+                location.reload();
+            },
+            error => console.log(error)
+        );
+    }
+
+    function answerDelete(answerNo) {
+        sendAxiosRequest( /answer/delete/sendAxios?answerNo=" + answerNo, 'GET', null,
+            response => {
+                console.log(response.data);
+                alert("답글이 정상적으로 삭제되었습니다!");
+            },
+            error => console.log(error)
+        );
+    }
+
+    function showAnswerForm(reviewIdx) {
+        const answerDivLists = document.querySelectorAll(".answer-div-list");
+
+        let answerDivList;
+        for (let i = 0; i < answerDivLists.length; i++) {
+            if (('answerDivList' + reviewIdx) === answerDivLists[i].getAttribute("data-custom-id")) {
+                answerDivList = answerDivLists[i];
+                answerDivList.hasAttribute("hidden") ? answerDivList.removeAttribute("hidden") : answerDivList.setAttribute("hidden", true);
+            } else {
+                let extraDiv = answerDivLists[i];
+                if (!extraDiv.hasAttribute("hidden")) {
+                    extraDiv.setAttribute("hidden", true);
+                }
+            }
+        }
+        console.log();
+        return;
+        sendAxiosRequest("/answer/list/sendAxios?reviewNo=" + document.getElementById("reviewNo").value + "&startRow=" +  answerDivList.length, 'GET', null,
+            response => {
+                console.log(response.data);
+                const answerList = response.data;
+                for (let i = 0; i < answerList.length; i++) {
+                    let answer = answerList[i];
+                    const newAnswerDiv = document.createElement("div");
+                    newAnswerDiv.className = "answer-div";
+
+                    const answerUpdateForm = document.createElement("form");
+
+                    const reviewNoInput = document.createElement("input");
+                    reviewNoInput.name = "reviewNo";
+                    reviewNoInput.value = answer.reviewNo;
+
+                    const answerNoInput = document.createElement("input");
+                    answerNoInput.name = "answerNo";
+                    answerNoInput.value = answer.answerNo;
+
+                    const answerDateP = document.createElement("p");
+                    answerDateP.textContent = dateFormatParse(new Date(answer.regDatetime < answer.mdfDatetime ? answer.mdfDatetime : answer.regDatetime));
+
+                    const answerContentTextArea = document.createElement("textarea");
+                    answerContentTextArea.textContent = answer.answerContent;
+                    answerContentTextArea.name = "answerContent";
+
+                    const updateBtnInDiv = document.createElement("button");
+                    updateBtnInDiv.textContent = "수정"
+                    updateBtnInDiv.setAttribute("type", "button");
+                    updateBtnInDiv.onclick = function () {
+                        answerUpdate(answerUpdateForm);
+                    };
 
 
-            if ((($(window).height() + $(window).scrollTop()) + 10) >= $(document).height()) {
-                console.log("스크롤 계산 정상");
-                let reviewDivLength = $(".review_div").length;
-                let reviewListSize = $("#review_list_size").val();
-                console.log("reviewDivLength: " + reviewDivLength);
-                console.log("reviewListSize: " + reviewListSize);
+                    const deleteBtnInDiv = document.createElement("button");
+                    deleteBtnInDiv.textContent = "삭제"
+                    deleteBtnInDiv.setAttribute("type", "button");
+                    deleteBtnInDiv.setAttribute("onclick", "answerDelete(" + answer.answerNo + ")");
 
-                if (reviewDivLength <= reviewListSize) {
-                    sendAjaxRequest("/review/list/sendAjax?reviewLength=" + reviewDivLength, 'GET', null,
-                        (data) => {
-                            console.log('성공');
-                            console.log(data);
-                            let reviewSubList = JSON.parse(data).reviewSubList;
-                            for (let i = 0; i < reviewSubList.length; i++) {
-                                let review = reviewSubList[i];
-                                let freshness;
+                    answerUpdateForm.appendChild(reviewNoInput);
+                    answerUpdateForm.appendChild(answerNoInput);
+                    answerUpdateForm.appendChild(answerDateP);
+                    answerUpdateForm.appendChild(answerContentTextArea);
+                    answerUpdateForm.appendChild(updateBtnInDiv);
+                    answerUpdateForm.appendChild(deleteBtnInDiv);
 
-                                if (review.reviewFreshness === 'L') {
-                                    freshness = '낮음';
-                                } else if (review.reviewFreshness === 'M') {
-                                    freshness = '중간';
-                                } else {
-                                    freshness = '높음';
+                    newAnswerDiv.appendChild(answerUpdateForm);
+                    answerDivList.appendChild(newAnswerDiv);
+                }
+            },
+            error => console.log(error)
+        );
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        window.addEventListener("scroll", function () {
+            if ((window.innerHeight + window.scrollY + 10) >= document.documentElement.scrollHeight) {
+                console.log("스크롤 작동 이벤트");
+                let reviewDivLength = document.querySelectorAll(".review_div").length;
+                let reviewListSize = parseInt(document.getElementById("review_list_size").value);
+
+                // 리뷰 리스트를 조회할 건지 리뷰에 대한 답글 리스트를 조회할건지 결정
+                let flag = 'R';
+                const elements = document.getElementsByClassName("answer-div-list");
+
+                let answerDivList;
+                for (let i = 0; i < elements.length; i++) {
+                    if (!elements[i].hasAttribute("hidden")) {
+                        answerDivList = elements[i];
+                        flag = 'A';
+                        break;
+                    }
+                }
+
+
+                if (flag === 'R') {
+                    if (reviewDivLength <= reviewListSize) { // 현재 화면에 출력된 review 수 보다 전체 리뷰수가 많으면
+                        console.log('리뷰조회');
+                        sendAxiosRequest("/review/list/sendAxios?reviewLength=" + reviewDivLength, 'GET', null,
+                            response => {
+                                console.log(response.data);
+                                let reviewSubList = response.data;
+                                for (let i = 0; i < reviewSubList.length; i++) {
+                                    let review = reviewSubList[i];
+                                    let freshness;
+                                    if (review.reviewFreshness === 'L') {
+                                        freshness = '낮음';
+                                    } else if (review.reviewFreshness === 'M') {
+                                        freshness = '중간';
+                                    } else {
+                                        freshness = '높음';
+                                    }
+                                    let newReviewDiv = document.createElement("div");
+                                    newReviewDiv.className = "review_div";
+                                    newReviewDiv.innerHTML = "<input type='text' value=" + review.reviewNo + ">신선도: " + freshness + " / " + review.reviewContent
+                                        + "<button onclick=reviewDelete(this.parentElement.querySelector('input').value)>리뷰삭제</button>";
+                                    document.querySelector(".review_div:last-of-type").after(newReviewDiv);
                                 }
-                                $(".review_div:last").after("<div class='review_div'>" + '신선도: ' + freshness + ' / ' + review.reviewContent
-                                    + "<input type='text' value=" + review.reviewNo + ">"
-                                    + '<button onclick=reviewDelete($(this).parent().find(\'input\').val())>리뷰삭제</button>' + "</div>");
+                            },
+                            error => console.log(error)
+                        );
+                    }
+                } else {
+                    console.log('답글조회');
+                    const reviewNo = answerDivList.querySelector('[name="reviewNo"]').value;
+                    console.log(reviewNo);
+                    sendAxiosRequest("/answer/list/sendAxios?reviewNo=" + reviewNo, 'GET', null, response => {
+                            console.log(response.data);
+                            const answerList = response.data;
+                            for (let i = 0; i < answerList.length; i++) {
+                                let answer = answerList[i];
+                                const newAnswerDiv = document.createElement("div");
+                                newAnswerDiv.className = "answer-div";
+
+                                const answerUpdateForm = document.createElement("form");
+
+                                const reviewNoInput = document.createElement("input");
+                                reviewNoInput.name = "reviewNo";
+                                reviewNoInput.value = answer.reviewNo;
+
+                                const answerNoInput = document.createElement("input");
+                                answerNoInput.name = "answerNo";
+                                answerNoInput.value = answer.answerNo;
+
+                                const answerDateP = document.createElement("p");
+                                answerDateP.textContent = dateFormatParse(new Date(answer.regDatetime < answer.mdfDatetime ? answer.mdfDatetime : answer.regDatetime));
+
+                                const answerContentTextArea = document.createElement("textarea");
+                                answerContentTextArea.textContent = answer.answerContent;
+                                answerContentTextArea.name = "answerContent";
+
+                                const updateBtnInDiv = document.createElement("button");
+                                updateBtnInDiv.textContent = "수정"
+                                updateBtnInDiv.setAttribute("type", "button");
+                                updateBtnInDiv.onclick = function () {
+                                    answerUpdate(answerUpdateForm);
+                                };
+
+
+                                const deleteBtnInDiv = document.createElement("button");
+                                deleteBtnInDiv.textContent = "삭제"
+                                deleteBtnInDiv.setAttribute("type", "button");
+                                deleteBtnInDiv.setAttribute("onclick", "answerDelete(" + answer.answerNo + ")");
+
+                                answerUpdateForm.appendChild(reviewNoInput);
+                                answerUpdateForm.appendChild(answerNoInput);
+                                answerUpdateForm.appendChild(answerDateP);
+                                answerUpdateForm.appendChild(answerContentTextArea);
+                                answerUpdateForm.appendChild(updateBtnInDiv);
+                                answerUpdateForm.appendChild(deleteBtnInDiv);
+
+                                newAnswerDiv.appendChild(answerUpdateForm);
+                                answerDivList.appendChild(newAnswerDiv);
                             }
                         },
-                        () => {
-                            console.error();
-                        });
+                        error => console.log(error)
+                    );
                 }
             }
         });
     });
-
-
 </script>
 </body>
 </html>

@@ -48,13 +48,17 @@ public class MenuService {
 
   //메뉴 수정
   @Transactional
-  public Menu update(Long menuNo, String menuName, MenuSize menuSize, String menuPrice,String menuContent) {
-    Menu menu = menuRepository.findOne(menuNo);
-    menu.setMenuName(menuName);
-    menu.setMenuSize(menuSize);
-    menu.setMenuPrice(menuPrice);
-    menu.setMenuContent(menuContent);
-    return menu;
+  public Menu update(Menu menu) {
+    Menu updatemenu = menuRepository.findOne(menu.getMenuNo());
+
+    updatemenu.setMenuName(menu.getMenuName());
+    updatemenu.setMenuSize(menu.getMenuSize());
+    updatemenu.setMenuPrice(menu.getMenuPrice());
+    updatemenu.setMenuContent(menu.getMenuContent());
+    updatemenu.setMdfDatetime(menu.getMdfDatetime());
+    Menu update = menuRepository.save(updatemenu);
+
+    return updatemenu;
   }
 
 }

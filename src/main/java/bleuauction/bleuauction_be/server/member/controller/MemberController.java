@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.member.controller;
 
+
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;
@@ -52,7 +53,9 @@ public class MemberController {
     @GetMapping("{memberNo}")
     public ResponseEntity<Object> detail(@PathVariable Long memberNo) throws Exception {
         Optional<Member> memberOptional = memberRepository.findById(memberNo);
+
         if (memberOptional.isPresent()) {
+
             Member member = memberOptional.get();
             return ResponseEntity.ok().body(member);
         } else {
@@ -80,14 +83,12 @@ public class MemberController {
                 memberRepository::delete,
                 () -> new MemberNotFoundException("해당 번호의 회원이 없습니다."));
     }
-
     @GetMapping("/logout")
     public ResponseEntity<String> logout(HttpSession session) throws Exception {
         session.invalidate();
         log.info("Call logout");
         return ResponseEntity.ok().body("{\"message\": \"Logout successful\"}");
     }
-
     // 일반사용자 회원가입
     @PostMapping("/signup")
     public Member signUp(@RequestBody Member member) throws Exception {
@@ -98,7 +99,6 @@ public class MemberController {
         // 회원 저장
         return memberRepository.save(member);
     }
-
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> loginRequest,
             HttpSession session,
@@ -144,6 +144,7 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
         try {
+
             // UpdateMemberService 클래스를 사용하여 회원 정보 업데이트
             UpdateMemberService updateMemberService = new UpdateMemberService(memberRepository);
             // 첨부 파일 목록 추가

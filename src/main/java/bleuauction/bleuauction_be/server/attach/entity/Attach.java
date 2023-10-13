@@ -6,6 +6,7 @@ import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CurrentTimestamp;
@@ -17,10 +18,12 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
+@Setter
 @Data
 @Table(name = "ba_attach")
 @NoArgsConstructor
 @DynamicInsert
+@DynamicUpdate
 public class Attach {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +38,7 @@ public class Attach {
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewNo")
-    private Review reviewNo;
+    private Review review;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
@@ -57,7 +60,7 @@ public class Attach {
     @NotNull
     private String saveFilename;
 
-    @CurrentTimestamp
+    @CreationTimestamp
     private Timestamp regDatetime;
 
     @UpdateTimestamp

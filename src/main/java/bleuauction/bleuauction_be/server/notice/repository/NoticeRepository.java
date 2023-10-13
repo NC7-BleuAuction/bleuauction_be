@@ -14,8 +14,9 @@ public class NoticeRepository {
 
   private final EntityManager em;
 
-  public void save(Notice notice) {
+  public Notice save(Notice notice) {
     em.persist(notice);
+    return notice;
   }
 
   public Notice findOne(Long noticeNo) {

@@ -21,7 +21,7 @@ public class MenuForm {
   public MenuSize menuSize;
 
   @Column(name="menu_price")
-  public String menuPrice;
+  public int menuPrice;
 
   @Column(name="menu_content")
   public String menuContent;

@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -43,11 +45,13 @@ public class NoticeService {
 
   //노티스 수정
   @Transactional
-  public Notice update(Long noticeNo, String title, String content) {
-    Notice notice = noticeRepository.findOne(noticeNo);
-    notice.setNoticeTitle(title);
-    notice.setNoticeContent(content);
-    return notice;
+  public Notice update(Notice notice) {
+    Notice updatenotice = noticeRepository.findOne(notice.getNoticeNo());
+
+    updatenotice.setNoticeTitle(notice.getNoticeTitle());
+    updatenotice.setNoticeContent(notice.getNoticeContent());
+    Notice update = noticeRepository.save(updatenotice);
+    return updatenotice;
   }
 
 

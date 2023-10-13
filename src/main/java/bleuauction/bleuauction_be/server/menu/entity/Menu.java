@@ -45,10 +45,10 @@ public class Menu {
   private String menuContent;
 
   @CreationTimestamp
-  private LocalDateTime regDatetime;
+  private Timestamp regDatetime;
 
   @UpdateTimestamp
-  private LocalDateTime mdfDatetime;
+  private Timestamp mdfDatetime;
 
   @Enumerated(EnumType.STRING)
   @Column(name="menu_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")

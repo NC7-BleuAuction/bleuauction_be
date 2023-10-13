@@ -29,7 +29,7 @@ spring:
     properties:
       format_sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
       show-sql: true
       # DDL(CREATE TABLE) 등의 문구를 직접 보기 위한 설정
       generate-ddl: true

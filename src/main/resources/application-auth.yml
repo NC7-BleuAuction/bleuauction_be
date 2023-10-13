@@ -2,6 +2,7 @@ cors:
   domains: [
     http://bleuauction.co.kr:8080,
     http://bleuauction.co.kr,
+    http://www.bleuauction.co.kr,
     http://localhost:3000,
     http://localhost,
     http://localhost:8080,

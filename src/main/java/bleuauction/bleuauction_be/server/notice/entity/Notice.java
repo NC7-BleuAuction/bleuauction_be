@@ -36,10 +36,10 @@ public class Notice {
   private Member memberNo;
 
   @CreationTimestamp
-  private LocalDateTime regDatetime;
+  private Timestamp regDatetime;
 
   @UpdateTimestamp
-  private LocalDateTime mdfDatetime;
+  private Timestamp mdfDatetime;
 
   @Enumerated(EnumType.STRING)
   private NoticeStatus noticeStatus; // 상태 [Y,N]

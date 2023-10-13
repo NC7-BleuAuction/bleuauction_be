@@ -6,10 +6,12 @@ import bleuauction.bleuauction_be.server.menu.entity.MenuSize;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.CurrentTimestamp;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -55,7 +57,6 @@ public class MenuService {
     updatemenu.setMenuSize(menu.getMenuSize());
     updatemenu.setMenuPrice(menu.getMenuPrice());
     updatemenu.setMenuContent(menu.getMenuContent());
-    updatemenu.setMdfDatetime(menu.getMdfDatetime());
     Menu update = menuRepository.save(updatemenu);
 
     return updatemenu;

@@ -9,9 +9,8 @@ import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CurrentTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Setter;
+import org.hibernate.annotations.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Timestamp;

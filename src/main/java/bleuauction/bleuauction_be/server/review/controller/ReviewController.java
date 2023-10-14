@@ -36,18 +36,22 @@ public class ReviewController {
   private final ReviewService reviewService;
 
   @GetMapping("/review/list/sendAxios")
-  public List<Review> listAxios(@RequestParam(value = "storeNo", defaultValue = "1") Long storeNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) {
+  public ResponseEntity<?> listAxios(@RequestParam(value = "storeNo", defaultValue = "1") Long storeNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) {
 
     log.info("/review/list/sendAxios");
     log.info("storeNo: " + storeNo);
     log.info("startPage: " + startPage);
+    try {
+      List<Review> reviewList = reviewService.selectReviewList(storeNo, ReviewStatus.Y, startPage, PAGE_ROW_COUNT);
+      log.info("reviewList: " + reviewList);
+      log.info("reviewList.size(): " + reviewList.size());
+      return ResponseEntity.ok(reviewList);
+    } catch (Exception e) {
+      return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
 
-    List<Review> reviewList = reviewService.selectReviewList(storeNo, ReviewStatus.Y, startPage, PAGE_ROW_COUNT);
-    log.info("reviewList: " + reviewList);
-    log.info("reviewList.size(): " + reviewList.size());
-
-    return reviewList;
+    }
   }
+
 
   @PostMapping("/review/add/sendAxios")
   public ResponseEntity<?> addSendAxios(Review review, @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) throws Exception {
@@ -67,7 +71,7 @@ public class ReviewController {
           if (multipartFile.getSize() > 0) {
             Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
                     "bleuauction-bucket", "review/", multipartFile);
-        attach.setReviewNo(insertReview);
+        attach.setReview(insertReview);
             attaches.add(attach);
           }
         }
@@ -90,10 +94,27 @@ public class ReviewController {
   }
 
   @GetMapping("/review/delete/sendAxios")
-  public Review deleteSendAxios(@RequestParam("reviewNo") Long reviewNo) throws Exception {
+  public ResponseEntity<?> deleteSendAxios(@RequestParam("reviewNo") Long reviewNo) throws Exception {
     log.info("url ===========> /delete/sendAxios");
     log.info("reviewNo: " + reviewNo);
-    Review deleteReview = reviewService.deleteReview(reviewNo);
-    return deleteReview;
+
+    try {
+      Review deleteReview = reviewService.deleteReview(reviewNo);
+      return ResponseEntity.ok(deleteReview);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
+    }
+  }
+
+  @GetMapping("/review/deleteFile/sendAxios")
+  public ResponseEntity<?> deleteFile(@RequestParam Long fileNo) throws Exception {
+    log.info("url ===========> /review/deleteFile/sendAxios");
+    log.info("fileNo: " + fileNo);
+    try {
+      Attach deleteAttch = attachService.update(fileNo);
+      return ResponseEntity.ok(deleteAttch);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
+    }
   }
 }

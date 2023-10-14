@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
   @Query("SELECT a FROM Review a " +
@@ -23,5 +24,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
           @Param("reviewStatus") ReviewStatus reviewStatus,
           Pageable pageable
   );
+
+  Optional<Review> findByReviewNoAndReviewStatus(Long reviewNo, ReviewStatus reviewStatus);
 
 }

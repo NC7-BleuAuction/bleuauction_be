@@ -1,30 +1,34 @@
 package bleuauction.bleuauction_be.server.attach.entity;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.item.entity.Item;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.store.entity.Store;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CurrentTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Timestamp;
 
 @Entity
 @Data
 @Table(name = "ba_attach")
 @NoArgsConstructor
 @DynamicInsert
+@DynamicUpdate
 public class Attach {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "file_no")
     private Long fileNo;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menuNo")
     private Menu menuNo;
@@ -33,9 +37,20 @@ public class Attach {
     @JoinColumn(name = "memberNo")
     private Member memberNo;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewNo")
-    private Review reviewNo;
+    private Review review;
+
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "itemNo")
+    private Item itemNo;
+
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "noticeNo")
+    private Notice noticeNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "storerNo")
@@ -50,13 +65,11 @@ public class Attach {
     @NotNull
     private String saveFilename;
 
-    @CurrentTimestamp
-    @Column(name = "reg_datetime")
-    private LocalDateTime regDatetime;
+    @CreationTimestamp
+    private Timestamp regDatetime;
 
     @UpdateTimestamp
-    @Column(name = "mdf_datetime")
-    private LocalDateTime mdfDatetime;
+    private Timestamp mdfDatetime;
 
     @Enumerated(EnumType.STRING)
     private FileStatus fileStatus;

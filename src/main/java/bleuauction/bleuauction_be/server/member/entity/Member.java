@@ -2,8 +2,10 @@ package bleuauction.bleuauction_be.server.member.entity;
 
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
-import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nullable;
+import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -82,8 +84,13 @@ public class Member {
     @Column(name = "member_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
     private MemberStatus memberStatus;
 
-    @OneToMany(mappedBy = "member")
-    private List<Notice> notices = new ArrayList<>();
+  @JsonManagedReference
+  @OneToMany(mappedBy = "memberNo")
+  private List<Notice> notices = new ArrayList<>();
+
+  @JsonManagedReference
+  @OneToMany(mappedBy = "memberNo")
+  private List<OrderMenu> OrderMenus= new ArrayList<>();
 
     @OneToMany(mappedBy = "memberNo", cascade = CascadeType.ALL)
     private List<Attach> memberAttaches = new ArrayList<>();

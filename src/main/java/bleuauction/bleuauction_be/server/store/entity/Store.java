@@ -3,6 +3,8 @@ package bleuauction.bleuauction_be.server.store.entity;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.order.entity.Order;
+import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -88,12 +90,9 @@ public class Store {
   @Column(name = "store_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
   private StoreStatus storeStatus;
 
-  @Builder.Default
+  @JsonManagedReference
   @OneToMany(mappedBy = "storeNo")
   private List<Menu> menus = new ArrayList<>();
-
-  @OneToMany(mappedBy = "storeNo")
-  private List<Order> orders = new ArrayList<>();
 
   @OneToMany(mappedBy = "storeNo", cascade = CascadeType.ALL)
   private List<Attach> storeAttaches = new ArrayList<>();

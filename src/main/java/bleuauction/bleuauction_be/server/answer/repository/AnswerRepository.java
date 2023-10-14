@@ -2,6 +2,7 @@ package bleuauction.bleuauction_be.server.answer.repository;
 
 import bleuauction.bleuauction_be.server.answer.entity.Answer;
 import bleuauction.bleuauction_be.server.answer.entity.AnswerStatus;
+import bleuauction.bleuauction_be.server.review.entity.Review;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
@@ -27,5 +28,5 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
   );
   public Optional<Answer> findByReviewNoAndAnswerNoAndAnswerStatus(Long reviewNo, Long answerNo, AnswerStatus answerStatus) throws Exception;
 
-
+  List<Answer> findAllByReviewNoAndAnswerStatus(Long reviewNo, AnswerStatus answerStatus) throws Exception;
 }

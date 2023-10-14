@@ -4,8 +4,10 @@ import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
@@ -29,8 +31,10 @@ public class Answer {
 
   private String answerContent;
 
+  @CreationTimestamp
   private Timestamp regDatetime;
 
+  @UpdateTimestamp
   private Timestamp mdfDatetime;
 
   @Enumerated(EnumType.STRING)

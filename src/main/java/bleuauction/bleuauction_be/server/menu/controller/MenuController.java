@@ -10,20 +10,14 @@ import bleuauction.bleuauction_be.server.menu.web.MenuForm;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import jakarta.persistence.EntityManager;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +79,7 @@ public class MenuController {
 
   //삭제
   @PostMapping("/api/menu/delete/{menuNo}")
-  public ResponseEntity<String> deleteNotice(@PathVariable("menuNo") Long menuNo) {
+  public ResponseEntity<String> deleteMenu(@PathVariable("menuNo") Long menuNo) {
     Menu menu = menuService.findOne(menuNo);
 
     // 사진 상태를 'N'으로 변경
@@ -99,7 +93,7 @@ public class MenuController {
 
   //사진삭제
   @DeleteMapping("/api/menu/deletefile/{fileNo}")
-  public ResponseEntity<String> fileDelete(@PathVariable Long fileNo) {
+  public ResponseEntity<String> fileMenuDelete(@PathVariable Long fileNo) {
 
     attachService.update(fileNo);
 
@@ -127,10 +121,6 @@ public class MenuController {
           @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
 
     Menu updatedMenu = menuService.findOne(menuNo);
-    // 사진 상태를 'N'으로 변경
-//    for (Attach attach : menu.getMenuAttaches()) {
-//      attachService.update(attach.getFileNo());
-//    }
 
     if (multipartFiles != null && multipartFiles.size() > 0) {
       ArrayList<Attach> attaches = new ArrayList<>();

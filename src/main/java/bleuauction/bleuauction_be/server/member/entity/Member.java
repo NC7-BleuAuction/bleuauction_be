@@ -84,13 +84,13 @@ public class Member {
     @Column(name = "member_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
     private MemberStatus memberStatus;
 
-  @JsonManagedReference
-  @OneToMany(mappedBy = "memberNo")
-  private List<Notice> notices = new ArrayList<>();
+    @JsonManagedReference
+    @OneToMany(mappedBy = "memberNo")
+    private List<Notice> notices = new ArrayList<>();
 
-  @JsonManagedReference
-  @OneToMany(mappedBy = "memberNo")
-  private List<OrderMenu> OrderMenus= new ArrayList<>();
+    @JsonManagedReference
+    @OneToMany(mappedBy = "memberNo")
+    private List<OrderMenu> OrderMenus = new ArrayList<>();
 
     @OneToMany(mappedBy = "memberNo", cascade = CascadeType.ALL)
     private List<Attach> memberAttaches = new ArrayList<>();

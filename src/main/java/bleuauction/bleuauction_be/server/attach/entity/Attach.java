@@ -2,9 +2,9 @@ package bleuauction.bleuauction_be.server.attach.entity;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +12,7 @@ import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.jetbrains.annotations.NotNull;
+
 
 @Entity
 @Data
@@ -33,6 +34,10 @@ public class Attach {
     private Member memberNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewNo")
+    private Review reviewNo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "storerNo")
     private Store storeNo;
 
@@ -49,7 +54,7 @@ public class Attach {
     @Column(name = "reg_datetime")
     private LocalDateTime regDatetime;
 
-    @CurrentTimestamp
+    @UpdateTimestamp
     @Column(name = "mdf_datetime")
     private LocalDateTime mdfDatetime;
 

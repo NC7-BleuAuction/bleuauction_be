@@ -1,22 +1,21 @@
 package bleuauction.bleuauction_be.server.review.entity;
 
-import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
-import bleuauction.bleuauction_be.server.store.entity.UnsupportedType;
+import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.DynamicInsert;
-import org.jetbrains.annotations.NotNull;
 
-import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@ToString
 @DynamicInsert
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,4 +40,8 @@ public class Review {
 
   @Enumerated(EnumType.STRING)
   private ReviewStatus reviewStatus;
+
+  @JsonIgnore
+  @OneToMany(mappedBy = "reviewNo", cascade=CascadeType.ALL)
+  private List<Attach> reivewAttaches;
 }

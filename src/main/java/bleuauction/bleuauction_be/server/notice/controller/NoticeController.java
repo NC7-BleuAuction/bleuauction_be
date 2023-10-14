@@ -9,12 +9,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -25,65 +27,79 @@ public class NoticeController {
   private final NoticeService noticeService;
   private final EntityManager entityManager;
 
+
   //등록
   @GetMapping("/api/notice/new")
-  public String creatForm(Model model) {
-      model.addAttribute("noticeForm", new NoticeForm());
-    log.info("notice/new");
-    return "/notices/new";
+  public NoticeForm createForm() {
+    NoticeForm noticeForm = new NoticeForm();
+    return noticeForm;
   }
+
 
   // 등록 처리
   @PostMapping("/api/notice/new")
   @Transactional
-  public String notice(@Valid NoticeForm form) {
+  public ResponseEntity<String>  notice(@Valid @RequestBody NoticeForm form) {
     Notice notice = new Notice();
     Member member =entityManager.find(Member.class, 1L);
-    notice.setNoticeNo(1L); // 테스트용 1번 회원
     notice.setNoticeTitle(form.getNoticeTitle());
     notice.setNoticeContent(form.getNoticeContent());
     notice.setMember(member);
     notice.setNoticeStatus(NoticeStatus.Y);
     notice = entityManager.merge(notice);
     noticeService.enroll(notice); // 서비스 메소드에서 엔터티 등록
+
     log.info("notice/postnew");
-    return "redirect:/notices";
+
+    //return "redirect:/notices";
+    return ResponseEntity.status(HttpStatus.CREATED).body("Notice created successfully");
   }
-
-
 
 
   //목록조회
-  @GetMapping("/api/notices")
-  public String list(Model model) {
-    List<Notice> notices = noticeService.findNotices();
-    model.addAttribute("notices", notices);
-    return "notices/noticeList";
+  @GetMapping(value = "/api/notice", produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<Notice> findNotices() throws Exception {
+    try {
+      List<Notice> notices = noticeService.findNotices();
+      return notices;
+    } catch (Exception e) {
+      // 예외 처리 코드 추가
+      e.printStackTrace(); // 또는 로깅 등의 작업을 수행하세요.
+      return new ArrayList<>();
+    }
   }
 
-  //삭제
-  @PostMapping("/api/notices/delete/{noticeNo}")
-  public String deleteNotice(@PathVariable("noticeNo") Long noticeNo) {
+
+// 삭제 처리
+  @PostMapping("/api/notice/delete/{noticeNo}")
+  public ResponseEntity<String> deleteNotice(@PathVariable("noticeNo") Long noticeNo) {
     noticeService.deleteNotice(noticeNo);
-    return "redirect:/notices";
+    return ResponseEntity.ok("Notice deleted successfully");
   }
 
-  //수정
+  //디테일(수정)
   @GetMapping("/api/notice/detail/{noticeNo}")
-  public String detailNotice(@PathVariable("noticeNo") Long noticeNo, Model model) {
+  public ResponseEntity<Notice> detailNotice(@PathVariable("noticeNo") Long noticeNo) {
     Notice notice = noticeService.findOne(noticeNo);
-    model.addAttribute("notice", notice);
-    return "/notices/detail";
+    if (notice != null) {
+      return ResponseEntity.ok(notice);
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
 
   // 수정 처리
   @PostMapping("/api/notice/update/{noticeNo}")
-  public String updateNotice(
+  public ResponseEntity<String> updateNotice(
           @PathVariable("noticeNo") Long noticeNo,
-          @ModelAttribute("notice") @Valid NoticeForm form
+          @RequestBody NoticeForm form
   ) {
-    noticeService.update(noticeNo, form.getNoticeTitle(), form.getNoticeContent());
-    return "redirect:/notices";
+    Notice updated = noticeService.update(noticeNo, form.getNoticeTitle(), form.getNoticeContent());
+    if (updated!= null) {
+      return ResponseEntity.ok("Notice updated successfully");
+    } else {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notice not found or update failed");
+    }
   }
 
 }

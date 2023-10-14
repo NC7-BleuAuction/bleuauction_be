@@ -20,8 +20,6 @@ import bleuauction.bleuauction_be.server.store.service.StoreService;
 import bleuauction.bleuauction_be.server.store.service.UpdateStoreService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import java.util.ArrayList;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +28,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -76,28 +75,27 @@ public class StoreController {
         return "testStoreList";
     }
 
-    @ResponseBody
-    @GetMapping("/ajaxList")
-    public List<Store> ajaxList(
-            @RequestParam(name = "storeLength", defaultValue = "0") int storeLength) {
-        log.info("/store/ajaxList");
-        log.info("storeLength: " + storeLength);
+  @ResponseBody
+  @GetMapping("/list/axios")
+  public List<Store> listAxios(@RequestParam(name = "storeLength", defaultValue = "0") int storeLength) {
+    log.info("/store/list/axios");
+    log.info("storeLength: " + storeLength);
 
-        List<Store> storeList = storeService.selectStoreList();
-        log.info("storeList: " + storeList);
-        log.info("storeList.size(): " + storeList.size());
+    List<Store> storeList = storeService.selectStoreList();
+    log.info("storeList: " + storeList);
+    log.info("storeList.size(): " + storeList.size());
 
-        List<Store> storeSubList = null;
-        if (storeLength > storeList.size()) {
-            storeSubList = storeList.subList(storeLength - 2, storeList.size());
-        } else {
-            storeSubList = storeList.subList(storeLength - 2, storeLength);
-        }
-
-        log.info("storeSubList: " + storeSubList);
-
-        return storeSubList;
+    List<Store> storeSubList = null;
+    if (storeLength > storeList.size()) {
+      storeSubList = storeList.subList(storeLength - 2, storeList.size());
+    } else {
+      storeSubList = storeList.subList(storeLength - 2, storeLength);
     }
+
+    log.info("storeSubList: " + storeSubList);
+
+    return storeSubList;
+  }
 
     @GetMapping("/detail")
     public String detail(Model model,

@@ -96,7 +96,8 @@ public class KakaoLoginService {
 
             //결과 코드가 200이라면 성공
             int responseCode = conn.getResponseCode();
-            System.out.println("responseCode : " + responseCode);
+
+            log.info("responseCode : " + responseCode);
 
             //요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));

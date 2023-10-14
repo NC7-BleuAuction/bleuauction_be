@@ -11,35 +11,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderRepository {
 
-
   private final EntityManager em;
 
-  public void save(Order order) {
+  public Order save(Order order) {
     em.persist(order);
+    return order;
   }
 
-//  public Order findByStoreNo(Long storeNo) {
-//    return em.find(Order.class, storeNo);
-//  }
-//
-//  public Order findByMemberNo(Long memberNo) {
-//    return em.find(Order.class, memberNo);
-//  }
+  public Order findOne(Long orderNo) {
+    return em.find(Order.class, orderNo);
+  }
 
-  public List<Order> findByMember(Long memberNo) {
-    String jpql = "select o from Order o where o.member.memberNo = :memberNo";
-    List<Order> result = em.createQuery(jpql, Order.class)
-            .setParameter("memberNo", memberNo)
+  public List<Order> findAll() {
+    List<Order> result = em.createQuery("select o from Order o", Order.class)
             .getResultList();
     return result;
   }
-
-  public List<Order> findByStore(Long storeNo) {
-    String jpql = "select o from Order o where o.store.storeNo = :storeNo";
-    List<Order> result = em.createQuery(jpql, Order.class)
-            .setParameter("storeNo", storeNo)
-            .getResultList();
-    return result;
-  }
-
 }

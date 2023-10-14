@@ -3,7 +3,7 @@ package bleuauction.bleuauction_be.server.store.entity;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
-import bleuauction.bleuauction_be.server.order.entity.Order;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Time;
@@ -83,11 +82,8 @@ public class Store {
   @Enumerated(EnumType.STRING)
   private StoreStatus storeStatus;
 
-  @Builder.Default
+  @JsonManagedReference
   @OneToMany(mappedBy = "storeNo")
   private List<Menu> menus = new ArrayList<>();
-
-  @OneToMany(mappedBy = "storeNo")
-  private List<Order> orders = new ArrayList<>();
 
 }

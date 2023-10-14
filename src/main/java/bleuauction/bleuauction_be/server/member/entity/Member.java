@@ -1,7 +1,8 @@
 package bleuauction.bleuauction_be.server.member.entity;
 
 
-import bleuauction.bleuauction_be.server.store.entity.Store;
+import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nullable;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import jakarta.persistence.*;
@@ -77,8 +78,13 @@ public class Member {
   @Enumerated(EnumType.STRING)
   private MemberStatus memberStatus;
 
+  @JsonManagedReference
   @OneToMany(mappedBy = "memberNo")
   private List<Notice> notices = new ArrayList<>();
+
+  @JsonManagedReference
+  @OneToMany(mappedBy = "memberNo")
+  private List<OrderMenu> OrderMenus= new ArrayList<>();
 
 }
 

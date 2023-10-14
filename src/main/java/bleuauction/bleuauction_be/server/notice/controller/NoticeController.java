@@ -102,7 +102,7 @@ public class NoticeController {
     }
   }
 
-  //사진삭제 -- attach 컨트롤러에 모으기?
+  //사진삭제
   @DeleteMapping("/api/notice/deletefile/{fileNo}")
   public ResponseEntity<String> fileNoticeDelete(@PathVariable Long fileNo) {
     attachService.update(fileNo);

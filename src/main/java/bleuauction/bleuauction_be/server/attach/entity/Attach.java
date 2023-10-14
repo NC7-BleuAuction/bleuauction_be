@@ -29,6 +29,7 @@ public class Attach {
     @Column(name = "file_no")
     private Long fileNo;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menuNo")
     private Menu menuNo;
@@ -38,10 +39,12 @@ public class Attach {
     @JoinColumn(name = "reviewNo")
     private Review review;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "itemNo")
     private Item itemNo;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "noticeNo")
     private Notice noticeNo;

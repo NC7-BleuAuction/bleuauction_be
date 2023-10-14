@@ -2,15 +2,16 @@ package bleuauction.bleuauction_be.server.notice.entity;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.joda.time.LocalDateTime;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class Notice {
 
   private String noticeContent;
 
-  @JsonIgnore
+  @JsonBackReference
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name ="member_no")
   private Member memberNo;
@@ -43,7 +44,7 @@ public class Notice {
   @Enumerated(EnumType.STRING)
   private NoticeStatus noticeStatus; // 상태 [Y,N]
 
-  @JsonIgnore
+  @JsonManagedReference
   @OneToMany(mappedBy = "noticeNo", cascade=CascadeType.ALL)
   private List<Attach> noticeAttaches = new ArrayList<>();
 

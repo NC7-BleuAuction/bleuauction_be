@@ -4,11 +4,11 @@ import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.store.entity.Store;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,7 +30,7 @@ public class Menu {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long menuNo;
 
-  @JsonIgnore
+  @JsonBackReference
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name ="store_no")
   private Store storeNo;
@@ -54,11 +54,11 @@ public class Menu {
   @Column(name="menu_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
   private MenuStatus menuStatus; // 상태 [Y,N]
 
-  @JsonIgnore
+  @JsonManagedReference
   @OneToMany(mappedBy = "menuNo")
   private List<Order> orders = new ArrayList<>();
 
-  @JsonIgnore
+  @JsonManagedReference
   @OneToMany(mappedBy = "menuNo", cascade=CascadeType.ALL)
   private List<Attach> menuAttaches = new ArrayList<>();
 

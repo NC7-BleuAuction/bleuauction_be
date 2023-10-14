@@ -1,7 +1,5 @@
-DROP TABLE IF EXISTS `ba_member`;
-
 CREATE TABLE `ba_member` (
-                             `member_no`	BIGINT	NOT NULL		AUTO_INCREMENT PRIMARY KEY,
+                             `member_no`	BIGINT	NOT NULL	AUTO_INCREMENT PRIMARY KEY,
                              `member_email`	VARCHAR(30)	NOT NULL	UNIQUE,
                              `member_pwd`	VARCHAR(100)	NOT NULL,
                              `member_name`	VARCHAR(20)	NOT NULL,
@@ -17,24 +15,21 @@ CREATE TABLE `ba_member` (
                              `member_status`	VARCHAR(1)	NULL	DEFAULT 'Y'	COMMENT 'Y:일반회원, N:탈퇴회원'
 );
 
-DROP TABLE IF EXISTS `ba_coupon`;
-
 CREATE TABLE `ba_coupon` (
                              `coupon_no`	BIGINT	NOT NULL	AUTO_INCREMENT PRIMARY KEY,
-                             `store_no`	BIGINT	NOT NULL,
-                             `member_no`	BIGINT	NOT NULL,
+                             `store_no`	BIGINT	NOT NULL	,
+                             `member_no`	BIGINT	NOT NULL	,
+                             `order_menu_no`	BIGINT	NULL	,
                              `coupon_name`	VARCHAR(30)	NOT NULL,
                              `coupon_content`	VARCHAR(255)	NOT NULL,
                              `min_buy_price`	INT	NOT NULL,
                              `discount_per`	INT	NOT NULL,
                              `discount_price`	INT	NOT NULL,
                              `extinction_date`	DATETIME	NULL,
-                             `create_date`	DATETIME	NULL,
-                             `modify_date`	DATETIME	NULL,
+                             `reg_datetime`	DATETIME	NULL	DEFAULT NOW(),
+                             `mdf_datetime`	DATETIME	NULL	DEFAULT NOW(),
                              `coupon_status`	VARCHAR(1)	NOT NULL	DEFAULT 'Y'	COMMENT 'Y:사용가능 N:사용불가능'
 );
-
-DROP TABLE IF EXISTS `ba_dibs`;
 
 CREATE TABLE `ba_dibs` (
                            `member_no`	BIGINT	NOT NULL	,
@@ -43,8 +38,6 @@ CREATE TABLE `ba_dibs` (
                            `mdf_datetime`	DATETIME	NULL	DEFAULT NOW(),
                            `dibs_status`	VARCHAR(1)	NULL	DEFAULT 'Y'	COMMENT 'Y:찜 N:찜취소'
 );
-
-DROP TABLE IF EXISTS `ba_store`;
 
 CREATE TABLE `ba_store` (
                             `store_no`	BIGINT	NOT NULL	AUTO_INCREMENT PRIMARY KEY,
@@ -63,20 +56,19 @@ CREATE TABLE `ba_store` (
                             `store_status`	VARCHAR(1)	NULL	DEFAULT 'Y'	COMMENT 'Y:운영중 , N:폐업'
 );
 
-DROP TABLE IF EXISTS `ba_item`;
-
 CREATE TABLE `ba_item` (
                            `item_no`	BIGINT	NOT NULL	AUTO_INCREMENT PRIMARY KEY,
+                           `member_no`	BIGINT	NOT NULL	,
                            `item_code`	VARCHAR(10)	NOT NULL	COMMENT 'S:생선/횟감, F:생선/비횟감,  C:갑각류,  M:패류  E:기타',
                            `item_name`	VARCHAR(30)	NOT NULL,
                            `item_size`	VARCHAR(1)	NOT NULL	COMMENT 'S:소, M:중, L:대',
                            `origin_status`	VARCHAR(1)	NOT NULL	COMMENT 'D:국내산,  I:수입산',
                            `origin_place_status`	VARCHAR(2)	NOT NULL	COMMENT '동해:ES, 서해:WS,남해:SS, 제주:JJ, 완도:WD, 일본:JP, 중국:CN, 러시아:RU, 노르웨이:NW',
                            `wild_farm_status`	VARCHAR(1)	NOT NULL	COMMENT 'W:자연산, F:양식',
+                           `reg_datetime`	DATETIME	NULL	DEFAULT NOW(),
+                           `mdf_datetime`	DATETIME	NULL	DEFAULT NOW(),
                            `item_status`	VARCHAR(1)	NULL	DEFAULT 'Y'	COMMENT 'Y,  N'
 );
-
-DROP TABLE IF EXISTS `ba_menu`;
 
 CREATE TABLE `ba_menu` (
                            `menu_no`	BIGINT	NOT NULL	AUTO_INCREMENT PRIMARY KEY,
@@ -90,8 +82,6 @@ CREATE TABLE `ba_menu` (
                            `menu_status`	VARCHAR(1)	NULL	DEFAULT 'Y'
 );
 
-DROP TABLE IF EXISTS `ba_review`;
-
 CREATE TABLE `ba_review` (
                              `review_no`	BIGINT	NOT NULL	AUTO_INCREMENT PRIMARY KEY,
                              `store_no`	BIGINT	NOT NULL	,
@@ -103,8 +93,6 @@ CREATE TABLE `ba_review` (
                              `review_status`	VARCHAR(1)	NULL	DEFAULT 'Y'
 );
 
-DROP TABLE IF EXISTS `ba_answer`;
-
 CREATE TABLE `ba_answer` (
                              `answer_no`	BIGINT	NOT NULL    AUTO_INCREMENT PRIMARY KEY,
                              `review_no`	BIGINT	NOT NULL	,
@@ -115,15 +103,13 @@ CREATE TABLE `ba_answer` (
                              `answer_status`	VARCHAR(1)	NULL	DEFAULT 'Y'
 );
 
-DROP TABLE IF EXISTS `ba_attach`;
-
 CREATE TABLE `ba_attach` (
                              `file_no`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                             `member_no`	BIGINT	NULL	,
                              `store_no`	BIGINT	NULL	,
                              `item_no`	BIGINT	NULL	,
                              `menu_no`	BIGINT	NULL	,
                              `review_no`	BIGINT	NULL	,
+                             `member_no`	BIGINT	NULL	,
                              `notice_no`	BIGINT	NULL	,
                              `file_path`	VARCHAR(255)	NOT NULL,
                              `origin_filename`	VARCHAR(255)	NOT NULL,
@@ -133,44 +119,39 @@ CREATE TABLE `ba_attach` (
                              `file_status`	VARCHAR(1)	NULL	DEFAULT 'Y'	COMMENT 'Y:사용 중, N:삭제 건'
 );
 
-DROP TABLE IF EXISTS `ba_store_item_daily_price`;
-
 CREATE TABLE `ba_store_item_daily_price` (
                                              `daily_price_no`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY,
                                              `item_no`	BIGINT	NOT NULL	,
                                              `store_no`	BIGINT	NOT NULL	,
                                              `daily_price`	INT	NOT NULL	COMMENT 'KG상관없이 가격',
-                                             `daliy_price_date`	DATE	NULL	DEFAULT (current_date)
+                                             `daliy_price_date`	DATE	NULL	DEFAULT (current_date),
+                                             `reg_datetime`	DATETIME	NULL	DEFAULT NOW(),
+                                             `mdf_datetime`	DATETIME	NULL	DEFAULT NOW(),
+                                             `daily_price_status`	VARCHAR(1)	NULL	DEFAULT 'Y'	COMMENT 'Y,  N'
 );
-
-DROP TABLE IF EXISTS `ba_pay`;
 
 CREATE TABLE `ba_pay` (
                           `pay_no`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                          `order_no`	BIGINT	NOT NULL,
                           `pay_type`	VARCHAR(1)	NOT NULL,
                           `pay_price`	INT	NOT NULL,
                           `pay_datetime`	DATETIME	NULL	DEFAULT NOW(),
                           `pay_cancel_datetime`	DATETIME	NULL	DEFAULT NOW(),
-                          `pay_status`	VARCHAR(1)	NOT NULL	DEFAULT 'Y'	COMMENT 'Y:결제완료, N:결제취소',
-                          `order_no`	BIGINT	NOT NULL
+                          `pay_status`	VARCHAR(1)	NOT NULL	DEFAULT 'Y'	COMMENT 'Y:결제완료, N:결제취소'
 );
 
-DROP TABLE IF EXISTS `ba_notice`;
-
 CREATE TABLE `ba_notice` (
-                             `notice_no`	BIGINT	NOT NULL	AUTO_INCREMENT PRIMARY KEY,
+                             `notice_no`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                             `member_no`	BIGINT	NOT NULL	,
                              `notice_title`	VARCHAR(255)	NOT NULL,
                              `notice_content`	VARCHAR(255)	NOT NULL,
-                             `member_no`	BIGINT	NOT NULL	,
                              `reg_datetiem`	DATETIME	NULL	DEFAULT NOW(),
                              `mdf_datetime`	DATETIME	NULL	DEFAULT NOW(),
                              `notice_status`	VARCHAR(1)	NULL	DEFAULT 'Y'
 );
 
-DROP TABLE IF EXISTS `ba_order`;
-
 CREATE TABLE `ba_order` (
-                            `order_no`	BIGINT	NOT NULL	AUTO_INCREMENT PRIMARY KEY,
+                            `order_no`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY,
                             `order_type`	VARCHAR(1)	NOT NULL	COMMENT 'Q:퀵 배송, T:포장',
                             `order_price`	INT	NOT NULL,
                             `order_request`	VARCHAR(255)	NULL,
@@ -181,13 +162,11 @@ CREATE TABLE `ba_order` (
                             `recipient_detail_addr`	VARCHAR(255)	NULL,
                             `reg_datetime`	DATETIME	NULL	DEFAULT NOW(),
                             `mdf_datetime`	DATETIME	NULL	DEFAULT NOW(),
-                            `order_status`	VARCHAR(255)	NULL	DEFAULT 'Y'
+                            `order_status`	VARCHAR(1)	NULL	DEFAULT 'Y'
 );
 
-DROP TABLE IF EXISTS `ba_order_menu`;
-
 CREATE TABLE `ba_order_menu` (
-                                 `order_menu_no`	BIGINT	NOT NULL	AUTO_INCREMENT PRIMARY KEY,
+                                 `order_menu_no`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY,
                                  `member_no`	BIGINT	NOT NULL	,
                                  `menu_no`	BIGINT	NOT NULL	,
                                  `order_no`	BIGINT	NOT NULL	,
@@ -212,6 +191,13 @@ ALTER TABLE `ba_coupon` ADD CONSTRAINT `FK_ba_member_TO_ba_coupon_1` FOREIGN KEY
                             `member_no`
         );
 
+ALTER TABLE `ba_coupon` ADD CONSTRAINT `FK_ba_order_menu_TO_ba_coupon_1` FOREIGN KEY (
+                                                                                      `order_menu_no`
+    )
+    REFERENCES `ba_order_menu` (
+                                `order_menu_no`
+        );
+
 ALTER TABLE `ba_dibs` ADD CONSTRAINT `FK_ba_member_TO_ba_dibs_1` FOREIGN KEY (
                                                                               `member_no`
     )
@@ -228,6 +214,13 @@ ALTER TABLE `ba_dibs` ADD CONSTRAINT `FK_ba_store_TO_ba_dibs_1` FOREIGN KEY (
 
 ALTER TABLE `ba_store` ADD CONSTRAINT `FK_ba_member_TO_ba_store_1` FOREIGN KEY (
                                                                                 `member_no`
+    )
+    REFERENCES `ba_member` (
+                            `member_no`
+        );
+
+ALTER TABLE `ba_item` ADD CONSTRAINT `FK_ba_member_TO_ba_item_1` FOREIGN KEY (
+                                                                              `member_no`
     )
     REFERENCES `ba_member` (
                             `member_no`
@@ -268,13 +261,6 @@ ALTER TABLE `ba_answer` ADD CONSTRAINT `FK_ba_member_TO_ba_answer_1` FOREIGN KEY
                             `member_no`
         );
 
-ALTER TABLE `ba_attach` ADD CONSTRAINT `FK_ba_member_TO_ba_attach_1` FOREIGN KEY (
-                                                                                  `member_no`
-    )
-    REFERENCES `ba_member` (
-                            `member_no`
-        );
-
 ALTER TABLE `ba_attach` ADD CONSTRAINT `FK_ba_store_TO_ba_attach_1` FOREIGN KEY (
                                                                                  `store_no`
     )
@@ -301,6 +287,13 @@ ALTER TABLE `ba_attach` ADD CONSTRAINT `FK_ba_review_TO_ba_attach_1` FOREIGN KEY
     )
     REFERENCES `ba_review` (
                             `review_no`
+        );
+
+ALTER TABLE `ba_attach` ADD CONSTRAINT `FK_ba_member_TO_ba_attach_1` FOREIGN KEY (
+                                                                                  `member_no`
+    )
+    REFERENCES `ba_member` (
+                            `member_no`
         );
 
 ALTER TABLE `ba_attach` ADD CONSTRAINT `FK_ba_notice_TO_ba_attach_1` FOREIGN KEY (

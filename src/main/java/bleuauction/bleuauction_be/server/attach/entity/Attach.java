@@ -11,12 +11,13 @@ import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.*;
 import org.jetbrains.annotations.NotNull;
-
 import java.sql.Timestamp;
 
 @Entity
+@Setter
 @Data
 @Table(name = "ba_attach")
 @NoArgsConstructor
@@ -33,6 +34,7 @@ public class Attach {
     @JoinColumn(name = "menuNo")
     private Menu menuNo;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberNo")
     private Member memberNo;

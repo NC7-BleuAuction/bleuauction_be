@@ -1,7 +1,7 @@
 package bleuauction.bleuauction_be.server.item.entity;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.DynamicInsert;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -22,6 +22,7 @@ public class Item {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long itemNo;
 
+  @Column(columnDefinition = "VARCHAR(1) DEFAULT 'S'")
   @Enumerated(EnumType.STRING)
   private ItemCode itemCode; // 종류 [S:생선/횟감, F:생선/비횟감,  C:갑각류,  M:패류  E:기타]
 
@@ -42,7 +43,7 @@ public class Item {
   @Enumerated(EnumType.STRING)
   private ItemStatus itemStatus; // 상태 [Y,N]
 
-  @JsonIgnore
+  @JsonManagedReference
   @OneToMany(mappedBy = "itemNo", cascade=CascadeType.ALL)
   private List<Attach> itemAttaches = new ArrayList<>();
 
@@ -50,5 +51,11 @@ public class Item {
   // 공지사항 삭제
   public void delete(){
     this.setItemStatus(ItemStatus.N);
+  }
+
+  // 이미지 추가를 위한 메서드
+  public void addItemAttach(Attach attach) {
+    itemAttaches.add(attach);
+    attach.setItemNo(this); // 이미지와 메뉴를 연결
   }
 }

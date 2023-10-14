@@ -42,15 +42,18 @@ public class ItemService {
   }
 
   @Transactional
-  public Item update(Long itemNo, ItemCode itemCode, OriginStatus originStatus, OriginPlaceStatus originPlaceStatus, String itemName, ItemSize itemSize, WildFarmStatus wildFarmStatus) {
-    Item item = itemRepository.findOne(itemNo);
-    item.setItemName(itemName);
-    item.setItemCode(itemCode);
-    item.setOriginStatus(originStatus);
-    item.setOriginPlaceStatus(originPlaceStatus);
-    item.setItemSize(itemSize);
-    item.setWildFarmStatus(wildFarmStatus);
-    return item;
+  public Item update(Item item) {
+    Item updateItem = itemRepository.findOne(item.getItemNo());
+
+    updateItem.setItemName(item.getItemName());
+    updateItem.setItemCode(item.getItemCode());
+    updateItem.setOriginStatus(item.getOriginStatus());
+    updateItem.setOriginPlaceStatus(item.getOriginPlaceStatus());
+    updateItem.setItemSize(item.getItemSize());
+    updateItem.setWildFarmStatus(item.getWildFarmStatus());
+
+    Item update = itemRepository.save(updateItem);
+    return updateItem;
   }
 
 }

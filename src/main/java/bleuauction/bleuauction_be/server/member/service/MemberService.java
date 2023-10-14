@@ -2,6 +2,7 @@ package bleuauction.bleuauction_be.server.member.service;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
+import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +61,11 @@ public class MemberService {
     // 회원 삭제
     public void delete(Long memberNo) {
         memberRepository.deleteById(memberNo);
+    }
+
+    // 회원 저장
+    public Member saveMember(Member member) throws Exception {
+        return memberRepository.save(member);
     }
 
     // 암호화 반환

@@ -13,8 +13,9 @@ public class ItemRepository {
 
   private final EntityManager em;
 
-  public void save(Item item) {
-    em.persist((item));
+  public Item save(Item item) {
+    em.persist(item);
+    return item;
   }
 
   public Item findOne(Long itemNo) {

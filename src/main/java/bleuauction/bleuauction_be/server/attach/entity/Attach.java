@@ -2,6 +2,7 @@ package bleuauction.bleuauction_be.server.attach.entity;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.store.entity.Store;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -31,6 +32,10 @@ public class Attach {
     @JoinColumn(name = "memberNo")
     private Member memberNo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storerNo")
+    private Store storeNo;
+
     @NotNull
     private String filePath;
 
@@ -44,7 +49,7 @@ public class Attach {
     @Column(name = "reg_datetime")
     private LocalDateTime regDatetime;
 
-    @UpdateTimestamp
+    @CurrentTimestamp
     @Column(name = "mdf_datetime")
     private LocalDateTime mdfDatetime;
 

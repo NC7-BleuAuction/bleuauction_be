@@ -1,13 +1,12 @@
 package bleuauction.bleuauction_be.server.member.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
@@ -16,21 +15,24 @@ public class UpdateMemberRequest {
 
     private Long memberNo;
 
-    @Email(message = "올바른 이메일 주소를 입력해주세요.")
-    private String memberEmail;
-
+    @NotNull(message = "비밀번호는 필수 입력값입니다.")
     @Size(min = 4, max = 20, message = "비밀번호는 8자 이상 20자 이하로 입력해주세요.")
     private String memberPwd;
 
+    @NotNull(message = "이름은 필수 입력값입니다.")
     @Size(min = 2, max = 10)
     private String memberName;
 
+    @NotNull(message = "기본주소는 필수 입력값입니다.")
     private String memberAddr;
 
+    @NotNull(message = "우편번호는 필수 입력값입니다.")
     private String memberZipcode;
 
+    @NotNull(message = "상세주소는 필수 입력값입니다.")
     private String memberDetailAddr;
 
+    @NotNull(message = "전화번호는 필수 입력값입니다.")
     @Pattern(regexp = "(01[016789])-(\\d{3,4})-(\\d{4})", message = "올바른 휴대폰 번호를 입력해주세요.")
     private String memberPhone;
 
@@ -39,8 +41,8 @@ public class UpdateMemberRequest {
 
     private String memberAccount;
 
-    @UpdateTimestamp
-    private LocalDateTime mdfDatetime;
+    @CreationTimestamp
+    private Timestamp mdfDatetime;
 
     private MultipartFile profileImage;
 

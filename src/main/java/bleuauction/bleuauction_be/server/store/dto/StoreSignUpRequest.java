@@ -37,7 +37,7 @@ public class StoreSignUpRequest {
     private String storeDetailAddr;
 
     @NotEmpty(message = "우편번호가 입력되지 않았습니다.")
-    private String storeZipCode;
+    private String storeZipcode;
 
     private Time weekdayStartTime;
 
@@ -53,7 +53,7 @@ public class StoreSignUpRequest {
                 .marketName(this.marketName)
                 .storeName(this.storeName)
                 .licenseNo(this.licenseNo)
-                .storeZipcode(this.storeZipCode)
+                .storeZipcode(this.storeZipcode)
                 .storeAddr(this.storeAddr)
                 .storeDetailAddr(this.storeDetailAddr)
                 .storeStatus(StoreStatus.Y)

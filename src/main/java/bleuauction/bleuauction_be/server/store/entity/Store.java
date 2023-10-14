@@ -79,7 +79,7 @@ public class Store {
   //@NotNull
 //  @UpdateTimestamp
 //  @Column(columnDefinition = "TIME DEFAULT '00:00:00'")
-  private Time weekendEndTime; // 주말 종료시간
+  private Time weekendEndTime; //  주말 종료시간
 
   @Enumerated(EnumType.STRING)
   private UnsupportedType unsupportedType; // 주문 불가 유형

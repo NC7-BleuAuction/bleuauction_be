@@ -25,9 +25,9 @@ public class AnswerController {
 
   private final AnswerService answerService;
 
-  @GetMapping("/answer/list")
+  @GetMapping("/api/answer/list")
   public List<Answer> answerList(@RequestParam("reviewNo") Long reviewNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception {
-    log.info("url ===========> /answer/list");
+    log.info("url ===========> /api/answer/list");
     log.info("reivewNo: " + reviewNo);
     log.info("startRow: " + startPage);
     List<Answer> answerList = answerService.selectAnswerList(reviewNo, AnswerStatus.Y, startPage, PAGE_ROW_COUNT);
@@ -36,9 +36,9 @@ public class AnswerController {
     return answerList;
   }
 
-  @PostMapping("/answer/add")
+  @PostMapping("/api/answer/add")
   public Answer answerAdd(Answer answer) throws Exception {
-    log.info("url ===========> /answer/add");
+    log.info("url ===========> /api/answer/add");
     log.info("Answer: " + answer);
 
     answer.setMemberNo(1L); // 로그인 구현되면 Session에서 받아오도록 수정요망!
@@ -47,18 +47,18 @@ public class AnswerController {
     return insertAnswer;
   }
 
-  @PostMapping("/answer/update")
+  @PostMapping("/api/answer/update")
   public Answer answerUpdate(Answer answer) throws Exception {
-    log.info("url ===========> /answer/update");
+    log.info("url ===========> /api/answer/update");
     log.info("Answer: " + answer);
     Answer updateAnswer = answerService.updateAnswer(answer);
     return updateAnswer;
   }
 
 
-  @GetMapping("/answer/delete")
+  @GetMapping("/api/answer/delete")
   public Answer answerDelete(@RequestParam("answerNo") Long answerNo) throws Exception {
-    log.info("url ===========> /delete/sendAxios");
+    log.info("url ===========> /api/answer/delete");
     log.info("answerNo: " + answerNo);
     Answer deleteAnswer = answerService.deleteAnswer(answerNo);
     return deleteAnswer;

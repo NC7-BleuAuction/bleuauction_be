@@ -27,9 +27,9 @@ public class ReviewController {
   private final AttachService attachService;
   private final ReviewService reviewService;
 
-  @GetMapping("/review/list")
-  public ResponseEntity<?> listAxios(HttpSession session, @RequestParam(value = "storeNo", defaultValue = "1") Long storeNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception{
-    log.info("url ===========> /review/list");
+  @GetMapping("/api/review/list")
+  public ResponseEntity<?> reviewList(HttpSession session, @RequestParam(value = "storeNo", defaultValue = "1") Long storeNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception{
+    log.info("url ===========> /api/review/list");
     Optional<Member> loginUserOptional = Optional.ofNullable((Member) session.getAttribute("loginUser"));
     Member loginUser = loginUserOptional.orElseThrow(() -> new Exception("로그인 유저가 없습니다!"));
     log.info("loginUser: " + loginUser);
@@ -51,9 +51,9 @@ public class ReviewController {
   }
 
 
-  @PostMapping("/review/add")
+  @PostMapping("/api/review/add")
   public ResponseEntity<?> reviewAdd(HttpSession session, Review review, @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) throws Exception {
-    log.info("url ===========> /review/add");
+    log.info("url ===========> /api/review/add");
     log.info("Review: " + review);
     log.info("MultipartFile: " + multipartFiles);
 
@@ -82,17 +82,17 @@ public class ReviewController {
     }
   }
 
-  @PostMapping("/review/update")
+  @PostMapping("/api/review/update")
   public Review reviewUpdate(Review review) throws Exception {
-    log.info("url ===========> /review/update");
+    log.info("url ===========> /api/review/update");
     log.info("Review: " + review);
     Review updateReview = reviewService.updateReview(review);
     return updateReview;
   }
 
-  @GetMapping("/review/delete")
+  @GetMapping("/api/review/delete")
   public ResponseEntity<?> reviewDelete(@RequestParam("reviewNo") Long reviewNo) throws Exception {
-    log.info("url ===========> /review/delete");
+    log.info("url ===========> /api/review/delete");
     log.info("reviewNo: " + reviewNo);
 
     try {
@@ -103,9 +103,9 @@ public class ReviewController {
     }
   }
 
-  @GetMapping("/review/deleteFile")
+  @GetMapping("/api/review/deleteFile")
   public ResponseEntity<?> reviewDeleteFile(@RequestParam Long fileNo) throws Exception {
-    log.info("url ===========> /review/deleteFile");
+    log.info("url ===========> /api/review/deleteFile");
     log.info("fileNo: " + fileNo);
     try {
       Attach deleteAttch = attachService.update(fileNo);

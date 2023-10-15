@@ -36,6 +36,7 @@ public class Review {
   private Long storeNo;
 
   @JsonBackReference
+  @JsonManagedReference
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name ="member_no")
   private Member member;

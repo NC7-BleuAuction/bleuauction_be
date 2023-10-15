@@ -40,7 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-
+@RequestMapping("/api/member")
 public class MemberController {
 
     private final MemberRepository memberRepository;
@@ -91,11 +91,13 @@ public class MemberController {
     }
     // 일반사용자 회원가입
     @PostMapping("/signup")
-    public Member signUp(@RequestBody Member member) throws Exception {
+    public Member signUp(Member member) throws Exception {
+        log.info("member: " + member);
         log.error("Email:[{}], Password:[{}]", member.getMemberEmail(), member.getMemberPwd());
         // 비밀번호를 암호화하여 저장
         String encryptedPassword = passwordEncoder.encode(member.getMemberPwd());
         member.setMemberPwd(encryptedPassword);
+
         // 회원 저장
         return memberRepository.save(member);
     }

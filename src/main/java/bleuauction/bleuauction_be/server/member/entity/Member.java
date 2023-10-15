@@ -30,6 +30,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.stereotype.Component;
 
@@ -39,8 +42,9 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(name = "ba_member")
 @Component
+@DynamicInsert
+@DynamicUpdate
 public class Member {
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "member_no")
@@ -81,12 +85,11 @@ public class Member {
   @Column(name = "reg_datetime")
   private Timestamp regDatetime;
 
-  @LastModifiedDate
+  @UpdateTimestamp
   @Column(name = "mdf_datetime")
   private Timestamp mdfDatetime;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "member_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
   private MemberStatus memberStatus;
 
   @JsonManagedReference

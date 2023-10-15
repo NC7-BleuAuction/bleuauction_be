@@ -1,13 +1,14 @@
-package bleuauction.bleuauction_be.server.order.entity;
+package bleuauction.bleuauction_be.server.orderMenu.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum OrderStatus {
+public enum OrderMenuStatus {
   Y("주문"),
   N("주문취소");
 
   private final String value;
 }
+

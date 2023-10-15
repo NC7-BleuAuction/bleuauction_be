@@ -1,44 +1,33 @@
 package bleuauction.bleuauction_be.server.order.entity;
 
-import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.store.entity.Store;
+import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@DynamicInsert
 @Table(name = "ba_order")
 public class Order {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long OrderNo;
+  private Long orderNo;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name ="store_no")
-  private Store storeNo;
+  @Enumerated(EnumType.STRING)
+  private OrderType orderType; // Q:퀵배송, T:포장
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name ="member_no")
-  private Member memberNo;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name ="menu_no")
-  private Menu menuNo;
-
-  //쿠폰 등록 후 추가
-  //private Coupon couponNo;
-
-  private Long orderPrice;
-
-  private Long orderCount;
+  private int orderPrice;
 
   private String orderRequest;
 
@@ -50,17 +39,24 @@ public class Order {
 
   private String recipientAddr;
 
-  private Long recipientDetailAddr;
+  private String recipientDetailAddr;
 
   @CreationTimestamp
-  private LocalDateTime orderDatetime;
+  private Timestamp regDatetime;
 
   @UpdateTimestamp
-  private LocalDateTime orderCancelDatetime;
+  private Timestamp mdfDatetime;
 
   @Enumerated(EnumType.STRING)
-  @Column(columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
   private OrderStatus orderStatus; // 상태 [Y,N]
 
+  @JsonManagedReference
+  @OneToMany(mappedBy = "orderNo")
+  private List<OrderMenu> OrderMenus= new ArrayList<>();
 
+  // 비지니스 로직
+  // 공지사항 삭제
+  public void delete(){
+    this.setOrderStatus(OrderStatus.N);
+  }
 }

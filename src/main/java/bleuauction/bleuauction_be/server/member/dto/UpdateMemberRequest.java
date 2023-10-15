@@ -1,13 +1,13 @@
 package bleuauction.bleuauction_be.server.member.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -15,40 +15,35 @@ public class UpdateMemberRequest {
 
     private Long memberNo;
 
-    @NotBlank(message = "수정할 이메일 주소를 입력해주세요.")
-    @Email(message = "올바른 이메일 주소를 입력해주세요.")
-    private String memberEmail;
-
-    @NotBlank(message = "수정할 비밀번호를 입력해주세요.")
+    @NotNull(message = "비밀번호는 필수 입력값입니다.")
     @Size(min = 4, max = 20, message = "비밀번호는 8자 이상 20자 이하로 입력해주세요.")
     private String memberPwd;
 
-    @NotBlank(message = "수정할 이름을 입력해주세요.")
+    @NotNull(message = "이름은 필수 입력값입니다.")
     @Size(min = 2, max = 10)
     private String memberName;
 
-    @NotBlank(message = "수정할 기본주소를 입력해주세요.")
+    @NotNull(message = "기본주소는 필수 입력값입니다.")
     private String memberAddr;
 
-    @NotBlank(message = "우편번호는 자동 등록됩니다.")
+    @NotNull(message = "우편번호는 필수 입력값입니다.")
     private String memberZipcode;
 
-    @NotBlank(message = "수정할 상세주소를 입력해주세요.")
+    @NotNull(message = "상세주소는 필수 입력값입니다.")
     private String memberDetailAddr;
 
-    @NotBlank(message = "수정할 휴대폰 번호를 입력해주세요.")
+    @NotNull(message = "전화번호는 필수 입력값입니다.")
     @Pattern(regexp = "(01[016789])-(\\d{3,4})-(\\d{4})", message = "올바른 휴대폰 번호를 입력해주세요.")
     private String memberPhone;
 
-    @NotBlank(message = "수정할 은형명을 입력해주세요.")
     @Size(min = 4, max = 10)
     private String memberBank;
 
-    @NotBlank(message = "수정할 계좌번호를 입력해주세요.")
     private String memberAccount;
 
-    @UpdateTimestamp
-    private LocalDateTime mdfDatetime;
+    @CreationTimestamp
+    private Timestamp mdfDatetime;
 
+    private MultipartFile profileImage;
 
 }

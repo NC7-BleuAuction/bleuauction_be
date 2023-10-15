@@ -15,14 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UpdateMemberService {
 
-private final MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
     public void updateMember(Long memberNo, UpdateMemberRequest updateMemberRequest) throws MemberNotFoundException {
         Optional<Member> optionalMember = memberRepository.findById(memberNo);
 
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
-            member.setMemberEmail(updateMemberRequest.getMemberEmail());
             member.setMemberPwd(updateMemberRequest.getMemberPwd());
             member.setMemberName(updateMemberRequest.getMemberName());
             member.setMemberAddr(updateMemberRequest.getMemberAddr());
@@ -31,7 +30,6 @@ private final MemberRepository memberRepository;
             member.setMemberPhone(updateMemberRequest.getMemberPhone());
             member.setMemberBank(updateMemberRequest.getMemberBank());
             member.setMemberAccount(updateMemberRequest.getMemberAccount());
-            member.setMdfDatetime(LocalDateTime.now());
 
             memberRepository.save(member);
         } else {

@@ -1,15 +1,20 @@
 package bleuauction.bleuauction_be.server.member.controller;
 
+
+import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;
 import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
 import bleuauction.bleuauction_be.server.member.exception.MemberNotFoundException;
 import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.member.service.UpdateMemberService;
+import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,13 +26,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -38,11 +46,16 @@ public class MemberController {
     private final MemberRepository memberRepository;
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final NcpObjectStorageService ncpObjectStorageService;
+    private final AttachService attachService;
+    private final Member member;
 
     @GetMapping("{memberNo}")
     public ResponseEntity<Object> detail(@PathVariable Long memberNo) throws Exception {
         Optional<Member> memberOptional = memberRepository.findById(memberNo);
-                if (memberOptional.isPresent()) {
+
+        if (memberOptional.isPresent()) {
+
             Member member = memberOptional.get();
             return ResponseEntity.ok().body(member);
         } else {
@@ -51,13 +64,14 @@ public class MemberController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<Member>> list () throws Exception {
+    public ResponseEntity<List<Member>> list() throws Exception {
         List<Member> members = memberRepository.findAll();
         return ResponseEntity.ok().body(members);
     }
 
     @GetMapping("/form")
-    public ResponseEntity<Map<String, String>> form(@CookieValue(required = false) String memberEmail) {
+    public ResponseEntity<Map<String, String>> form(
+            @CookieValue(required = false) String memberEmail) {
         Map<String, String> response = new HashMap<>();
         response.put("memberEmail", memberEmail);
         return ResponseEntity.ok().body(response);
@@ -118,19 +132,76 @@ public class MemberController {
         log.info("Call login");
         return ResponseEntity.ok(responseMap);
     }
+
+    // 회원정보수정
     @PutMapping("/update")
-    public ResponseEntity<String> updateMember(HttpSession session, @Valid @RequestBody UpdateMemberRequest updateMemberRequest) {
+    public ResponseEntity<String> updateMember(HttpSession session,
+            @RequestPart("updateMemberRequest") UpdateMemberRequest updateMemberRequest,
+            @RequestPart("profileImage") MultipartFile profileImage)
+            throws Exception {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
         try {
-            UpdateMemberService service = new UpdateMemberService(memberRepository);
-            service.updateMember(loginUser.getMemberNo(), updateMemberRequest);
+
+            // UpdateMemberService 클래스를 사용하여 회원 정보 업데이트
+            UpdateMemberService updateMemberService = new UpdateMemberService(memberRepository);
+            // 첨부 파일 목록 추가
+            List<Attach> attaches = new ArrayList<>();
+            if (profileImage != null) {
+                log.info("첨부 파일 이름: {}", profileImage.getOriginalFilename());
+                if (profileImage.getSize() > 0) {
+                    Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
+                            "bleuauction-bucket", "member/", profileImage);
+                    attach.setMemberNo(loginUser);
+                    attaches.add(attach);
+                }
+            }
+            // 첨부 파일 저장 및 결과를 insertAttaches에 할당
+            ArrayList<Attach> insertAttaches = (ArrayList<Attach>) attachService.addAttachs((ArrayList<Attach>) attaches);
+            // 회원 정보 업데이트
+            updateMemberService.updateMember(loginUser.getMemberNo(), updateMemberRequest);
             log.info("회원 정보가 업데이트되었습니다. 업데이트된 회원 정보: {}", updateMemberRequest);
             return ResponseEntity.ok("회원 정보가 업데이트되었습니다.");
         } catch (MemberNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원을 찾을 수 없습니다.");
+        }
+    }
+    // 회원 탈퇴
+    @PutMapping("/withdraw")
+    public ResponseEntity<String> withdrawMember(HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        try {
+            // 회원 상태를 'N'으로 변경하여 탈퇴 처리
+            loginUser.setMemberStatus(MemberStatus.N);
+            memberRepository.save(loginUser);
+
+            // 세션을 무효화하여 로그아웃 처리
+            session.invalidate();
+
+            log.info("회원이 성공적으로 탈퇴되었습니다. 회원번호: {}", loginUser.getMemberNo());
+            return ResponseEntity.ok("회원이 성공적으로 탈퇴되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("회원 탈퇴 중 오류가 발생했습니다.");
+        }
+    }
+    // 회원 프로필 삭제
+    @DeleteMapping("/delete/profileImage/{fileNo}")
+    public ResponseEntity<String> deleteProfileImage(@PathVariable Long fileNo) {
+        Attach attach = attachService.getProfileImageByFileNo(fileNo);
+        if (attach == null) {
+            return new ResponseEntity<>("첨부파일을 찾을 수 없습니다", HttpStatus.NOT_FOUND);
+        }
+        boolean isDeleted = attachService.deleteProfileImage(attach);
+        if (isDeleted) {
+            return new ResponseEntity<>("첨부파일이 성공적으로 삭제되었습니다", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("첨부파일 삭제에 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

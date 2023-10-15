@@ -57,7 +57,7 @@ public class Attach {
     private Notice noticeNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "storerNo")
+    @JoinColumn(name = "storeNo")
     private Store storeNo;
 
     @NotNull

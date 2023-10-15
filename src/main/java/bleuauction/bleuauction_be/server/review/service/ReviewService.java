@@ -32,7 +32,7 @@ public class ReviewService {
     List<Review> exitingReviewList = reviewRepository.findAllByReviewStatus(storeNo, reviewStatus, pageable);
     for (int i = 0; i < exitingReviewList.size(); i++) {
       List<Attach> exitingAttachList = attachRepository.findAllByReviewAndFileStatus(exitingReviewList.get(i), FileStatus.Y);
-      exitingReviewList.get(i).setReivewAttaches(exitingAttachList);
+      exitingReviewList.get(i).setReviewAttaches(exitingAttachList);
     }
     return exitingReviewList;
   }

@@ -40,7 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/member")
+
 public class MemberController {
 
     private final MemberRepository memberRepository;
@@ -100,11 +100,11 @@ public class MemberController {
         return memberRepository.save(member);
     }
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> loginRequest,
+    public ResponseEntity<Map<String, Object>> login(Member member,
             HttpSession session,
             HttpServletResponse response) throws Exception {
-        String memberEmail = loginRequest.get("memberEmail");
-        String memberPwd = loginRequest.get("memberPwd");
+        String memberEmail = member.getMemberEmail();
+        String memberPwd = member.getMemberPwd();
         Map<String, Object> responseMap = new HashMap<>();
 
         if (memberEmail != null && !memberEmail.isEmpty()) {  // null 또는 비어 있는지 확인

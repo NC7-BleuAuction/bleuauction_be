@@ -1,6 +1,8 @@
 package bleuauction.bleuauction_be.server.review.entity;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.member.entity.Member;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -33,7 +35,11 @@ public class Review {
 
   private Long storeNo;
 
-  private Long memberNo;
+  @JsonBackReference
+  @JsonManagedReference
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name ="member_no")
+  private Member member;
 
   private String reviewContent;
 
@@ -49,6 +55,7 @@ public class Review {
   private ReviewStatus reviewStatus;
 
   @JsonManagedReference
-  @OneToMany(mappedBy = "review", cascade=CascadeType.ALL)
-  private List<Attach> reivewAttaches;
+  @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private List<Attach> reviewAttaches;
+
 }

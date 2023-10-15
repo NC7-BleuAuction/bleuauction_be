@@ -15,11 +15,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-  @Query("SELECT a FROM Review a " +
-          "WHERE a.storeNo = :storeNo " +
-          "AND a.reviewStatus = :reviewStatus " +
-          "ORDER BY a.regDatetime DESC")
-  List<Review> findAllByReviewStatus(
+  @Query("SELECT DISTINCT r " +
+          "FROM Review r " +
+          "JOIN FETCH r.member m " +
+          "WHERE r.storeNo = :storeNo " +
+          "AND r.reviewStatus = :reviewStatus " +
+          "ORDER BY r.regDatetime DESC")
+  List<Review> findAllReviewsWithMembersByReviewStatus(
           @Param("storeNo") Long storeNo,
           @Param("reviewStatus") ReviewStatus reviewStatus,
           Pageable pageable

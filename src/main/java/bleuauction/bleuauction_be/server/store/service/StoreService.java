@@ -21,17 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class StoreService {
 
-    @Autowired
-    private StoreRepository storeRepository;
-    @Autowired
-    private MemberRepository memberRepository;
+    private final StoreRepository storeRepository;
+    private final MemberRepository memberRepository;
 
     public List<Store> selectStoreList() {
         return storeRepository.findAll();
-    }
-
-    public Optional<Store> selectStore(Long storeNo) {
-        return storeRepository.findBystoreNo(storeNo);
     }
 
     // 가게등록
@@ -67,4 +61,7 @@ public class StoreService {
         storeRepository.deleteById(storeNo);
     }
 
+    public Optional<Store> selectStore(Long storeNo) {
+        return storeRepository.findById(storeNo);
+    }
 }

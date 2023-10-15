@@ -145,7 +145,7 @@ CREATE TABLE `ba_notice` (
                              `member_no`	BIGINT	NOT NULL	,
                              `notice_title`	VARCHAR(255)	NOT NULL,
                              `notice_content`	VARCHAR(255)	NOT NULL,
-                             `reg_datetiem`	DATETIME	NULL	DEFAULT NOW(),
+                             `reg_datetime`	DATETIME	NULL	DEFAULT NOW(),
                              `mdf_datetime`	DATETIME	NULL	DEFAULT NOW(),
                              `notice_status`	VARCHAR(1)	NULL	DEFAULT 'Y'
 );

@@ -9,8 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
-  List<Store> findAll();
-
   Optional<Store> findBystoreNo(Long storeNo);
   Optional<Store> findBystoreName(String storeName);
 }

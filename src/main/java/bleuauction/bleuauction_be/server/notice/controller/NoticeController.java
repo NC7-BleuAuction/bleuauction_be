@@ -45,7 +45,7 @@ public class NoticeController {
   @Transactional
   public ResponseEntity<String>  notice(Notice notice, @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
     Member member =entityManager.find(Member.class, 1L);
-    notice.setMemberNo(member);
+//    notice.setMemberNo(member);
 
     if (multipartFiles != null && multipartFiles.size() > 0) {
       ArrayList<Attach> attaches = new ArrayList<>();

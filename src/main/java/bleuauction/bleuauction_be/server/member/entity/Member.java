@@ -92,8 +92,9 @@ public class Member {
   @OneToMany(mappedBy = "memberNo")
   private List<OrderMenu> OrderMenus= new ArrayList<>();
 
-    @OneToMany(mappedBy = "memberNo", cascade = CascadeType.ALL)
-    private List<Attach> memberAttaches = new ArrayList<>();
+  @JsonManagedReference
+  @OneToMany(mappedBy = "memberNo", cascade = CascadeType.ALL)
+  private List<Attach> memberAttaches = new ArrayList<>();
 
     public void addAttaches(Attach attach) {
         memberAttaches.add(attach);

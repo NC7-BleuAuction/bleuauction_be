@@ -2,9 +2,11 @@ package bleuauction.bleuauction_be.server.attach.entity;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.item.entity.Item;
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.review.entity.Review;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -34,10 +36,10 @@ public class Attach {
     @JoinColumn(name = "menuNo")
     private Menu menuNo;
 
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "memberNo")
-    private Member memberNo;
+  @JsonBackReference
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "memberNo")
+  private Member memberNo;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
@@ -55,7 +57,7 @@ public class Attach {
     private Notice noticeNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "storerNo")
+    @JoinColumn(name = "storeNo")
     private Store storeNo;
 
     @NotNull

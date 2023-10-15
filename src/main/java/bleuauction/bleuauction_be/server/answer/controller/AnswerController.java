@@ -6,6 +6,7 @@ import bleuauction.bleuauction_be.server.answer.service.AnswerService;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,18 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Controller
+@RestController
+@RequiredArgsConstructor
 public class AnswerController {
 
   final int PAGE_ROW_COUNT = 2;
 
-  @Autowired
-  AnswerService answerService;
+  private final AnswerService answerService;
 
-  @GetMapping("/answer/list/sendAxios")
-  @ResponseBody
-  public List<Answer> listSendAxios(@RequestParam("reviewNo") Long reviewNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception {
-    log.info("url ===========> /answer/list/sendAxios");
+  @GetMapping("/api/answer/list")
+  public List<Answer> answerList(@RequestParam("reviewNo") Long reviewNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception {
+    log.info("url ===========> /api/answer/list");
     log.info("reivewNo: " + reviewNo);
     log.info("startRow: " + startPage);
     List<Answer> answerList = answerService.selectAnswerList(reviewNo, AnswerStatus.Y, startPage, PAGE_ROW_COUNT);
@@ -36,10 +36,9 @@ public class AnswerController {
     return answerList;
   }
 
-  @PostMapping("/answer/add/sendAxios")
-  @ResponseBody
-  public Answer addSendAxios(Answer answer) throws Exception {
-    log.info("url ===========> /answer/add/sendAxios");
+  @PostMapping("/api/answer/add")
+  public Answer answerAdd(Answer answer) throws Exception {
+    log.info("url ===========> /api/answer/add");
     log.info("Answer: " + answer);
 
     answer.setMemberNo(1L); // 로그인 구현되면 Session에서 받아오도록 수정요망!
@@ -48,20 +47,18 @@ public class AnswerController {
     return insertAnswer;
   }
 
-  @ResponseBody
-  @PostMapping("/answer/update/sendAxios")
-  public Answer updateSendAxios(Answer answer) throws Exception {
-    log.info("url ===========> /answer/update/sendAxios");
+  @PostMapping("/api/answer/update")
+  public Answer answerUpdate(Answer answer) throws Exception {
+    log.info("url ===========> /api/answer/update");
     log.info("Answer: " + answer);
     Answer updateAnswer = answerService.updateAnswer(answer);
     return updateAnswer;
   }
 
 
-  @ResponseBody
-  @GetMapping("/answer/delete/sendAxios")
-  public Answer deleteSendAxios(@RequestParam("answerNo") Long answerNo) throws Exception {
-    log.info("url ===========> /delete/sendAxios");
+  @GetMapping("/api/answer/delete")
+  public Answer answerDelete(@RequestParam("answerNo") Long answerNo) throws Exception {
+    log.info("url ===========> /api/answer/delete");
     log.info("answerNo: " + answerNo);
     Answer deleteAnswer = answerService.deleteAnswer(answerNo);
     return deleteAnswer;

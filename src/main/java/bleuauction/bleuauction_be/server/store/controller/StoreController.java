@@ -21,6 +21,7 @@ import bleuauction.bleuauction_be.server.store.service.UpdateStoreService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,60 +56,19 @@ public class StoreController {
     @Autowired
     AttachService attachService;
 
-    @GetMapping("/list")
-    public String list(Model model) {
-        log.info("/store/list");
-
-        List<Store> storeList = storeService.selectStoreList();
-        log.info("storeList: " + storeList);
-
-        if (storeList != null && storeList.size() > 0) {
-            List<Store> storeSubList = storeList.subList(0,
-                    storeList.size() >= 2 ? 2 : storeList.size());
-            log.info("storeSubList: " + storeSubList);
-
-            model.addAttribute("storeListSize", storeList.size());
-            model.addAttribute("storeSubList", storeSubList);
-        }
-
-//        return "/store/list GET 요청 Test: " + storeList;
-        return "testStoreList";
-    }
-
-  @ResponseBody
-  @GetMapping("/list/axios")
-  public List<Store> listAxios(@RequestParam(name = "storeLength", defaultValue = "0") int storeLength) {
-    log.info("/store/list/axios");
+  @GetMapping("/list")
+  public ResponseEntity<?> storeList(@RequestParam(name = "storeLength", defaultValue = "0") int storeLength) {
+    log.info("url ===========> /store/list");
     log.info("storeLength: " + storeLength);
 
-    List<Store> storeList = storeService.selectStoreList();
-    log.info("storeList: " + storeList);
-    log.info("storeList.size(): " + storeList.size());
-
-    List<Store> storeSubList = null;
-    if (storeLength > storeList.size()) {
-      storeSubList = storeList.subList(storeLength - 2, storeList.size());
-    } else {
-      storeSubList = storeList.subList(storeLength - 2, storeLength);
+    try {
+      List<Store> storeList = storeService.selectStoreList();
+      log.info("storeList: " + storeList);
+      return ResponseEntity.ok(storeList);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
     }
-
-    log.info("storeSubList: " + storeSubList);
-
-    return storeSubList;
   }
-
-    @GetMapping("/detail")
-    public String detail(Model model,
-            @RequestParam(name = "storeNo", defaultValue = "1") Long storeNo) {
-        log.info("/store/detail");
-        Optional<Store> store = storeService.selectStore(storeNo);
-        log.info("storeNo가 " + storeNo + "인 가게" + store);
-
-        if (store.isPresent()) {
-            model.addAttribute("store", store);
-        }
-        return "testStoreDetail";
-    }
 
     // 가게 등록
     @PostMapping("/signup")

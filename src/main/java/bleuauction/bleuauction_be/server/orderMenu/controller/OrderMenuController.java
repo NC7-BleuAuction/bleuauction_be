@@ -43,7 +43,7 @@ public class OrderMenuController {
     return ResponseEntity.status(HttpStatus.CREATED).body("OrderMenu created successfully");
   }
 
-  //주문메뉴 조회
+  //주문 번호별 주문메뉴 조회
   @GetMapping("/api/ordermenu/{orderNo}")
   public List<OrderMenu> findOM(@PathVariable("orderNo") Long orderNo) throws Exception {
     //세션에 orderNo 담고 찾기 ++

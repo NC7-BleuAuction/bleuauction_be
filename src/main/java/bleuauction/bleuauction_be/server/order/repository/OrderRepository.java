@@ -27,4 +27,14 @@ public class OrderRepository {
             .getResultList();
     return result;
   }
+
+  public List<Order> findOrderbyMemberNo(Long memberNo) {
+    return em.createQuery("SELECT o\n" +
+            "FROM Order o\n" +
+            "WHERE o.orderNo IN (\n" +
+            "    SELECT om.orderNo\n" +
+            "    FROM OrderMenu om\n" +
+            "    WHERE om.memberNo = :memberNo\n" +
+            ")").getResultList();
+  }
 }

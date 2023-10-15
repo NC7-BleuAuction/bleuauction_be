@@ -1,8 +1,11 @@
 package bleuauction.bleuauction_be.server.order.controller;
 
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
+import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,7 @@ public class OrderController {
 
   private final NcpObjectStorageService ncpObjectStorageService;
   private final OrderService orderService;
+  private final OrderRepository orderRepository;
 
   //등록
   @GetMapping("/api/order/new")
@@ -39,15 +43,16 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.CREATED).body("Menu created successfully");
   }
 
-  //주문 조회
-  @GetMapping("/api/order")
-  public List<Order> findorders() throws Exception {
-    try {
-      List<Order> orders = orderService.findOrders();
-      return orders;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ArrayList<>();
+  // 회원별 주문 조회
+  @GetMapping("/api/order/{memberNo}")
+  public ResponseEntity<?> findOrders(HttpSession session) {
+    Member loginUser = (Member) session.getAttribute("loginUser");
+    List<Order> orders = orderRepository.findOrderbyMemberNo(loginUser.getMemberNo());
+
+    if (orders.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문이 없습니다.");
+    } else {
+      return ResponseEntity.ok(orders);
     }
   }
 

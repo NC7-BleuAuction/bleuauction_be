@@ -3,6 +3,8 @@ package bleuauction.bleuauction_be.server.orderMenu.entity;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.order.entity.Order;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,14 +25,17 @@ public class OrderMenu {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long orderMenuNo;
 
+  @JsonBackReference
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name ="memberNo")
   private Member memberNo;
 
+  @JsonBackReference
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name ="menuNo")
   private Menu menuNo;
 
+  @JsonBackReference
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name ="orderNo")
   private Order orderNo;

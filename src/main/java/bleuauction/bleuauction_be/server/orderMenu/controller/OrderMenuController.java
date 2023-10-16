@@ -1,10 +1,12 @@
 package bleuauction.bleuauction_be.server.orderMenu.controller;
 
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
 import bleuauction.bleuauction_be.server.orderMenu.service.OrderMenuService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,19 +38,29 @@ public class OrderMenuController {
     return orderMenu;
   }
 
+  //프론트 페이지 만들어지면 확인 가능
   @PostMapping("/api/ordermenu/new")
   @Transactional
-  public ResponseEntity<String> orderMenu(OrderMenu orderMenu) {
+  public ResponseEntity<String> orderMenu(OrderMenu orderMenu, HttpSession session) {
+    //로그인유저의 멤버번호
+    Member member = (Member) session.getAttribute("loginUser");
+    orderMenu.setMemberNo(member);
+    //오더 세션의 오더
+    Order order = (Order) session.getAttribute("order");
+    orderMenu.setOrderNo(order);
+    //메뉴는 뭘로 하지?
+    //orderMenu.setMenuNo(Menu);
+
     orderMenuService.enroll(orderMenu);
     log.info("ordermenu/postnew");
     return ResponseEntity.status(HttpStatus.CREATED).body("OrderMenu created successfully");
   }
 
   //주문 번호별 주문메뉴 조회
-  @GetMapping("/api/ordermenu/{orderNo}")
-  public List<OrderMenu> findOM(@PathVariable("orderNo") Long orderNo) throws Exception {
-    //세션에 orderNo 담고 찾기 ++
-    Order order = orderService.findOne(orderNo);
+  @GetMapping("/api/ordermenu")
+  public List<OrderMenu> findOM(HttpSession session) throws Exception {
+    Order order = (Order) session.getAttribute("order");
+
     try {
       List<OrderMenu> orderMenus = orderMenuService.findOrderMenusByOrderNo(order.getOrderNo());
       return orderMenus;

@@ -51,12 +51,16 @@ public class Order {
   private OrderStatus orderStatus; // 상태 [Y,N]
 
   @JsonManagedReference
-  @OneToMany(mappedBy = "orderNo")
+  @OneToMany(mappedBy = "orderNo", cascade = CascadeType.ALL)
   private List<OrderMenu> OrderMenus= new ArrayList<>();
 
   // 비지니스 로직
   // 공지사항 삭제
   public void delete(){
     this.setOrderStatus(OrderStatus.N);
+
+    for (OrderMenu orderMenu : this.getOrderMenus()) {
+      orderMenu.delete(); // 주문 메뉴 상태 변경
+    }
   }
 }

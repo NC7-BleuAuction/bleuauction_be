@@ -35,10 +35,13 @@ public class OrderMenu {
   @JoinColumn(name ="menuNo")
   private Menu menuNo;
 
+
   @JsonBackReference
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name ="orderNo")
   private Order orderNo;
+
+
 
   private int orderMenuCount;
 
@@ -55,5 +58,7 @@ public class OrderMenu {
   // 공지사항 삭제
   public void delete(){
     this.setOrderMenuStatus(OrderMenuStatus.N);
+
+
   }
 }

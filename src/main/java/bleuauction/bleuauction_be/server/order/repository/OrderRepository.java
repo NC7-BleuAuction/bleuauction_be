@@ -2,6 +2,7 @@ package bleuauction.bleuauction_be.server.order.repository;
 
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import jakarta.persistence.EntityManager;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +18,6 @@ public class OrderRepository {
     em.persist(order);
     return order;
   }
-
   public Order findOne(Long orderNo) {
     return em.find(Order.class, orderNo);
   }

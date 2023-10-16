@@ -1,8 +1,12 @@
 package bleuauction.bleuauction_be.server.order.controller;
 
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
+import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
+import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -23,6 +26,8 @@ public class OrderController {
 
   private final NcpObjectStorageService ncpObjectStorageService;
   private final OrderService orderService;
+  private final OrderRepository orderRepository;
+  private final EntityManager entityManager;
 
   //등록
   @GetMapping("/api/order/new")
@@ -39,19 +44,25 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.CREATED).body("Menu created successfully");
   }
 
-  //주문 조회
+  // 회원별 주문 조회
   @GetMapping("/api/order")
-  public List<Order> findorders() throws Exception {
-    try {
-      List<Order> orders = orderService.findOrders();
-      return orders;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ArrayList<>();
+  public ResponseEntity<?> findOrders(HttpSession session) {
+    Member loginUser = (Member) session.getAttribute("loginUser");
+
+    if (loginUser == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인한 사용자가 아닙니다.");
+    }
+
+    List<Order> orders = orderRepository.findByOrderMenusMemberMemberNo(loginUser);
+
+    if (orders.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문이 없습니다.");
+    } else {
+      return ResponseEntity.ok(orders);
     }
   }
 
-  // 삭제
+  // 삭제--오더메뉴도 같이
   @PostMapping("api/order/delete/{orderNo}")
   public ResponseEntity<String> deleteOrder(@PathVariable("orderNo") Long orderNo) {
     Order order = orderService.findOne(orderNo);
@@ -64,8 +75,9 @@ public class OrderController {
 
   //디테일(수정)
   @GetMapping("/api/order/detail/{orderNo}")
-  public ResponseEntity<Order> detailOrder(@PathVariable("orderNo") Long orderNo) {
+  public ResponseEntity<Order> detailOrder(HttpSession session, @PathVariable("orderNo") Long orderNo) {
     Order order = orderService.findOne(orderNo);
+    session.setAttribute("order", order);
     return ResponseEntity.ok(order);
   }
 

@@ -56,6 +56,7 @@ public class Attach {
     @JoinColumn(name = "noticeNo")
     private Notice noticeNo;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "storeNo")
     private Store storeNo;

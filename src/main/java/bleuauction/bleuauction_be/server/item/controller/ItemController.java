@@ -130,7 +130,6 @@ public class ItemController {
         }
       }
     }
-
     if (updatedItem!= null) {
       itemService.update(item);
       log.info("item/update");

@@ -31,6 +31,7 @@ public class OrderMenuController {
   //등록
   @GetMapping("/api/ordermenu/new")
   public OrderMenu orderMenu() {
+//    log.info("orderList: " + orderList );
     OrderMenu orderMenu = new OrderMenu();
     return orderMenu;
   }

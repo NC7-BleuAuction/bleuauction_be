@@ -112,4 +112,3 @@ public class Member {
     attach.setMemberNo(this);
   }
 }
-

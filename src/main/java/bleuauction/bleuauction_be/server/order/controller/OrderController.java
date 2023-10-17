@@ -36,12 +36,13 @@ public class OrderController {
     return order;
   }
 
-  @PostMapping("/api/order/new")
   @Transactional
-  public ResponseEntity<String> order(Order order) {
+  @PostMapping("/api/order/new")
+  public ResponseEntity<String> order(Order order, HttpSession session) {
     orderService.enroll(order);
+    session.setAttribute("order", order);
     log.info("order/postnew");
-    return ResponseEntity.status(HttpStatus.CREATED).body("Menu created successfully");
+    return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully");
   }
 
   // 회원별 주문 조회

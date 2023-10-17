@@ -28,7 +28,6 @@ public class PayController {
     private final String restApiKey;
     private final String restApiSecret;
 
-
     public PayController(
             @Value("${iamport.key}") String restApiKey,
             @Value("${iamport.secret}") String restApiSecret) {
@@ -54,7 +53,4 @@ public class PayController {
             return ResponseEntity.notFound().build();
         }
     }
-
-
-
 }

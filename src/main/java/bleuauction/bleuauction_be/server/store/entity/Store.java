@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.DynamicInsert;
 import org.jetbrains.annotations.NotNull;
 
 @Entity
@@ -36,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 @Setter
 @Slf4j
 @Builder
+@DynamicInsert
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "ba_store")
@@ -46,9 +48,13 @@ public class Store {
   @Column(name = "store_no")
   private Long storeNo;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "member_no")
+  @OneToOne
+  @JoinColumn(name = "member_no", referencedColumnName = "memberNo")
   private Member memberNo;
+
+  public void setMember(Member member) {
+    this.memberNo = member;
+  }
 
   @NotNull
   private String marketName; // (수산)시장명

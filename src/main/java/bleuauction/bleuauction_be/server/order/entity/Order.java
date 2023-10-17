@@ -1,10 +1,12 @@
 package bleuauction.bleuauction_be.server.order.entity;
 
+import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -51,12 +53,30 @@ public class Order {
   private OrderStatus orderStatus; // 상태 [Y,N]
 
   @JsonManagedReference
-  @OneToMany(mappedBy = "orderNo")
+  @OneToMany(mappedBy = "orderNo", cascade = CascadeType.ALL)
   private List<OrderMenu> OrderMenus= new ArrayList<>();
+
+  public int calculateOrderPrice() {
+    int totalPrice = 0;
+
+    for (OrderMenu orderMenu : OrderMenus) {
+      Menu menu = orderMenu.getMenuNo();
+      if (menu != null) {
+        totalPrice += menu.getMenuPrice();
+      }
+    }
+
+    return totalPrice;
+  }
+
 
   // 비지니스 로직
   // 공지사항 삭제
   public void delete(){
     this.setOrderStatus(OrderStatus.N);
+
+    for (OrderMenu orderMenu : this.getOrderMenus()) {
+      orderMenu.delete(); // 주문 메뉴 상태 변경
+    }
   }
 }

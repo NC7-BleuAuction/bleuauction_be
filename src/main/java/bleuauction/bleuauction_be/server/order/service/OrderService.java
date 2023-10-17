@@ -34,6 +34,7 @@ public class OrderService {
     return orderRepository.findOne(orderNo);
   }
 
+
   //메뉴 삭제(N)
   public void deleteOrder(Long orderNo) {
     Order order = orderRepository.findOne(orderNo);
@@ -46,7 +47,7 @@ public class OrderService {
     Order updateorder = orderRepository.findOne(order.getOrderNo());
 
     updateorder.setOrderType(order.getOrderType());
-    updateorder.setOrderPrice(order.getOrderPrice());
+    //updateorder.setOrderPrice(order.getOrderPrice());
     updateorder.setOrderRequest(order.getOrderRequest());
     updateorder.setRecipientPhone(order.getRecipientPhone());
     updateorder.setRecipientName(order.getRecipientName());

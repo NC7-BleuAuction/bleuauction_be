@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.store.entity;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
@@ -10,10 +11,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -42,8 +46,9 @@ public class Store {
   @Column(name = "store_no")
   private Long storeNo;
 
-  @Column(name = "member_no")
-  private Long memberNo;
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_no")
+  private Member memberNo;
 
   @NotNull
   private String marketName; // (수산)시장명

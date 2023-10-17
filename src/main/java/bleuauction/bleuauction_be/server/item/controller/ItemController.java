@@ -5,8 +5,10 @@ import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.item.service.ItemService;
 import bleuauction.bleuauction_be.server.item.web.ItemForm;
 import bleuauction.bleuauction_be.server.item.entity.Item;
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static bleuauction.bleuauction_be.server.member.entity.MemberCategory.A;
 
 @Slf4j
 @RestController
@@ -40,24 +44,32 @@ public class ItemController {
   //등록 처리
   @PostMapping("/api/item/new")
   @Transactional
-  public ResponseEntity<String> item(Item item,  @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
+  public ResponseEntity<String> item(HttpSession session, Item item, @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
 
-    if (multipartFiles != null && multipartFiles.size() > 0) {
-      ArrayList<Attach> attaches = new ArrayList<>();
-      for (MultipartFile multipartFile : multipartFiles) {
-        if (multipartFile.getSize() > 0) {
-          Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
-                  "bleuauction-bucket", "item/", multipartFile);
-          item.addItemAttach(attach);
+    Member loginUser = (Member) session.getAttribute("loginUser");
+
+    if(loginUser.getMemberCategory() == A) {
+      item.setMemberNo(loginUser);
+
+      if (multipartFiles != null && multipartFiles.size() > 0) {
+        ArrayList<Attach> attaches = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+          if (multipartFile.getSize() > 0) {
+            Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
+                    "bleuauction-bucket", "item/", multipartFile);
+            item.addItemAttach(attach);
+          }
         }
       }
+
+      item = entityManager.merge(item);
+      itemService.enroll(item);
+
+      log.info("item/postnew");
+      return ResponseEntity.status(HttpStatus.CREATED).body("Item created successfully");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
     }
-
-    item = entityManager.merge(item);
-    itemService.enroll(item);
-
-    log.info("item/postnew");
-    return ResponseEntity.status(HttpStatus.CREATED).body("Item created successfully");
   }
 
   //품목조회
@@ -74,9 +86,12 @@ public class ItemController {
 
   //삭제
   @PostMapping("/api/item/delete/{itemNo}")
-  public ResponseEntity<String> deleteItem(@PathVariable("itemNo") Long itemNo) {
+  public ResponseEntity<String> deleteItem(HttpSession session, @PathVariable("itemNo") Long itemNo) {
     Item item = itemService.findOne(itemNo);
 
+    Member loginUser = (Member) session.getAttribute("loginUser");
+
+    if(loginUser.getMemberCategory() == A) {
     // 사진 상태를 'N'으로 변경
     if (item != null) {
       if (item.getItemAttaches() != null && !item.getItemAttaches().isEmpty()) {
@@ -90,13 +105,22 @@ public class ItemController {
     } else {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item not found");
     }
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
+    }
   }
 
   //사진삭제
   @DeleteMapping("/api/item/deletefile/{fileNo}")
-  public ResponseEntity<String> fileItemDelete(@PathVariable Long fileNo) {
-    attachService.update(fileNo);
-    return ResponseEntity.ok("File deleted successfully");
+  public ResponseEntity<String> fileItemDelete(HttpSession session, @PathVariable Long fileNo) {
+    Member loginUser = (Member) session.getAttribute("loginUser");
+
+    if(loginUser.getMemberCategory() == A) {
+      attachService.update(fileNo);
+      return ResponseEntity.ok("File deleted successfully");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
+    }
   }
 
   //디테일(수정)
@@ -104,39 +128,48 @@ public class ItemController {
   public ResponseEntity<Item> detailItem(@PathVariable("itemNo") Long itemNo) {
     Item item = itemService.findOne(itemNo);
 
-    if (item != null) {
-      item.setItemAttaches((item.getItemAttaches()));
-      return ResponseEntity.ok(item);
-    } else {
-      return ResponseEntity.notFound().build();
-    }
+      if (item != null) {
+        item.setItemAttaches((item.getItemAttaches()));
+        return ResponseEntity.ok(item);
+      } else {
+        return ResponseEntity.notFound().build();
+      }
+
   }
 
   //수정 처리
   @PostMapping("/api/item/update/{itemNo}")
-  public ResponseEntity<String> updateItem(Item item,
+  public ResponseEntity<String> updateItem(HttpSession session, Item item,
           @PathVariable("itemNo") Long itemNo,
           @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles
   ) {
     Item updatedItem = itemService.findOne(itemNo);
 
-    if (multipartFiles != null && multipartFiles.size() > 0) {
-      ArrayList<Attach> attaches = new ArrayList<>();
-      for (MultipartFile multipartFile : multipartFiles) {
-        if (multipartFile.getSize() > 0) {
-          Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
-                  "bleuauction-bucket", "item/", multipartFile);
-          updatedItem.addItemAttach(attach);
+    Member loginUser = (Member) session.getAttribute("loginUser");
+
+    if(loginUser.getMemberCategory() == A) {
+
+      if (multipartFiles != null && multipartFiles.size() > 0) {
+        ArrayList<Attach> attaches = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+          if (multipartFile.getSize() > 0) {
+            Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
+                    "bleuauction-bucket", "item/", multipartFile);
+            updatedItem.addItemAttach(attach);
+          }
         }
       }
-    }
-    if (updatedItem!= null) {
-      itemService.update(item);
-      log.info("item/update");
-      return ResponseEntity.ok("Item updated successfully");
+      if (updatedItem != null) {
+        itemService.update(item);
+        log.info("item/update");
+        return ResponseEntity.ok("Item updated successfully");
+      } else {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item not found or update failed");
+      }
     } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item not found or update failed");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
     }
+
   }
 
 }

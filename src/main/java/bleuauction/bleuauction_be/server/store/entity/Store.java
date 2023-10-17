@@ -46,7 +46,7 @@ public class Store {
   @Column(name = "store_no")
   private Long storeNo;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "member_no")
   private Member memberNo;
 

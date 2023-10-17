@@ -1,6 +1,9 @@
 package bleuauction.bleuauction_be.server.answer.entity;
 
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +30,10 @@ public class Answer {
 
   private Long reviewNo;
 
-  private Long memberNo;
+
+  @OneToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name ="member_no")
+  private Member member;
 
   private String answerContent;
 

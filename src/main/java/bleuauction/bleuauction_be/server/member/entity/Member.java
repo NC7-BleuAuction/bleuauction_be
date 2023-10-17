@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.member.entity;
 
 
+import bleuauction.bleuauction_be.server.answer.entity.Answer;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.review.entity.Review;

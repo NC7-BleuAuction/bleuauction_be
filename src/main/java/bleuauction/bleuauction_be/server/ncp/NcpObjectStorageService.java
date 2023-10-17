@@ -48,7 +48,8 @@ public class NcpObjectStorageService {
       objectMetadata.setContentType(part.getContentType());
 
       // Amazon S3에 파일 업로드
-      s3.putObject(bucketName, dirPath + saveFileName, part.getInputStream(), objectMetadata);
+      s3.putObject(new PutObjectRequest(bucketName, dirPath + saveFileName, part.getInputStream(), objectMetadata)
+              .withCannedAcl(CannedAccessControlList.PublicRead));
 
       return attach;
     } catch (IOException e) {

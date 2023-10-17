@@ -6,6 +6,8 @@ import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
 
+import bleuauction.bleuauction_be.server.util.CustomTimeDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotEmpty;
 import java.sql.Time;
 
@@ -39,12 +41,16 @@ public class StoreSignUpRequest {
     @NotEmpty(message = "우편번호가 입력되지 않았습니다.")
     private String storeZipcode;
 
+    @JsonDeserialize(using = CustomTimeDeserializer.class)
     private Time weekdayStartTime;
 
+    @JsonDeserialize(using = CustomTimeDeserializer.class)
     private Time weekdayEndTime;
 
+    @JsonDeserialize(using = CustomTimeDeserializer.class)
     private Time weekendStartTime;
 
+    @JsonDeserialize(using = CustomTimeDeserializer.class)
     private Time weekendEndTime;
 
     public Store getStoreEntity(Member signUpMemberEntity) {

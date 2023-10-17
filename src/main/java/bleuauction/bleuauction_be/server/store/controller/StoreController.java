@@ -128,7 +128,7 @@ public class StoreController {
         }
         Store store = storeOptional.get();  // Store 객체 가져오기
 
-        if (store.getMemberNo() == loginUser.getMemberNo()) {
+        if (store.getMemberNo() == loginUser) {
 
             // 가게 상태를 'N'으로 변경하여 탈퇴 처리
             store.setStoreStatus(StoreStatus.N);

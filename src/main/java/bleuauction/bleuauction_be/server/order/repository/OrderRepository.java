@@ -17,6 +17,8 @@ public class OrderRepository {
   private final EntityManager em;
 
   public Order save(Order order) {
+    // calculate the order price
+    order.setOrderPrice(order.calculateOrderPrice());
     em.persist(order);
     return order;
   }

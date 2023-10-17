@@ -8,6 +8,7 @@ import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.service.NoticeService;
 import bleuauction.bleuauction_be.server.notice.web.NoticeForm;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static bleuauction.bleuauction_be.server.member.entity.MemberCategory.A;
 
 @Slf4j
 @RestController
@@ -40,12 +43,14 @@ public class NoticeController {
   }
 
 
-  // 등록 처리
+  // 등록 처리(관리자 회원)
   @PostMapping("/api/notice/new")
   @Transactional
-  public ResponseEntity<String>  notice(Notice notice, @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
-    Member member =entityManager.find(Member.class, 1L);
-//    notice.setMemberNo(member);
+  public ResponseEntity<String>  notice(HttpSession session, Notice notice, @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
+    Member loginUser = (Member) session.getAttribute("loginUser");
+
+    if(loginUser.getMemberCategory() == A) {
+    notice.setMemberNo(loginUser);
 
     if (multipartFiles != null && multipartFiles.size() > 0) {
       ArrayList<Attach> attaches = new ArrayList<>();
@@ -63,7 +68,10 @@ public class NoticeController {
 
     log.info("notice/postnew");
 
-    return ResponseEntity.status(HttpStatus.CREATED).body("Notice created successfully");
+    return ResponseEntity.status(HttpStatus.CREATED).body("Notice created successfully");}
+    else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
+    }
   }
 
 
@@ -83,30 +91,41 @@ public class NoticeController {
 
 // 삭제
   @PostMapping("/api/notice/delete/{noticeNo}")
-  public ResponseEntity<String> deleteNotice(@PathVariable("noticeNo") Long noticeNo) {
+  public ResponseEntity<String> deleteNotice(HttpSession session, @PathVariable("noticeNo") Long noticeNo) {
     Notice notice = noticeService.findOne(noticeNo);
 
-    // 사진 상태를 'N'으로 변경
-    if (notice != null) {
-      if (notice.getNoticeAttaches() != null && !notice.getNoticeAttaches().isEmpty()) {
-        for (Attach attach : notice.getNoticeAttaches()) {
-          attachService.update(attach.getFileNo());
+    Member loginUser = (Member) session.getAttribute("loginUser");
+    if(loginUser.getMemberCategory() == A) {
+
+      // 사진 상태를 'N'으로 변경
+      if (notice != null) {
+        if (notice.getNoticeAttaches() != null && !notice.getNoticeAttaches().isEmpty()) {
+          for (Attach attach : notice.getNoticeAttaches()) {
+            attachService.update(attach.getFileNo());
+          }
         }
+
+        noticeService.deleteNotice(noticeNo);
+        return ResponseEntity.ok("Notice deleted successfully");
+      } else {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notice not found");
+
       }
-
-      noticeService.deleteNotice(noticeNo);
-      return ResponseEntity.ok("Notice deleted successfully");
     } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notice not found");
-
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
     }
   }
 
   //사진삭제
   @DeleteMapping("/api/notice/deletefile/{fileNo}")
-  public ResponseEntity<String> fileNoticeDelete(@PathVariable Long fileNo) {
-    attachService.update(fileNo);
-    return ResponseEntity.ok("File deleted successfully");
+  public ResponseEntity<String> fileNoticeDelete(HttpSession session, @PathVariable Long fileNo) {
+    Member loginUser = (Member) session.getAttribute("loginUser");
+    if(loginUser.getMemberCategory() == A) {
+      attachService.update(fileNo);
+      return ResponseEntity.ok("File deleted successfully");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
+    }
   }
 
 
@@ -126,27 +145,31 @@ public class NoticeController {
 
   // 수정 처리
   @PostMapping("/api/notice/update/{noticeNo}")
-  public ResponseEntity<String> updateNotice(Notice notice,
+  public ResponseEntity<String> updateNotice(HttpSession session, Notice notice,
           @PathVariable("noticeNo") Long noticeNo,
           @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
 
     Notice updatedNotice = noticeService.findOne(noticeNo);
 
-    if (multipartFiles != null && multipartFiles.size() > 0) {
-      ArrayList<Attach> attaches = new ArrayList<>();
-      for (MultipartFile multipartFile : multipartFiles) {
-        if (multipartFile.getSize() > 0) {
-          Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
-                  "bleuauction-bucket", "notice/", multipartFile);
-          updatedNotice.addNoticeAttach(attach);
+    Member loginUser = (Member) session.getAttribute("loginUser");
+    if (loginUser.getMemberCategory() == A) {
+
+      if (multipartFiles != null && multipartFiles.size() > 0) {
+        ArrayList<Attach> attaches = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+          if (multipartFile.getSize() > 0) {
+            Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
+                    "bleuauction-bucket", "notice/", multipartFile);
+            updatedNotice.addNoticeAttach(attach);
+          }
         }
       }
+
+      noticeService.update(notice);
+      log.info("notice/update");
+      return ResponseEntity.ok("Notice updated successfully");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
     }
-
-    noticeService.update(notice);
-    log.info("notice/update");
-    return ResponseEntity.ok("Notice updated successfully");
-
   }
-
 }

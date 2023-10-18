@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,14 +53,20 @@ public class ReviewController {
 
 
   @PostMapping("/api/review/add")
-  public ResponseEntity<?> reviewAdd(HttpSession session, Review review, @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) throws Exception {
+  public ResponseEntity<?> reviewAdd(HttpSession session, Review review, Member member,@RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) throws Exception {
     log.info("url ===========> /api/review/add");
     log.info("Review: " + review);
     log.info("MultipartFile: " + multipartFiles);
 
-    review.setMember((Member)session.getAttribute("loginUser")); // 로그인 구현되면 Session에서 받아오도록 수정요망!
-
     try {
+      Optional<Member> loginUserOptional = Optional.ofNullable((Member) session.getAttribute("loginUser"));
+      Member loginUser = loginUserOptional.orElseThrow(() -> new Exception("로그인 유저가 없습니다!"));
+
+      if (loginUser.getMemberNo() != member.getMemberNo()) {
+        throw new Exception("리뷰 작성권한이 없습니다!");
+      }
+
+      review.setMember(member);
       Review insertReview = reviewService.addReview(review);
       log.info("insertReview: " + insertReview);
 
@@ -83,11 +90,16 @@ public class ReviewController {
   }
 
   @PostMapping("/api/review/update")
-  public Review reviewUpdate(Review review) throws Exception {
+  public ResponseEntity<?>  reviewUpdate(Review review) throws Exception {
     log.info("url ===========> /api/review/update");
-    log.info("Review: " + review);
-    Review updateReview = reviewService.updateReview(review);
-    return updateReview;
+    log.info("Review: " + review.toString());
+
+    try {
+      Review updateReview = reviewService.updateReview(review);
+      return ResponseEntity.ok(updateReview);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
+    }
   }
 
   @GetMapping("/api/review/delete")

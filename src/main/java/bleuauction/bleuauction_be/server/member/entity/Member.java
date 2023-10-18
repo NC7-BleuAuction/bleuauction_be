@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.member.entity;
 
 
+import bleuauction.bleuauction_be.server.answer.entity.Answer;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.review.entity.Review;
@@ -33,6 +34,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.stereotype.Component;
 
 @Entity
@@ -111,3 +113,4 @@ public class Member {
     attach.setMemberNo(this);
   }
 }
+

@@ -11,6 +11,8 @@ import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.member.service.UpdateMemberService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
+import bleuauction.bleuauction_be.server.order.entity.Order;
+import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -51,7 +53,20 @@ public class MemberController {
     private final AttachService attachService;
     private final Member member;
 
-    @GetMapping("/{memberNo}")
+    @GetMapping("/loginCheck")
+    public ResponseEntity<Object> loginCheck(HttpSession session) throws Exception {
+        Member loginUser = (Member)session.getAttribute("loginUser");
+        Map<String, Object> responseMap = new HashMap<>();
+
+        if(session.getAttribute("loginUser") != null) {
+            responseMap.put("loginUser", loginUser);
+        } else {
+            responseMap.put("loginUser", null);
+        }
+        return ResponseEntity.ok(responseMap);
+    }
+
+      @GetMapping("/{memberNo}")
     public ResponseEntity<Object> detail(@PathVariable Long memberNo) throws Exception {
         Optional<Member> memberOptional = memberRepository.findById(memberNo);
 

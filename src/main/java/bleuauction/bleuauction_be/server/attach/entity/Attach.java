@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.*;
 import org.jetbrains.annotations.NotNull;
+
 import java.sql.Timestamp;
 
 @Entity
@@ -26,58 +27,58 @@ import java.sql.Timestamp;
 @DynamicInsert
 @DynamicUpdate
 public class Attach {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "file_no")
-    private Long fileNo;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "file_no")
+  private Long fileNo;
 
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menuNo")
-    private Menu menuNo;
+  @JsonBackReference
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "menuNo")
+  private Menu menuNo;
 
   @JsonBackReference
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "memberNo")
   private Member memberNo;
 
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reviewNo")
-    private Review review;
+  @JsonBackReference
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "reviewNo")
+  private Review review;
+
+  @JsonBackReference
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "itemNo")
+  private Item itemNo;
+
+  @JsonBackReference
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "noticeNo")
+  private Notice noticeNo;
 
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "itemNo")
-    private Item itemNo;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "storeNo")
+  private Store storeNo;
 
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "noticeNo")
-    private Notice noticeNo;
+  @NotNull
+  private String filePath;
 
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "storeNo")
-    private Store storeNo;
+  @NotNull
+  private String originFilename;
 
-    @NotNull
-    private String filePath;
+  @NotNull
+  private String saveFilename;
 
-    @NotNull
-    private String originFilename;
+  @CreationTimestamp
+  private Timestamp regDatetime;
 
-    @NotNull
-    private String saveFilename;
+  @UpdateTimestamp
+  private Timestamp mdfDatetime;
 
-    @CreationTimestamp
-    private Timestamp regDatetime;
-
-    @UpdateTimestamp
-    private Timestamp mdfDatetime;
-
-    @Enumerated(EnumType.STRING)
-    private FileStatus fileStatus;
+  @Enumerated(EnumType.STRING)
+  private FileStatus fileStatus;
 
 
 }

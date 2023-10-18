@@ -1,15 +1,22 @@
 package bleuauction.bleuauction_be.server.store.service;
 
+import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
+import bleuauction.bleuauction_be.server.review.entity.Review;
+import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import bleuauction.bleuauction_be.server.store.dto.StoreSignUpRequest;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.exception.MemberNotFoundException;
 import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import bleuauction.bleuauction_be.server.store.entity.Store;
+import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
 import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,11 +28,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class StoreService {
 
+
     private final StoreRepository storeRepository;
     private final MemberRepository memberRepository;
 
-    public List<Store> selectStoreList() {
-        return storeRepository.findAll();
+    public List<Store> selectStoreList(StoreStatus storeStatus, int startPage, int pageRowCount) {
+        Pageable pageable = PageRequest.of(startPage, pageRowCount);
+        List<Store>  exitingStoreList = storeRepository.findAllByStoreStatus(storeStatus, pageable);
+        return exitingStoreList;
     }
 
     // 가게등록

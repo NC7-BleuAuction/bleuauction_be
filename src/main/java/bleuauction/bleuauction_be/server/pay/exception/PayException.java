@@ -17,6 +17,7 @@ public class PayException {
             String message = "값이 제대로 입력되지 않았습니다. (DataIntegrityViolationException)";
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
+    // TODO : 추후 아래 Exception 활성화 예정
 
 //        @ExceptionHandler(verifyIamportException.class)
 //        public ResponseEntity<String> handleVerifyIamportException(verifyIamportException e) {

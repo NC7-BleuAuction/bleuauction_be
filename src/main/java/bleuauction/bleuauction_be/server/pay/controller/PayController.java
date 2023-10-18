@@ -1,21 +1,25 @@
 package bleuauction.bleuauction_be.server.pay.controller;
 
-import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.order.entity.Order;
-import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
+import bleuauction.bleuauction_be.server.pay.dto.PayInsertRequest;
+import bleuauction.bleuauction_be.server.pay.entity.Pay;
+import bleuauction.bleuauction_be.server.pay.repository.PayRepository;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,33 +28,59 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/pay")
 public class PayController {
 
-    private final IamportClient iamportClient;
-    private final String restApiKey;
-    private final String restApiSecret;
+    @Value("${iamport.key}")
+    private String restApiKey;
+    @Value("${iamport.secret}")
+    private String restApiSecret;
 
-    public PayController(
-            @Value("${iamport.key}") String restApiKey,
-            @Value("${iamport.secret}") String restApiSecret) {
+    private final PayRepository payRepository;
+    private IamportClient iamportClient;
+
+    public PayController(PayRepository payRepository, @Value("${iamport.key}") String restApiKey, @Value("${iamport.secret}") String restApiSecret) {
+        this.payRepository = payRepository;
         this.restApiKey = restApiKey;
         this.restApiSecret = restApiSecret;
-        this.iamportClient = new IamportClient(this.restApiKey, this.restApiSecret);
+        log.info("Rest API Key: {}, Rest API Secret: {}", restApiKey, restApiSecret);
     }
 
-    @PostMapping("/verifyIamport/{imp_uid}")
-    public IamportResponse<Payment> paymentByImpUid(@PathVariable("imp_uid") String imp_uid) throws IamportResponseException, IOException {
-        return iamportClient.paymentByImpUid(imp_uid);
-    }
-
-    @GetMapping("{orderNo}")
-    public ResponseEntity<Object> detail(@PathVariable Long orderNo, OrderRepository orderRepository) throws Exception {
-        Optional<Order> orderOptional = Optional.ofNullable(orderRepository.findOne(orderNo));
-
-        if (orderOptional.isPresent()) {
-
+    @PostMapping("/createPayment")
+    public ResponseEntity<Pay> createPayment(@RequestBody PayInsertRequest payInsertRequest, OrderService orderService) {
+        try {
+            Optional<Order> orderOptional = orderService.getOrderById(
+                    payInsertRequest.getOrderNo());
+            if (!orderOptional.isPresent()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
             Order order = orderOptional.get();
-            return ResponseEntity.ok().body(order);
-        } else {
-            return ResponseEntity.notFound().build();
+            Pay pay = payInsertRequest.getPayEntity(order);
+            Pay savedPay = payRepository.save(pay);
+
+            return ResponseEntity.ok(savedPay);
+        } catch (Exception e) {
+            log.error("Error creating payment: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+        @GetMapping("/{payNo}")
+        public ResponseEntity<Object> detail (@PathVariable Long payNo) throws Exception {
+            Optional<Pay> payOptional = payRepository.findBypayNo(payNo);
+
+            if (payOptional.isPresent()) {
+
+                Pay pay = payOptional.get();
+                return ResponseEntity.ok().body(pay);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        }
+    @PostConstruct
+    public void init() {
+        this.iamportClient = new IamportClient(restApiKey, restApiSecret);
+    }
+
+        @PostMapping("/verifyIamport/{imp_uid}")
+        public IamportResponse<Payment> paymentByImpUid (@PathVariable("imp_uid") String imp_uid) throws
+        IamportResponseException, IOException {
+            return iamportClient.paymentByImpUid(imp_uid);
+        }
 }

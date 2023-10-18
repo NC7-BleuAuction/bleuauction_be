@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,7 +51,7 @@ public class MemberController {
     private final AttachService attachService;
     private final Member member;
 
-    @GetMapping("{memberNo}")
+    @GetMapping("/{memberNo}")
     public ResponseEntity<Object> detail(@PathVariable Long memberNo) throws Exception {
         Optional<Member> memberOptional = memberRepository.findById(memberNo);
 

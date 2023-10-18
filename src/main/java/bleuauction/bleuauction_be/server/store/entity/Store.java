@@ -95,10 +95,12 @@ public class Store {
   @Column(name = "store_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
   private StoreStatus storeStatus;
 
+  @Builder.Default
   @JsonManagedReference
   @OneToMany(mappedBy = "storeNo")
   private List<Menu> menus = new ArrayList<>();
 
+  @Builder.Default
   @OneToMany(mappedBy = "storeNo", cascade = CascadeType.ALL)
   private List<Attach> storeAttaches = new ArrayList<>();
 

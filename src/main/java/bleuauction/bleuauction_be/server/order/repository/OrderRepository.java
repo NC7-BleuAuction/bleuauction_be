@@ -49,4 +49,8 @@ public List<Order> findByOrderMenusMemberMemberNo(@Param("memberNo") Member memb
                   ")").setParameter("memberNo", memberNo) // named parameter를 설정
           .getResultList();
 }
+  public Optional<Order> findById(Long orderNo) {
+    Order order = em.find(Order.class, orderNo);
+    return Optional.ofNullable(order);
+  }
 }

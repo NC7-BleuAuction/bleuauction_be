@@ -35,13 +35,10 @@ public class OrderMenu {
   @JoinColumn(name ="menuNo")
   private Menu menuNo;
 
-
   @JsonBackReference
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name ="orderNo")
   private Order orderNo;
-
-
 
   private int orderMenuCount;
 

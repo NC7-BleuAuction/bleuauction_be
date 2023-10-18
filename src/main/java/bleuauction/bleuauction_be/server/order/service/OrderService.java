@@ -4,6 +4,7 @@ import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,15 +12,14 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
 public class OrderService {
 
   private final OrderRepository orderRepository;
 
-  public Optional<Order> getOrderById(Long orderId) {
-    return orderRepository.findById(orderId);
+  @Autowired
+  public OrderService(OrderRepository orderRepository) {
+    this.orderRepository = orderRepository;
   }
-
   //등록
   @Transactional
   public Long enroll(Order order) {

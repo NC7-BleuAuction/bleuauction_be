@@ -19,7 +19,7 @@ public class PayInsertRequest {
     private PayType payType = PayType.C;
     private OrderStatus orderStatus = OrderStatus.Y;
 
-    private Long payNo;
+//    private Long payNo;
 
     private Long orderNo;
 

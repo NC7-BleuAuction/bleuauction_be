@@ -25,29 +25,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderController {
 
-  private final NcpObjectStorageService ncpObjectStorageService;
   private final OrderService orderService;
   private final OrderRepository orderRepository;
-  private final EntityManager entityManager;
 
   //등록
   @GetMapping("/api/order/new")
   public Order order() {
     Order order = new Order();
     return order;
-  }
-
-  @GetMapping("/api/order/{orderNo}")
-  public ResponseEntity<Object> detail(@PathVariable Long orderNo, OrderRepository orderRepository) throws Exception {
-    Optional<Order> orderOptional = Optional.ofNullable(orderRepository.findOne(orderNo));
-
-    if (orderOptional.isPresent()) {
-
-      Order order = orderOptional.get();
-      return ResponseEntity.ok().body(order);
-    } else {
-      return ResponseEntity.notFound().build();
-    }
   }
 
   @Transactional

@@ -42,7 +42,7 @@ public class Item {
   private ItemSize itemSize; // 크기 [S,M,L]
 
   @Enumerated(EnumType.STRING)
-  private OriginStatus originStatus; // 생산지 [I:국내, O:국외]
+  private OriginStatus originStatus; // 생산지 [D:국내, I:국외]
 
   @Enumerated(EnumType.STRING)
   private OriginPlaceStatus originPlaceStatus; // 동해:ES, 서해:WS,남해:SS, 제주:JJ, 완도:WD, 일본:JP, 중국:CN, 러시아:RU, 노르웨이:NW

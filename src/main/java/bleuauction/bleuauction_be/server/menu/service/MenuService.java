@@ -35,6 +35,7 @@ public class MenuService {
     return menuRepository.findAll();
   }
 
+
   //메뉴 1건 조회
   @Transactional(readOnly = true)
   public Menu findOne(Long menuNo) {

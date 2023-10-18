@@ -4,6 +4,8 @@ import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import jakarta.persistence.EntityManager;
 import java.util.Optional;
+
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -11,10 +13,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-@RequiredArgsConstructor
 public class OrderRepository {
-
-  private final EntityManager em;
+  @PersistenceContext
+  private EntityManager em;
 
   public Order save(Order order) {
     // calculate the order price

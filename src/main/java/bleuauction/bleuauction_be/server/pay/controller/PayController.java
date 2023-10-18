@@ -12,6 +12,8 @@ import com.siot.IamportRestClient.response.Payment;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Optional;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -27,16 +29,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/pay")
 public class PayController {
-
     @Value("${iamport.key}")
     private String restApiKey;
     @Value("${iamport.secret}")
     private String restApiSecret;
-
+    private final OrderService orderService;
     private final PayRepository payRepository;
     private IamportClient iamportClient;
 
-    public PayController(PayRepository payRepository, @Value("${iamport.key}") String restApiKey, @Value("${iamport.secret}") String restApiSecret) {
+    public PayController(OrderService orderService, PayRepository payRepository, @Value("${iamport.key}") String restApiKey, @Value("${iamport.secret}") String restApiSecret) {
+        this.orderService = orderService;
         this.payRepository = payRepository;
         this.restApiKey = restApiKey;
         this.restApiSecret = restApiSecret;
@@ -44,14 +46,13 @@ public class PayController {
     }
 
     @PostMapping("/createPayment")
-    public ResponseEntity<Pay> createPayment(@RequestBody PayInsertRequest payInsertRequest, OrderService orderService) {
+    public ResponseEntity<Pay> createPayment(@RequestBody PayInsertRequest payInsertRequest) {
         try {
-            Optional<Order> orderOptional = orderService.getOrderById(
-                    payInsertRequest.getOrderNo());
-            if (!orderOptional.isPresent()) {
+            Order order = orderService.findOne(payInsertRequest.getOrderNo());
+//            Optional<Order> orderOptional = orderService.getOrderById(payInsertRequest.getOrderNo());
+            if (order == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
-            Order order = orderOptional.get();
             Pay pay = payInsertRequest.getPayEntity(order);
             Pay savedPay = payRepository.save(pay);
 

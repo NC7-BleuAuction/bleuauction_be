@@ -2,6 +2,7 @@ package bleuauction.bleuauction_be.server.order.service;
 
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,10 @@ import java.util.List;
 public class OrderService {
 
   private final OrderRepository orderRepository;
+
+  public Optional<Order> getOrderById(Long orderId) {
+    return orderRepository.findById(orderId);
+  }
 
   //등록
   @Transactional

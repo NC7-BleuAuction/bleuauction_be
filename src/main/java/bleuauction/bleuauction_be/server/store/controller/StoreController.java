@@ -79,6 +79,17 @@ public class StoreController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
     }
   }
+  @GetMapping("{storeNo}")
+  public ResponseEntity<Object> detail(@PathVariable Long storeNo) throws Exception {
+      Optional<Store> storeOptional = storeRepository.findById(storeNo);
+
+      if (storeOptional.isPresent()) {
+          Store store = storeOptional.get();
+          return ResponseEntity.ok().body(store);
+      } else {
+          return ResponseEntity.notFound().build();
+      }
+  }
 
   // 가게 등록
   @PostMapping("/signup")

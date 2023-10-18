@@ -41,10 +41,10 @@ import org.springframework.stereotype.Component;
 @Data
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-@Table(name = "ba_member")
 @Component
 @DynamicInsert
 @DynamicUpdate
+@Table(name = "ba_member")
 public class Member {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

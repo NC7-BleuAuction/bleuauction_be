@@ -15,6 +15,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Entity
 @Data
 @Slf4j
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "ba_pay")
 public class Pay {
@@ -37,8 +41,9 @@ public class Pay {
     @JoinColumn(name ="order_no")
     private Order orderNo;
 
-    @NotNull
-    private String payType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "pay_type")
+    private PayType payType;
 
     @NotNull
     private Integer payPrice;

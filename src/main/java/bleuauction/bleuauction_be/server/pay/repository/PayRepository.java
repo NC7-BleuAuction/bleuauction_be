@@ -11,5 +11,6 @@ public interface PayRepository extends JpaRepository<Pay, Long> {
 
     Optional<Pay> findById(Long payNo);
     List<Pay> findAll();
+    Optional<Pay> findBypayNo(Long payNo);
 
 }

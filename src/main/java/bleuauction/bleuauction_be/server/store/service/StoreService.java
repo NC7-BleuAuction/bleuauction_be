@@ -46,7 +46,7 @@ public class StoreService {
         if (request.getMemberCategory() != MemberCategory.S) {
     throw new IllegalAccessException("판매자 회원만 등록 가능합니다.");
         }
-        Store store = request.getStoreEntity(member); // builder로 바꿔보세요
+        Store store = request.getStoreEntity(member); // builder로?
         store.setWeekdayStartTime(request.getWeekdayStartTime());
         store.setWeekdayEndTime(request.getWeekdayEndTime());
         store.setWeekendStartTime(request.getWeekendStartTime());

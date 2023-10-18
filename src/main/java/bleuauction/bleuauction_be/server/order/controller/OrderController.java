@@ -7,6 +7,7 @@ import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpSession;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,19 @@ public class OrderController {
   public Order order() {
     Order order = new Order();
     return order;
+  }
+
+  @GetMapping("/api/order/{orderNo}")
+  public ResponseEntity<Object> detail(@PathVariable Long orderNo, OrderRepository orderRepository) throws Exception {
+    Optional<Order> orderOptional = Optional.ofNullable(orderRepository.findOne(orderNo));
+
+    if (orderOptional.isPresent()) {
+
+      Order order = orderOptional.get();
+      return ResponseEntity.ok().body(order);
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
 
   @Transactional

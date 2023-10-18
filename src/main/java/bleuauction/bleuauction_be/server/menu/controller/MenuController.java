@@ -6,6 +6,7 @@ import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
+import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.menu.service.MenuService;
 import bleuauction.bleuauction_be.server.menu.web.MenuForm;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
@@ -30,6 +31,7 @@ import java.util.List;
 public class MenuController {
 
   private final MenuService menuService;
+  private final MenuRepository menuRepository;
   private final NcpObjectStorageService ncpObjectStorageService;
   private final AttachService attachService;
   private final EntityManager entityManager;
@@ -77,6 +79,17 @@ public class MenuController {
     return ResponseEntity.status(HttpStatus.CREATED).body("Menu created successfully");
   }
 
+  //가게별 목록 조회
+  @GetMapping(value = "/api/menu/{storeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<Menu> findMenusByStoreNo(@PathVariable("storeNo") Long storeNo) throws Exception {
+    try {
+      List<Menu> menus = menuRepository.findMenusByStoreNo(storeNo);
+      return menus;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
+  }
 
   //목록 조회
   @GetMapping(value = "/api/menu", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/api/chat")
 public class ChatController {
     private String secretKey = "a3NkQ1hVY2xGbXhtdVFGUVFJSVpuZ3BZaUZIZ0FxTVQ=";
     private String apiUrl = "https://uumm27ff9w.apigw.ntruss.com/custom/v1/12032/2811f67f287950a0e6ea2f3ac1c28349dd6be775ba1798e93ac8402bef2592a2";

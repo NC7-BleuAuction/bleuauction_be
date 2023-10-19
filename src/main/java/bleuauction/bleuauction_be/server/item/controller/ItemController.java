@@ -48,7 +48,7 @@ public class ItemController {
 
     Member loginUser = (Member) session.getAttribute("loginUser");
 
-    if(loginUser.getMemberCategory() == A) {
+    if("A".equals(loginUser.getMemberCategory().name())) {
       item.setMemberNo(loginUser);
 
       if (multipartFiles != null && multipartFiles.size() > 0) {

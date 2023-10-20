@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.notice.repository;
 
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -30,4 +31,10 @@ public class NoticeRepository {
   }
 
 
+  public List<Notice> findByNoticeStatus(NoticeStatus status) {
+    List<Notice> result = em.createQuery("select n from Notice n where n.noticeStatus = :status", Notice.class)
+            .setParameter("status", status)
+            .getResultList();
+    return result;
+  }
 }

@@ -59,7 +59,7 @@ public class AnswerController {
 
     Member loginUser = (Member) session.getAttribute("loginUser");
 
-    answer.setMember(loginUser); // 로그인 구현되면 Session에서 받아오도록 수정요망!
+    answer.setMember(loginUser);
 
     Answer insertAnswer = answerService.addAnswer(answer);
     return insertAnswer;

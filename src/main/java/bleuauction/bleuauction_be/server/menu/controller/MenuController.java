@@ -56,7 +56,6 @@ public class MenuController {
             .getSingleResult();
 
     if (store == null) {
-      // Store가 없는 경우에 대한 처리, 예를 들어 오류 응답을 반환하거나 로깅을 할 수 있습니다.
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not associated with a store.");
     }
 

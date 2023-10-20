@@ -59,6 +59,19 @@ public class StoreController {
   @Autowired
   AttachService attachService;
 
+  @GetMapping("/loginCheck")
+  public ResponseEntity<Object> loginCheck(HttpSession session) throws Exception {
+    Member loginUser = (Member)session.getAttribute("loginUser");
+    Map<String, Object> responseMap = new HashMap<>();
+
+    if(session.getAttribute("loginUser") != null) {
+      responseMap.put("loginUser", loginUser);
+    } else {
+      responseMap.put("loginUser", null);
+    }
+    return ResponseEntity.ok(responseMap);
+  }
+
   @GetMapping("/list")
   public ResponseEntity<?> storeList(HttpSession session, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception {
     log.info("url ===========> /store/list");

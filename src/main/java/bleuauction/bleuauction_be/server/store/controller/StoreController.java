@@ -116,6 +116,23 @@ public class StoreController {
     return storeRepository.save(storeService.signup(request, memberNo));
   }
 
+  @GetMapping("/detailByMember")
+  public ResponseEntity<?>  detailByMemberNo(HttpSession session, @RequestParam Member member)
+          throws Exception {
+    Member loginUser = (Member) session.getAttribute("loginUser");
+    if (loginUser == null) {
+      throw new Exception("로그인한 회원 정보를 찾을 수 없습니다.");
+    }
+    Optional<Store> storeOptional = storeRepository.findByMemberNo(member);
+
+    if (storeOptional.isPresent()) {
+      Store store = storeOptional.get();
+      return ResponseEntity.ok().body(store);
+    } else {
+      return ResponseEntity.notFound().build();
+    }
+  }
+
   // 가게정보수정
   @PutMapping("/update")
   public ResponseEntity<String> updateStore(HttpSession session,

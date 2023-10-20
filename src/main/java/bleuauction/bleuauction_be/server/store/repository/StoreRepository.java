@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.store.repository;
 
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import bleuauction.bleuauction_be.server.store.entity.Store;
@@ -27,4 +28,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
   Optional<Store> findBystoreNo(Long storeNo);
   Optional<Store> findBystoreName(String storeName);
+
+  Optional<Store> findByMemberNo(Member member);
 }

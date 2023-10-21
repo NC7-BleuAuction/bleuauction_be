@@ -108,6 +108,10 @@ public class Member {
   @OneToMany(mappedBy = "memberNo", cascade = CascadeType.ALL)
   private List<Attach> memberAttaches = new ArrayList<>();
 
+  @JsonBackReference
+  @OneToMany(mappedBy = "memberNo")
+  private List<Store> ownedStores = new ArrayList<>();
+
   public void addAttaches(Attach attach) {
     memberAttaches.add(attach);
     attach.setMemberNo(this);

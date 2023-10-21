@@ -134,13 +134,14 @@ public class StoreController {
   }
 
   // 가게정보수정
-  @PutMapping("/update")
+  @PostMapping("/update")
   public ResponseEntity<String> updateStore(HttpSession session,
                                             @RequestPart("updateStoreRequest") UpdateStoreRequest updateStoreRequest,
                                             @RequestPart("profileImage") MultipartFile profileImage)
           throws Exception {
     Member loginUser = (Member) session.getAttribute("loginUser");
     if (loginUser == null) {
+      log.info("로그인이 필요합니다.");
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
     }
     try {
@@ -164,9 +165,12 @@ public class StoreController {
       log.info("가게 정보가 업데이트되었습니다. 업데이트된 가게 정보: {}", updateStoreRequest);
       return ResponseEntity.ok("가게 정보가 업데이트되었습니다.");
     } catch (StoreNotFoundException e) {
+      log.info("가게를 찾을 수 없습니다.");
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("가게를 찾을 수 없습니다.");
     }
   }
+
+
 
   // 가게 탈퇴
   @PutMapping("/withdraw/{storeNo}")

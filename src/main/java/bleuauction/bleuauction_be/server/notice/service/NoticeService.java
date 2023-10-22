@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.notice.service;
 
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,10 @@ public class NoticeService {
   @Transactional(readOnly = true)
   public List<Notice> findNotices() {
     return noticeRepository.findAll();
+  }
+
+  public List<Notice> findNoticesByStatus(NoticeStatus status) {
+    return noticeRepository.findByNoticeStatus(status);
   }
 
 

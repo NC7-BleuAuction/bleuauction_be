@@ -148,6 +148,13 @@ public class MemberController {
         log.info(session.getAttribute("loginUser") + "");
         responseMap.put("status", "success");
         log.info("Call login");
+
+        if(session.getAttribute("loginUser") != null) {
+            responseMap.put("loginUser", loginUser);
+        } else {
+            responseMap.put("loginUser", null);
+        }
+        
         return ResponseEntity.ok(responseMap);
     }
 

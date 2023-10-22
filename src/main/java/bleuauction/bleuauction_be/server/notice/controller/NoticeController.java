@@ -5,6 +5,7 @@ import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import bleuauction.bleuauction_be.server.notice.service.NoticeService;
 import bleuauction.bleuauction_be.server.notice.web.NoticeForm;
 import jakarta.persistence.EntityManager;
@@ -79,7 +80,7 @@ public class NoticeController {
   @GetMapping(value = "/api/notice", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Notice> findNotices() throws Exception {
     try {
-      List<Notice> notices = noticeService.findNotices();
+      List<Notice> notices = noticeService.findNoticesByStatus(NoticeStatus.Y);
       return notices;
     } catch (Exception e) {
       // 예외 처리 코드 추가
@@ -147,11 +148,13 @@ public class NoticeController {
   @PostMapping("/api/notice/update/{noticeNo}")
   public ResponseEntity<String> updateNotice(HttpSession session, Notice notice,
           @PathVariable("noticeNo") Long noticeNo,
+           @RequestParam(name = "noticeTitle") String noticeTitle,
+           @RequestParam(name = "noticeContent") String noticeContent,
           @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
 
     Notice updatedNotice = noticeService.findOne(noticeNo);
-
     Member loginUser = (Member) session.getAttribute("loginUser");
+
     if (loginUser.getMemberCategory() == A) {
 
       if (multipartFiles != null && multipartFiles.size() > 0) {
@@ -164,8 +167,12 @@ public class NoticeController {
           }
         }
       }
+      // 공지사항 정보 업데이트
+      updatedNotice.setNoticeTitle(noticeTitle);
+      updatedNotice.setNoticeContent(noticeContent);
 
-      noticeService.update(notice);
+      noticeService.update(updatedNotice);
+
       log.info("notice/update");
       return ResponseEntity.ok("Notice updated successfully");
     } else {

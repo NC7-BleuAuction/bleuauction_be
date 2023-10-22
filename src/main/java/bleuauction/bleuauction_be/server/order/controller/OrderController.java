@@ -67,7 +67,7 @@ public class OrderController {
   }
 
   // 가게(가게주인)별 주문 조회
-  @GetMapping("/api/order/{memberNo}")
+  @GetMapping("/api/store/order")
   public ResponseEntity<?> findOrdersbyStore(HttpSession session) {
     Member loginUser = (Member) session.getAttribute("loginUser");
     Long memberNo = loginUser.getMemberNo();

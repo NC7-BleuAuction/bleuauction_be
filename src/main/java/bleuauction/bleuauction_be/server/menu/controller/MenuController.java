@@ -139,7 +139,6 @@ public class MenuController {
 
   //디테일(수정)
   @GetMapping("/api/menu/detail/{menuNo}")
-  @ResponseBody
   public ResponseEntity<Menu> detailMenu(HttpSession session, @PathVariable("menuNo") Long menuNo) {
     Menu menu = menuService.findOne(menuNo);
     // 예를 들어, Menu 객체에 Attach 정보가 있을 경우:

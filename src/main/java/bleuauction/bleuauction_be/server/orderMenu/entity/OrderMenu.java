@@ -5,6 +5,7 @@ import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.entity.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,8 +32,8 @@ public class OrderMenu {
   private Member memberNo;
 
   @JsonBackReference
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name ="menuNo")
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name ="menu_no")
   private Menu menuNo;
 
   @JsonBackReference
@@ -50,6 +51,15 @@ public class OrderMenu {
 
   @Enumerated(EnumType.STRING)
   private OrderMenuStatus orderMenuStatus; // 상태 [Y,N]
+
+  public Menu getMenuNo() {
+    return this.menuNo;
+  }
+
+  public Order getOrderNo() {
+    return this.orderNo;
+  }
+
 
   // 비지니스 로직
   // 공지사항 삭제

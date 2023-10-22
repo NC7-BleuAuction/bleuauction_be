@@ -45,7 +45,7 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully");
   }
 
-  // 회원별 주문 조회
+  //회원별 주문 조회
   @GetMapping("/api/order")
   public ResponseEntity<?> findOrders(HttpSession session) {
     Member loginUser = (Member) session.getAttribute("loginUser");
@@ -59,6 +59,9 @@ public class OrderController {
     if (orders.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문이 없습니다.");
     } else {
+      for (Order order : orders) {
+        order.calculateOrderPrice(); // 주문 가격 계산
+      }
       return ResponseEntity.ok(orders);
     }
   }

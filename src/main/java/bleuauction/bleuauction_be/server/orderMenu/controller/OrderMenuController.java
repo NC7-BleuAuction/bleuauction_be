@@ -3,6 +3,7 @@ package bleuauction.bleuauction_be.server.orderMenu.controller;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
+import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
 import bleuauction.bleuauction_be.server.orderMenu.service.OrderMenuService;
@@ -17,6 +18,7 @@ import retrofit2.http.Path;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -74,6 +76,34 @@ public class OrderMenuController {
     try {
       List<OrderMenu> orderMenus = orderMenuService.findOrderMenusByOrderNo(order.getOrderNo());
       return orderMenus;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
+  }
+  @GetMapping("/api/ordermenu/order/{orderNo}")
+  public List<OrderMenuDTO> findorderOM(HttpSession session, @PathVariable("orderNo") Long orderNo) throws Exception {
+    Order order = orderService.findOne(orderNo);
+
+    try {
+      List<OrderMenu> orderMenus = orderMenuService.findOrderMenusByOrderNo(order.getOrderNo());
+
+      // OrderMenu 엔터티를 OrderMenuDTO로 매핑하여 반환
+      List<OrderMenuDTO> orderMenuDTOs = orderMenus.stream()
+              .map(orderMenu -> {
+                OrderMenuDTO dto = new OrderMenuDTO();
+                dto.setOrderMenuNo(orderMenu.getOrderMenuNo());
+                dto.setOrderMenuCount(orderMenu.getOrderMenuCount());
+                dto.setRegDatetime(orderMenu.getRegDatetime());
+                dto.setMdfDatetime(orderMenu.getMdfDatetime());
+                dto.setOrderMenuStatus(orderMenu.getOrderMenuStatus());
+                dto.setMenuNo(orderMenu.getMenuNo().getMenuNo()); // 메뉴 번호
+                dto.setOrderNo(orderMenu.getOrderNo().getOrderNo()); // 주문 번호
+                return dto;
+              })
+              .collect(Collectors.toList());
+
+      return orderMenuDTOs;
     } catch (Exception e) {
       e.printStackTrace();
       return new ArrayList<>();

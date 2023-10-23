@@ -2,6 +2,7 @@ package bleuauction.bleuauction_be.server.orderMenu.service;
 
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
+import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,23 @@ public class OrderMenuService {
   public Long enroll(OrderMenu orderMenu) {
     orderMenuRepository.save(orderMenu);
     return orderMenu.getOrderMenuNo();
+  }
+
+  // DTO 등록
+  public Long enroll(OrderMenuDTO orderMenuDTO) {
+    OrderMenu orderMenu = copyDTOToEntity(orderMenuDTO);
+    orderMenuRepository.save(orderMenu);
+    return orderMenu.getOrderMenuNo();
+  }
+  // OrderMenuDTO를 OrderMenu로 복사하는 메서드
+  public OrderMenu copyDTOToEntity(OrderMenuDTO dto) {
+    OrderMenu orderMenu = new OrderMenu();
+    orderMenu.setOrderMenuCount(dto.getOrderMenuCount());
+    // 나머지 필드들도 복사해야 합니다.
+    //orderMenu.setMenuNo(dto.getMenuNo());
+    // orderMenu.setOrderNo(dto.getOrderNo());
+    // orderMenu.setMemberNo(dto.getMemberNo());
+    return orderMenu;
   }
 
   //주문메뉴 전체 조회
@@ -56,15 +74,15 @@ public class OrderMenuService {
   }
 
   //주문 메뉴 수정
-  public OrderMenu update(OrderMenu orderMenu) {
-    OrderMenu updateom = orderMenuRepository.findOne(orderMenu.getOrderMenuNo());
-
-    updateom.setMemberNo(orderMenu.getMemberNo());
-    updateom.setMenuNo(orderMenu.getMenuNo());
-    //updateom.setOrderNo(orderMenu.getOrderNo());
-    updateom.setOrderMenuCount(orderMenu.getOrderMenuCount());
-    orderMenuRepository.save(orderMenu);
-
-    return updateom;
-  }
+//  public OrderMenu update(OrderMenu orderMenu) {
+//    OrderMenu updateom = orderMenuRepository.findOne(orderMenu.getOrderMenuNo());
+//
+//    updateom.setMemberNo(orderMenu.getMemberNo());
+//    updateom.setMenuNo(orderMenu.getMenuNo());
+//    //updateom.setOrderNo(orderMenu.getOrderNo());
+//    updateom.setOrderMenuCount(orderMenu.getOrderMenuCount());
+//    orderMenuRepository.save(orderMenu);
+//
+//    return updateom;
+//  }
 }

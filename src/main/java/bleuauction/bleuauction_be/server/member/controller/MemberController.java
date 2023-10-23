@@ -59,19 +59,6 @@ public class MemberController {
   private final Member member;
 
 
-  @GetMapping("/loginCheck")
-  public ResponseEntity<Object> loginCheck(HttpSession session) throws Exception {
-    Member loginUser = (Member) session.getAttribute("loginUser");
-    Map<String, Object> responseMap = new HashMap<>();
-
-    if (session.getAttribute("loginUser") != null) {
-      responseMap.put("loginUser", loginUser);
-    } else {
-      responseMap.put("loginUser", null);
-    }
-    return ResponseEntity.ok(responseMap);
-  }
-
   @GetMapping("/{memberNo}")
   public ResponseEntity<Object> detail(@PathVariable Long memberNo) throws Exception {
     Optional<Member> memberOptional = memberRepository.findById(memberNo);

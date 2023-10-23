@@ -52,13 +52,7 @@ public class OrderMenu {
   @Enumerated(EnumType.STRING)
   private OrderMenuStatus orderMenuStatus; // 상태 [Y,N]
 
-  public Menu getMenuNo() {
-    return this.menuNo;
-  }
 
-  public Order getOrderNo() {
-    return this.orderNo;
-  }
 
 
   // 비지니스 로직
@@ -68,4 +62,6 @@ public class OrderMenu {
 
 
   }
+
+
 }

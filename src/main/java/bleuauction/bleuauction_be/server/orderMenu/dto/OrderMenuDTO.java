@@ -16,4 +16,5 @@ public class OrderMenuDTO {
   private OrderMenuStatus orderMenuStatus;
   private Long menuNo; // 메뉴 번호
   private Long orderNo; // 주문 번호
+  private Long memberNo; // 멤버 번호
 }

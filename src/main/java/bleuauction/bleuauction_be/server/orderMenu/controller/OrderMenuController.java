@@ -1,10 +1,13 @@
 package bleuauction.bleuauction_be.server.orderMenu.controller;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
 import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
+import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
 import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
 import bleuauction.bleuauction_be.server.orderMenu.service.OrderMenuService;
 import jakarta.servlet.http.HttpSession;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import retrofit2.http.Path;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,42 +32,68 @@ public class OrderMenuController {
   private final OrderMenuService orderMenuService;
   private final OrderService orderService;
   private final OrderMenuRepository orderMenuRepository;
+  private final MenuRepository menuRepository;
 
   //등록
   @GetMapping("/api/ordermenu/new")
   public OrderMenu orderMenu() {
-//    log.info("orderList: " + orderList );
     OrderMenu orderMenu = new OrderMenu();
     return orderMenu;
   }
 
+//  @GetMapping("/api/ordermenu/new")
+//  public OrderMenuDTO createOrderMenuDTO(
+//          @RequestParam Long orderMenuNo,
+//          @RequestParam int orderMenuCount,
+//          @RequestParam Timestamp regDatetime,
+//          @RequestParam Timestamp mdfDatetime,
+//          @RequestParam OrderMenuStatus orderMenuStatus,
+//          @RequestParam Long menuNo,
+//          @RequestParam Long orderNo,
+//          @RequestParam Long memberNo
+//  ) {
+//    OrderMenuDTO orderMenuDTO = new OrderMenuDTO();
+//
+//    orderMenuDTO.setOrderMenuNo(orderMenuNo);
+//    orderMenuDTO.setOrderMenuCount(orderMenuCount);
+//    orderMenuDTO.setRegDatetime(regDatetime);
+//    orderMenuDTO.setMdfDatetime(mdfDatetime);
+//    orderMenuDTO.setOrderMenuStatus(orderMenuStatus);
+//    orderMenuDTO.setMenuNo(menuNo);
+//    orderMenuDTO.setOrderNo(orderNo);
+//    orderMenuDTO.setMemberNo(memberNo);
+//
+//    return orderMenuDTO;
+//  }
+
+
   //프론트 페이지 만들어지면 확인 가능
   @PostMapping("/api/ordermenu/new")
   @Transactional
-  public ResponseEntity<String> orderMenu(OrderMenu orderMenu, HttpSession session) {
-    System.out.println(orderMenu);
-    //로그인유저의 멤버번호
+  public ResponseEntity<String> orderMenu(HttpSession session, OrderMenuDTO orderMenuDTO) {
+    // 로그인 유저의 멤버 번호
     Member member = (Member) session.getAttribute("loginUser");
-    orderMenu.setMemberNo(member);
-    //오더 세션의 오더
+    // 오더 세션의 오더
     Order order = (Order) session.getAttribute("order");
-    orderMenu.setOrderNo(order);
-    //메뉴는 뭘로 하지?
-    //orderMenu.setMenuNo(Menu); 프론트에서 메뉴 체크하면 메뉴 넘어가게 만들기.
-    //axios.post('/api/ordermenu/new', {
-    //    menuNo: 2, // 선택한 메뉴의 ID
-    //    orderMenuCount: 5
-    //})
-    //.then(response => {
-    //    console.log(response.data);
-    //})
-    //.catch(error => {
-    //    console.error(error);
-    //});
 
-    orderMenuService.enroll(orderMenu);
-    log.info("ordermenu/postnew");
-    return ResponseEntity.status(HttpStatus.CREATED).body("OrderMenu created successfully");
+
+    // 이 부분에서 selectedMenuId를 사용하여 Menu 엔티티를 조회하고 orderMenu 엔티티에 할당합니다.
+    Menu selectedMenu = menuRepository.findOne(orderMenuDTO.getMenuNo());
+
+    if (selectedMenu != null) {
+      OrderMenu orderMenu = new OrderMenu();
+      orderMenu.setMemberNo(member);
+      orderMenu.setOrderNo(order);
+      orderMenu.setOrderMenuCount(orderMenuDTO.getOrderMenuCount());
+      orderMenu.setMenuNo(selectedMenu);
+
+      orderMenuService.enroll(orderMenu);
+      log.info("ordermenu/postnew");
+      return ResponseEntity.status(HttpStatus.CREATED).body("OrderMenu created successfully");
+    } else {
+      // 선택한 메뉴가 없을 때 처리
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Selected menu not found");
+    }
   }
 
   //주문 번호별 주문메뉴 조회
@@ -128,10 +158,10 @@ public class OrderMenuController {
     return ResponseEntity.ok(OM);
   }
 
-  @PostMapping("/api/ordermenu/update/{orderMenuNo}")
-  public ResponseEntity<String> updateOM (OrderMenu orderMenu, @PathVariable("orderMenuNo") Long orderMenuNo) {
-    orderMenuService.update(orderMenu);
-    log.info("ordermenu/update");
-    return ResponseEntity.ok("OrderMenu updated successfully");
-  }
+//  @PostMapping("/api/ordermenu/update/{orderMenuNo}")
+//  public ResponseEntity<String> updateOM (OrderMenu orderMenu, @PathVariable("orderMenuNo") Long orderMenuNo) {
+//    orderMenuService.update(orderMenu);
+//    log.info("ordermenu/update");
+//    return ResponseEntity.ok("OrderMenu updated successfully");
+//  }
 }

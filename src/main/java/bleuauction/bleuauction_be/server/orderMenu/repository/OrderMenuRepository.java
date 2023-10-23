@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.orderMenu.repository;
 
 import bleuauction.bleuauction_be.server.order.entity.Order;
+import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,11 @@ public class OrderMenuRepository {
   public OrderMenu save(OrderMenu orderMenu) {
     em.persist(orderMenu);
     return orderMenu;
+  }
+
+  public OrderMenuDTO save(OrderMenuDTO orderMenuDTO) {
+    em.persist(orderMenuDTO);
+    return orderMenuDTO;
   }
 
   public OrderMenu findOne(Long orderMenuNo) {

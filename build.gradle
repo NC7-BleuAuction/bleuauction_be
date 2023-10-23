@@ -32,6 +32,11 @@ dependencies {
 	implementation 'com.google.code.gson:gson:2.8.9'
 	implementation 'mysql:mysql-connector-java:8.0.33'
 
+	// JWT 토큰
+	implementation 'com.auth0:java-jwt:4.0.0'
+//	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2' // jjwt 버전을 사용 중인 버전으로 변경
+//	implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2' // jjwt 버전을 사용 중인 버전으로 변경
+
 	//예외처리
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 

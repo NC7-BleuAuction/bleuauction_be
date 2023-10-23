@@ -92,7 +92,6 @@ public class ReviewController {
   @PostMapping("/api/review/update")
   public ResponseEntity<?>  reviewUpdate(Review review) throws Exception {
     log.info("url ===========> /api/review/update");
-    log.info("Review: " + review.toString());
 
     try {
       Review updateReview = reviewService.updateReview(review);

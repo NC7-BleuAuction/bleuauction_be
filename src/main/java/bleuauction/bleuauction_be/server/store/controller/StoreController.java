@@ -2,17 +2,11 @@ package bleuauction.bleuauction_be.server.store.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
-import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;
-import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
-import bleuauction.bleuauction_be.server.member.exception.MemberNotFoundException;
-import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
-import bleuauction.bleuauction_be.server.member.service.UpdateMemberService;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
-import bleuauction.bleuauction_be.server.review.entity.Review;
-import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
-import bleuauction.bleuauction_be.server.store.dto.StoreSignUpRequest;
 import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
+import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
+import bleuauction.bleuauction_be.server.store.dto.StoreSignUpRequest;
 import bleuauction.bleuauction_be.server.store.dto.UpdateStoreRequest;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
@@ -20,76 +14,89 @@ import bleuauction.bleuauction_be.server.store.exception.StoreNotFoundException;
 import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
 import bleuauction.bleuauction_be.server.store.service.UpdateStoreService;
+import bleuauction.bleuauction_be.server.util.CreateJwt;
+import bleuauction.bleuauction_be.server.util.JwtConfig;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Response;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
-
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/store")
 public class StoreController {
+  private final CreateJwt createJwt;
+  private final MemberRepository memberRepository;
+  private final StoreService storeService;
+  private final MemberService memberService;
+  private final StoreRepository storeRepository;
+  private final NcpObjectStorageService ncpObjectStorageService;
+  private final AttachService attachService;
 
-  final int PAGE_ROW_COUNT = 3;
-
-  @Autowired
-  private MemberRepository memberRepository;
-
-  @Autowired
-  StoreService storeService;
-
-  @Autowired
-  MemberService memberService;
-
-  @Autowired
-  StoreRepository storeRepository;
-
-  @Autowired
-  NcpObjectStorageService ncpObjectStorageService;
-
-  @Autowired
-  AttachService attachService;
 
   @GetMapping("/list")
-  public ResponseEntity<?> storeList(HttpSession session, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception {
+  public ResponseEntity<?> storeList(@RequestHeader("Authorization") String  authorizationHeader, @RequestParam(name = "startPage", defaultValue = "0") int startPage, @RequestParam(name = "pageLowCount", defaultValue = "3") int pageLowCount) throws Exception {
     log.info("url ===========> /store/list");
     log.info("startPage: " + startPage);
-
-    Member loginUser = (Member) session.getAttribute("loginUser");
-    log.info("loginUser: " + loginUser);
-    if (loginUser == null) {
-      new Exception("로그인이 유효하지 않습니다!");
-    }
+    log.info("authorizationHeader: " + authorizationHeader);
 
     try {
-      List<Store> storeList = storeService.selectStoreList(StoreStatus.Y, startPage, PAGE_ROW_COUNT);
+      // 홈에 기본 출력되는 가게리스트에 대한 요청만 예외적으로 토큰검사 제외
+      if (authorizationHeader != null && !CreateJwt.UNAUTHORIZED_ACCESS.equals(authorizationHeader)) {
+        ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+        if (verificationResult != null) {
+          return verificationResult;
+        }
+      }
+
+      List<Store> storeList = storeService.selectStoreList(StoreStatus.Y, startPage, pageLowCount);
       log.info("storeList: " + storeList);
       return ResponseEntity.ok(storeList);
-
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CreateJwt.SERVER_ERROR);
     }
   }
+
   @GetMapping("{storeNo}")
   public ResponseEntity<Object> detail(@PathVariable Long storeNo) throws Exception {
-      Optional<Store> storeOptional = storeRepository.findById(storeNo);
+    Optional<Store> storeOptional = storeRepository.findById(storeNo);
 
-      if (storeOptional.isPresent()) {
-          Store store = storeOptional.get();
-          return ResponseEntity.ok().body(store);
-      } else {
-          return ResponseEntity.notFound().build();
-      }
+    if (storeOptional.isPresent()) {
+      Store store = storeOptional.get();
+      return ResponseEntity.ok().body(store);
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
+
+  // 회원 번호로 가게 찾기
+  @GetMapping("/detailByMember")
+  public ResponseEntity<?> detailByMemberNo(HttpSession session, @RequestParam Member member)
+          throws Exception {
+    Member loginUser = (Member) session.getAttribute("loginUser");
+    if (loginUser == null) {
+      throw new Exception("로그인한 회원 정보를 찾을 수 없습니다.");
+    }
+    Optional<Store> storeOptional = storeRepository.findByMemberNo(member);
+
+    if (storeOptional.isPresent()) {
+      Store store = storeOptional.get();
+      return ResponseEntity.ok().body(store);
+    } else {
+      return ResponseEntity.notFound().build();
+    }
+  }
+
 
   // 가게 등록
   @PostMapping("/signup")
@@ -150,7 +157,7 @@ public class StoreController {
     }
     Store store = storeOptional.get();  // Store 객체 가져오기
 
-        if (store.getMemberNo() == loginUser) {
+    if (store.getMemberNo() == loginUser) {
 
       // 가게 상태를 'N'으로 변경하여 탈퇴 처리
       store.setStoreStatus(StoreStatus.N);

@@ -22,6 +22,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.repository.cdi.Eager;
 import org.springframework.stereotype.Component;
 
 @Entity
@@ -45,7 +47,7 @@ import org.springframework.stereotype.Component;
 @DynamicInsert
 @DynamicUpdate
 @Table(name = "ba_member")
-public class Member {
+public class Member implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "member_no")
@@ -55,7 +57,7 @@ public class Member {
   @Column(name = "member_email", unique = true)
   private String memberEmail;
 
-  @NotNull
+
   private String memberPwd;
 
   @NotNull
@@ -98,14 +100,15 @@ public class Member {
   private List<Notice> notices = new ArrayList<>();
 
   @JsonBackReference
-  @OneToMany(mappedBy = "member")
+  @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
   private List<Review> reviews = new ArrayList<>();
 
   @JsonManagedReference
   @OneToMany(mappedBy = "memberNo")
   private List<OrderMenu> OrderMenus = new ArrayList<>();
 
-  @OneToMany(mappedBy = "memberNo", cascade = CascadeType.ALL)
+  @JsonManagedReference
+  @OneToMany(mappedBy = "memberNo")
   private List<Attach> memberAttaches = new ArrayList<>();
 
   public void addAttaches(Attach attach) {

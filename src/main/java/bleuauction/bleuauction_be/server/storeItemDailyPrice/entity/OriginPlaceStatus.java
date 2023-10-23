@@ -1,4 +1,4 @@
-package bleuauction.bleuauction_be.server.item.entity;
+package bleuauction.bleuauction_be.server.storeItemDailyPrice.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum OriginPlaceStatus {
-
   ES("동해"),
   WS("서해"),
   SS("남해"),

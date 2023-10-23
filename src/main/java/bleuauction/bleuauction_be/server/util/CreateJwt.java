@@ -57,7 +57,6 @@ public class CreateJwt {
     if (CreateJwt.EXPIRED_TOKEN.equals(createJwt.isTokenValid(token)) || CreateJwt.INVALID_TOKEN.equals(createJwt.isTokenValid(token))) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createJwt.isTokenValid(token));
     }
-
     return null;
   }
 

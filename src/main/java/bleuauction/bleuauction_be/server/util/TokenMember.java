@@ -1,25 +1,38 @@
 package bleuauction.bleuauction_be.server.util;
 
+import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
+import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
+import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
+import bleuauction.bleuauction_be.server.review.entity.Review;
+import bleuauction.bleuauction_be.server.store.entity.Store;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.lang.reflect.Field;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@AllArgsConstructor
 public class TokenMember {
+  private Long memberNo;
 
-  @NotNull
   private String memberEmail;
 
-  @NotNull
   private String memberName;
 
-  public TokenMember(String memberEmail, String memberName) {
-    this.memberEmail = memberEmail;
-    this.memberName = memberName;
-  }
+
 }
+

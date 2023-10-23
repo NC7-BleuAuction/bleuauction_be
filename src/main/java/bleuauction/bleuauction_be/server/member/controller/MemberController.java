@@ -159,11 +159,8 @@ public class MemberController {
     }
 
     // 회원정보수정
-    @PutMapping("/update")
-    public ResponseEntity<String> updateMember(HttpSession session,
-            @RequestPart("updateMemberRequest") UpdateMemberRequest updateMemberRequest,
-            @RequestPart("profileImage") MultipartFile profileImage)
-            throws Exception {
+    @PostMapping("/update")
+    public ResponseEntity<String> updateMember(HttpSession session, UpdateMemberRequest updateMemberRequest, @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) throws Exception {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
@@ -177,8 +174,7 @@ public class MemberController {
             if (profileImage != null) {
                 log.info("첨부 파일 이름: {}", profileImage.getOriginalFilename());
                 if (profileImage.getSize() > 0) {
-                    Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
-                            "bleuauction-bucket", "member/", profileImage);
+                    Attach attach = ncpObjectStorageService.uploadFile(new Attach(), "bleuauction-bucket", "member/", profileImage);
                     attach.setMemberNo(loginUser);
                     attaches.add(attach);
                 }
@@ -193,6 +189,7 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원을 찾을 수 없습니다.");
         }
     }
+
     // 회원 탈퇴
     @PutMapping("/withdraw")
     public ResponseEntity<String> withdrawMember(HttpSession session) {

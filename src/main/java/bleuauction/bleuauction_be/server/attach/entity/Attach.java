@@ -1,8 +1,6 @@
 package bleuauction.bleuauction_be.server.attach.entity;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.item.entity.Item;
-import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.review.entity.Review;
@@ -49,15 +47,10 @@ public class Attach {
 
   @JsonBackReference
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "itemNo")
-  private Item itemNo;
-
-  @JsonBackReference
-  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "noticeNo")
   private Notice noticeNo;
 
-    @JsonBackReference
+  @JsonBackReference
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "storeNo")
   private Store storeNo;

@@ -2,6 +2,7 @@ package bleuauction.bleuauction_be.server.review.entity;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.store.entity.Store;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;

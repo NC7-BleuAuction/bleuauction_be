@@ -5,6 +5,8 @@ import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.review.entity.Review;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 

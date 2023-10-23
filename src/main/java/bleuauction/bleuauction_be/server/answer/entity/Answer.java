@@ -17,7 +17,6 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
-@ToString
 @DynamicInsert
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

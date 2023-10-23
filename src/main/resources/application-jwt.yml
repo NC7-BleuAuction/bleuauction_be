@@ -1,0 +1,5 @@
+jwt:
+  secret: "oui/AhgjSCW9/KgdgDYXjKZ7gkWsxOy66Rqlu4qaK1U="
+  expriration-tiem: 180000
+  token-prefix: "Bearer "
+#  header-string: "Authorization"

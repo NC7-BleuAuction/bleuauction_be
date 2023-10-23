@@ -46,6 +46,7 @@ out/
 
 ### .yml ###
 /application-local.yml
+/application-jwt.yml
 
 
 ### .html ###

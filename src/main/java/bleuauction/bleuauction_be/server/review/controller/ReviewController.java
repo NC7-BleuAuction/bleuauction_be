@@ -53,7 +53,8 @@ public class ReviewController {
 
 
   @PostMapping("/api/review/add")
-  public ResponseEntity<?> reviewAdd(HttpSession session, Review review, Member member,@RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) throws Exception {
+  public ResponseEntity<?> reviewAdd(HttpSession session, Review review, Member member,
+                                     @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) throws Exception {
     log.info("url ===========> /api/review/add");
     log.info("Review: " + review);
     log.info("MultipartFile: " + multipartFiles);

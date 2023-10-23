@@ -111,6 +111,10 @@ public class Member implements Serializable {
   @OneToMany(mappedBy = "memberNo")
   private List<Attach> memberAttaches = new ArrayList<>();
 
+  @JsonBackReference
+  @OneToMany(mappedBy = "memberNo")
+  private List<Store> ownedStores = new ArrayList<>();
+
   public void addAttaches(Attach attach) {
     memberAttaches.add(attach);
     attach.setMemberNo(this);

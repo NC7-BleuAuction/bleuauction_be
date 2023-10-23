@@ -5,6 +5,7 @@ import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
+import bleuauction.bleuauction_be.server.store.entity.Store;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
@@ -44,7 +45,7 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully");
   }
 
-  // 회원별 주문 조회
+  //회원별 주문 조회
   @GetMapping("/api/order")
   public ResponseEntity<?> findOrders(HttpSession session) {
     Member loginUser = (Member) session.getAttribute("loginUser");
@@ -54,6 +55,29 @@ public class OrderController {
     }
 
     List<Order> orders = orderRepository.findByOrderMenusMemberMemberNo(loginUser);
+
+    if (orders.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문이 없습니다.");
+    } else {
+      for (Order order : orders) {
+        order.calculateOrderPrice(); // 주문 가격 계산
+      }
+      return ResponseEntity.ok(orders);
+    }
+  }
+
+  // 가게(가게주인)별 주문 조회
+  @GetMapping("/api/store/order")
+  public ResponseEntity<?> findOrdersbyStore(HttpSession session) {
+    Member loginUser = (Member) session.getAttribute("loginUser");
+    Long memberNo = loginUser.getMemberNo();
+
+
+    if (loginUser == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인한 사용자가 아닙니다.");
+    }
+
+    List<Order> orders = orderRepository.findOrdersByMemberAndStore(memberNo);
 
     if (orders.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문이 없습니다.");

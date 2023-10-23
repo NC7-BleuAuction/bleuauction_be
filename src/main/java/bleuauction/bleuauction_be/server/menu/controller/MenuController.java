@@ -184,4 +184,31 @@ public class MenuController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("삭제 권한이 없습니다.");
     }
   }
+
+
+  @GetMapping("/api/menu/my-menus")
+  public List<Menu> findMyMenus(HttpSession session) throws Exception {
+    try {
+      // 세션에서 현재 사용자 정보 가져오기
+      Member loginUser = (Member) session.getAttribute("loginUser");
+      Long memberId = loginUser.getMemberNo();
+
+      // 사용자와 연결된 가게 조회
+      Store store = entityManager.createQuery("SELECT s FROM Store s WHERE s.memberNo.memberNo = :memberId", Store.class)
+              .setParameter("memberId", memberId)
+              .getSingleResult();
+
+      // 가게와 연결된 메뉴 목록 조회
+      List<Menu> myMenus = menuRepository.findMenusByStoreNo(store.getStoreNo());
+
+      return myMenus;
+    } catch (Exception e) {
+      e.printStackTrace();
+      // 예외 발생 시, 빈 리스트 반환
+      return new ArrayList<>();
+    }
+  }
+
+
 }
+

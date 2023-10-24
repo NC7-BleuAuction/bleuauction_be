@@ -94,8 +94,7 @@ public class StoreController {
   // 회원 번호로 가게 찾기
   @GetMapping("/detailByMember")
   public ResponseEntity<?> detailByMemberNo(@RequestHeader("Authorization") String authorizationHeader,
-          @RequestParam Member member,
-          TokenMember tokenMember)
+          @RequestParam Member member)
           throws Exception {
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(
             authorizationHeader,
@@ -103,6 +102,7 @@ public class StoreController {
     if (verificationResult != null) {
       return verificationResult;
     }
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     if (loginUser == null) {
@@ -130,13 +130,13 @@ public class StoreController {
       return verificationResult;
     }
 
-    Long memberNo = request.getMemberNo();
-    Optional<Member> loginUser = memberService.findByMemberNo(memberNo);
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     if (loginUser.isPresent() && loginUser.get().getMemberCategory() == MemberCategory.S) {
       try {
         // StoreService를 사용하여 가게 등록 및 중복 검사
-        Store store = storeService.signup(request, memberNo);
+        Store store = storeService.signup(request, tokenMember.getMemberNo());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Store created successfully");
       } catch (IllegalAccessException e) {
@@ -162,11 +162,11 @@ public class StoreController {
       return verificationResult;
     }
 
-    Long memberNo = updateStoreRequest.getMemberNo();
-    Optional<Member> loginUser = memberService.findByMemberNo(memberNo);
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
     if (loginUser.isPresent() && loginUser.get().getMemberCategory() == MemberCategory.S) {
       try {
-        updateStoreService.updateStore(memberNo, updateStoreRequest, profileImage);
+        updateStoreService.updateStore(tokenMember.getMemberNo(), updateStoreRequest, profileImage);
         // 첨부 파일 목록 추가
         List<Attach> attaches = new ArrayList<>();
         if (profileImage != null) {
@@ -182,7 +182,7 @@ public class StoreController {
         ArrayList<Attach> insertAttaches = (ArrayList<Attach>) attachService.addAttachs(
                 (ArrayList<Attach>) attaches);
         // 가게 정보 업데이트
-        updateStoreService.updateStore(memberNo, updateStoreRequest, profileImage);
+        updateStoreService.updateStore(tokenMember.getMemberNo(), updateStoreRequest, profileImage);
         log.info("가게 정보가 업데이트되었습니다. 업데이트된 가게 정보: {}", updateStoreRequest);
         return ResponseEntity.ok("가게 정보가 업데이트되었습니다.");
       } catch (StoreNotFoundException e) {
@@ -195,8 +195,16 @@ public class StoreController {
 
   // 가게 탈퇴
   @PutMapping("/withdraw/{storeNo}")
-  public ResponseEntity<String> withdrawStore(HttpSession session, @PathVariable("storeNo") Long storeNo) {
-    Member loginUser = (Member) session.getAttribute("loginUser");
+  public ResponseEntity<?> withdrawStore(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable("storeNo") Long storeNo) {
+
+    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+    if (verificationResult != null) {
+      return verificationResult;
+    }
+
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+
     Optional<Store> storeOptional = storeService.selectStore(storeNo);
 
     // 체크: storeOptional이 비어있는지 확인
@@ -205,15 +213,14 @@ public class StoreController {
     }
     Store store = storeOptional.get();  // Store 객체 가져오기
 
-    if (store.getMemberNo() == loginUser) {
+    if (store.getMemberNo() == loginUser.get()) {
 
       // 가게 상태를 'N'으로 변경하여 탈퇴 처리
       store.setStoreStatus(StoreStatus.N);
       storeRepository.save(store);
       // 세션을 무효화하여 로그아웃 처리
-      session.invalidate();
 
-      log.info("가게가 성공적으로 폐업되었습니다. 가게번호: {}", loginUser.getMemberNo());
+      log.info("가게가 성공적으로 폐업되었습니다. 가게번호: {}", loginUser.get());
       return ResponseEntity.ok("가게가 성공적으로 폐업되었습니다.");
     } else {
       log.error("가게정보는: {}", ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR));

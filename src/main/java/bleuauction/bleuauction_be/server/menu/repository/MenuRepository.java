@@ -1,6 +1,9 @@
 package bleuauction.bleuauction_be.server.menu.repository;
 
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
+import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +37,13 @@ public class MenuRepository {
 
   public List<Menu> findAll() {
     List<Menu> result = em.createQuery("select m from Menu m", Menu.class)
+            .getResultList();
+    return result;
+  }
+
+  public List<Menu> findByMenuStatus(MenuStatus status) {
+    List<Menu> result = em.createQuery("select m from Menu n where m.menuStatus = :status", Menu.class)
+            .setParameter("status", status)
             .getResultList();
     return result;
   }

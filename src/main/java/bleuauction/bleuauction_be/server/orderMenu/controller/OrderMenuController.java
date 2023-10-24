@@ -20,9 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import retrofit2.http.Path;
 
-import java.sql.Timestamp;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -50,13 +49,14 @@ public class OrderMenuController {
 
   @PostMapping("/api/ordermenu/new")
   @Transactional
-  public ResponseEntity<?> orderMenu(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader,  HttpSession session, OrderMenuDTO orderMenuDTO) {
+  public ResponseEntity<?> orderMenu(@RequestHeader("Authorization") String  authorizationHeader,  HttpSession session, OrderMenuDTO orderMenuDTO) {
 
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
     if (verificationResult != null) {
       return verificationResult;
     }
 
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     // 로그인 유저의 멤버 번호
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
@@ -85,7 +85,7 @@ public class OrderMenuController {
 
   //주문 번호별 주문메뉴 조회
   @GetMapping("/api/ordermenu/{orderNo}")
-  public List<OrderMenu> findOM(HttpSession session, @PathVariable("orderNo") Long orderNo) throws Exception {
+  public List<OrderMenu> findOM(@PathVariable("orderNo") Long orderNo) throws Exception {
 
     Order order = orderService.findOne(orderNo);
 
@@ -100,7 +100,7 @@ public class OrderMenuController {
 
   //주문 별 주문메뉴 조회
   @GetMapping("/api/ordermenu/order/{orderNo}")
-  public List<OrderMenuDTO> findorderOM(HttpSession session, @PathVariable("orderNo") Long orderNo) throws Exception {
+  public List<OrderMenuDTO> findorderOM(@PathVariable("orderNo") Long orderNo) throws Exception {
     Order order = orderService.findOne(orderNo);
 
     try {

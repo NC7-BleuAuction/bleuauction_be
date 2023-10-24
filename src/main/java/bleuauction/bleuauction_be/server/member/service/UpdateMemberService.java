@@ -13,6 +13,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -21,7 +22,7 @@ public class UpdateMemberService {
 
   private final MemberRepository memberRepository;
 
-  public void updateMember(Long memberNo, UpdateMemberRequest updateMemberRequest) throws MemberNotFoundException {
+  public void updateMember(Long memberNo, UpdateMemberRequest updateMemberRequest, MultipartFile multipartFile) throws MemberNotFoundException {
     Optional<Member> optionalMember = memberRepository.findById(memberNo);
 
     if (optionalMember.isPresent()) {
@@ -34,6 +35,7 @@ public class UpdateMemberService {
       member.setMemberPhone(updateMemberRequest.getMemberPhone());
       member.setMemberBank(updateMemberRequest.getMemberBank());
       member.setMemberAccount(updateMemberRequest.getMemberAccount());
+      member.setMemberAttaches((List<Attach>) updateMemberRequest.getProfileImage());
 
       memberRepository.save(member);
 

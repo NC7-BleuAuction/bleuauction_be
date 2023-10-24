@@ -33,5 +33,7 @@ public class TokenMember {
 
   private String memberName;
 
+  private String memberCategory;
+
 }
 

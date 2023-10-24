@@ -34,15 +34,18 @@ public class CreateJwt {
             .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExprirationTiem()))
             .withClaim("memberEmail", tokenMember.getMemberEmail())
             .withClaim("memberName", tokenMember.getMemberName())
+            .withClaim("memberCategory", tokenMember.getMemberCategory().toString())
             .sign(Algorithm.HMAC256(jwtConfig.getSecret()));
   }
 
   public String createRefreshToken(TokenMember tokenMember, String AccessToken) {
     return JWT.create()
             .withSubject(tokenMember.getMemberNo() + "")
-            .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExprirationTiem() * 10))
+            .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExprirationTiem() * 2))
             .withClaim("AccessToken", AccessToken)
+            .withClaim("memberEmail", tokenMember.getMemberEmail())
             .withClaim("memberName", tokenMember.getMemberName())
+            .withClaim("memberCategory", tokenMember.getMemberCategory().toString())
             .sign(Algorithm.HMAC256(jwtConfig.getSecret()));
   }
 
@@ -96,8 +99,10 @@ public class CreateJwt {
         log.info("JWT memberEmail: " + memberEmail);
         String memberName = decodedJWT.getClaim("memberName").asString();
         log.info("JWT memberName: " + memberName);
+        String memberCategory = decodedJWT.getClaim("memberCategory").asString();
+        log.info("JWT memberCategory: " + memberCategory);
 
-        TokenMember tokenMember = new TokenMember(Long.parseLong(memberNo), memberEmail, memberName);
+        TokenMember tokenMember = new TokenMember(Long.parseLong(memberNo), memberEmail, memberName, memberCategory);
         return createAccessToken(tokenMember);
       }
     } catch (Exception e) {

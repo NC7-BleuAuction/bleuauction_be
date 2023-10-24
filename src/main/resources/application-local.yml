@@ -42,3 +42,23 @@ ncp:
 server:
   port: 8080
   shutdown: graceful
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: 8f86e26b25885745851af320068795ef
+            redirect-uri: http://localhost:8080/api/oauth/kakao
+            authorization-grant-type: authorization_code
+            client-authentication-method: POST
+            client-name: Kakao
+            scope:
+              - profile_nickname
+              - account_email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id

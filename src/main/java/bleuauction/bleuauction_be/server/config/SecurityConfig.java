@@ -1,12 +1,16 @@
 package bleuauction.bleuauction_be.server.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -32,10 +36,17 @@ public class SecurityConfig {
                             authorizationManagerRequestMatcherRegistry
                                     .anyRequest()
                                     .permitAll()
+                                    .requestMatchers("/auth/**",
+                                            "/auth/oauth/**",
+                                            "/auth/oauth/kakao/**",
+                                            "/api/auth/**",
+                                            "/api/oauth/kakao")
             )
+            .oauth2Login(withDefaults())
             .logout(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
             .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource)); //CORS Spring Boot 설정
+
 
     return http.build();
   }

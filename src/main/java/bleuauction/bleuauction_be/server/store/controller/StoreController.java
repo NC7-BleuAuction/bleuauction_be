@@ -1,7 +1,5 @@
 package bleuauction.bleuauction_be.server.store.controller;
 
-import static bleuauction.bleuauction_be.server.member.entity.MemberCategory.S;
-
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
@@ -18,17 +16,12 @@ import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
 import bleuauction.bleuauction_be.server.store.service.UpdateStoreService;
 import bleuauction.bleuauction_be.server.util.CreateJwt;
-import bleuauction.bleuauction_be.server.util.JwtConfig;
 import bleuauction.bleuauction_be.server.util.TokenMember;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

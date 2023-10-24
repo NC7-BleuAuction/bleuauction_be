@@ -129,14 +129,15 @@ public class MemberController {
           throw new MemberNotFoundException("패스워드가 유효하지 않습니다!");
         }
 
+        Map<String, Object> authMap = new HashMap<>();
         TokenMember tokenMember = new TokenMember(loginUser.getMemberNo(), loginUser.getMemberEmail(), loginUser.getMemberName(), loginUser.getMemberCategory() + "");
-        Map<String, Object> tokenMap = new HashMap<>();
         String accessToken = createJwt.createAccessToken(tokenMember);
         String refreshToken = createJwt.createRefreshToken(tokenMember, accessToken);
 
-        tokenMap.put("accessToken", accessToken);
-        tokenMap.put("refreshToken", refreshToken);
-        return ResponseEntity.ok(tokenMap);
+        authMap.put("accessToken", accessToken);
+        authMap.put("refreshToken", refreshToken);
+        authMap.put("loginUser", loginUser);
+        return ResponseEntity.ok(authMap);
       } else {
         throw new MemberNotFoundException("이메일과 패스워드를 올바르게 입력해주십시오.");
       }
@@ -218,7 +219,7 @@ public class MemberController {
         ArrayList<Attach> insertAttaches = (ArrayList<Attach>) attachService.addAttachs(
                 (ArrayList<Attach>) attaches);
         // 회원 정보 업데이트
-        updateMemberService.updateMember(tokenMember.getMemberNo(), updateMemberRequest);
+        updateMemberService.updateMember(tokenMember.getMemberNo(), updateMemberRequest, profileImage);
         log.info("회원 정보가 업데이트되었습니다. 업데이트된 회원 정보: {}", updateMemberRequest);
         return ResponseEntity.ok("회원 정보가 업데이트되었습니다.");
       } else {

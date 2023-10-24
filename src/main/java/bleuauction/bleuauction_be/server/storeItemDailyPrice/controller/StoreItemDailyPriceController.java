@@ -52,13 +52,16 @@ public class StoreItemDailyPriceController {
   }
 
   @PostMapping("/api/sidp/add")
-  public ResponseEntity<?> storeItemDailyPriceAdd(HttpSession session, StoreItemDailyPrice storeItemDailyPrice) throws Exception {
+  public ResponseEntity<?> storeItemDailyPriceAdd(@RequestHeader("Authorization") String authorizationHeader, @RequestBody StoreItemDailyPrice storeItemDailyPrice) throws Exception {
     log.info("url ===========> /api/sidp/add");
     log.info("StoreItemDailyPrice: " + storeItemDailyPrice);
 
     try {
-      Optional<Member> loginUserOptional = Optional.ofNullable((Member) session.getAttribute("loginUser"));
-      loginUserOptional.orElseThrow(() -> new Exception("로그인 유저가 없습니다!"));
+      // 토큰 검사
+      ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+      if (verificationResult != null) {
+        return verificationResult; // 토큰 인증 실패
+      }
 
       StoreItemDailyPrice insertStoreItemDailyPrice = storeItemDailyPriceService.addStoreItemDailyPrice(storeItemDailyPrice);
       log.info("insertStoreItemDailyPrice: " + insertStoreItemDailyPrice);

@@ -32,7 +32,6 @@ public class ReviewService {
   public List<Review> selectReviewList(Long storeNo, ReviewStatus reviewStatus, int startPage, int pageRowCount) {
     Pageable pageable = PageRequest.of(startPage, pageRowCount);
     List<Review>  exitingReviewList = reviewRepository.findAllReviewsWithMembersByReviewStatus(storeNo, reviewStatus, pageable);
-    log.info("exitingReviewList:" +exitingReviewList.get(0).getMember());
     for (int i = 0; i < exitingReviewList.size(); i++) {
       List<Attach> exitingAttachList = attachRepository.findAllByReviewAndFileStatus(exitingReviewList.get(i), FileStatus.Y);
       exitingReviewList.get(i).setReviewAttaches(exitingAttachList);

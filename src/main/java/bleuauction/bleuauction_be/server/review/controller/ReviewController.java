@@ -7,6 +7,7 @@ import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import bleuauction.bleuauction_be.server.review.service.ReviewService;
+import bleuauction.bleuauction_be.server.util.CreateJwt;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,27 +25,26 @@ import java.util.*;
 public class ReviewController {
 
   final int PAGE_ROW_COUNT = 4;
+  private final CreateJwt createJwt;
   private final NcpObjectStorageService ncpObjectStorageService;
   private final AttachService attachService;
   private final ReviewService reviewService;
 
   @GetMapping("/api/review/list")
-  public ResponseEntity<?> reviewList(HttpSession session, @RequestParam(value = "storeNo", defaultValue = "1") Long storeNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception{
+  public ResponseEntity<?> reviewList(@RequestHeader("Authorization") String authorizationHeader, @RequestParam(value = "storeNo") Long storeNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception{
     log.info("url ===========> /api/review/list");
-    Optional<Member> loginUserOptional = Optional.ofNullable((Member) session.getAttribute("loginUser"));
-    Member loginUser = loginUserOptional.orElseThrow(() -> new Exception("로그인 유저가 없습니다!"));
-    log.info("loginUser: " + loginUser);
 
     log.info("storeNo: " + storeNo);
     log.info("startPage: " + startPage);
-    try {
-      Map<String, Object> responseMap = new HashMap<>();
-      List<Review> reviewList = reviewService.selectReviewList(storeNo, ReviewStatus.Y, startPage, PAGE_ROW_COUNT);
 
-      responseMap.put("loginUser", loginUser);
-      responseMap.put("reviewList", reviewList);
-      log.info("responseMap: " + responseMap);
-      return ResponseEntity.ok(responseMap);
+    try {
+      // 토큰 검사
+      ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+      if (verificationResult != null) {
+        return verificationResult;
+      }
+      List<Review> reviewList = reviewService.selectReviewList(storeNo, ReviewStatus.Y, startPage, PAGE_ROW_COUNT);
+      return ResponseEntity.ok(reviewList);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
 
@@ -52,18 +52,19 @@ public class ReviewController {
   }
 
   @PostMapping("/api/review/add")
-  public ResponseEntity<?> reviewAdd(HttpSession session, Review review, Member member,
+  public ResponseEntity<?> reviewAdd(@RequestHeader("Authorization") String authorizationHeader, Review review, Member member,
                                      @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) throws Exception {
     log.info("url ===========> /api/review/add");
+    log.info("authorizationHeader: " +  authorizationHeader);
     log.info("Review: " + review);
     log.info("MultipartFile: " + multipartFiles);
 
-    try {
-      Optional<Member> loginUserOptional = Optional.ofNullable((Member) session.getAttribute("loginUser"));
-      Member loginUser = loginUserOptional.orElseThrow(() -> new Exception("로그인 유저가 없습니다!"));
 
-      if (loginUser.getMemberNo() != member.getMemberNo()) {
-        throw new Exception("리뷰 작성권한이 없습니다!");
+    try {
+      // 토큰 검사
+      ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+      if (verificationResult != null) {
+        return verificationResult;
       }
 
       review.setMember(member);
@@ -85,7 +86,7 @@ public class ReviewController {
       }
       return ResponseEntity.ok(insertReview);
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
   }
 

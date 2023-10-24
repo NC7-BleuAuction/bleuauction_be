@@ -6,7 +6,9 @@ import bleuauction.bleuauction_be.server.answer.service.AnswerService;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.review.entity.Review;
+import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
+import bleuauction.bleuauction_be.server.util.CreateJwt;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,30 +28,36 @@ import java.util.*;
 public class AnswerController {
 
   final int PAGE_ROW_COUNT = 2;
-
+  private final CreateJwt createJwt;
   private final AnswerService answerService;
 
   @GetMapping("/api/answer/list")
-  public Map<String, Object> answerList(@RequestParam("reviewNo") Long reviewNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception {
+  public ResponseEntity<?> answerList(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("reviewNo") Long reviewNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception {
     log.info("url ===========> /api/answer/list");
     log.info("reivewNo: " + reviewNo);
     log.info("startPage: " + startPage);
 
+    try {
+      // 토큰 검사
+      ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+      if (verificationResult != null) {
+        return verificationResult;
+      }
+      Page<Answer> page = answerService.selectAnswerList(reviewNo, AnswerStatus.Y, startPage, PAGE_ROW_COUNT);
 
-    Page<Answer> page = answerService.selectAnswerList(reviewNo, AnswerStatus.Y, startPage, PAGE_ROW_COUNT);
+      List<Answer> answerList = page.getContent();
+      long totalRows = page.getTotalElements(); // 전체 행 수
+      int totalPages = page.getTotalPages(); // 전체 페이지 수
 
-    List<Answer> answerList = page.getContent();
-    long totalRows = page.getTotalElements(); // 전체 행 수
-    int totalPages = page.getTotalPages(); // 전체 페이지 수
+      Map<String, Object> answerMap = new HashMap<>();
+      answerMap.put("answerList", answerList);
+      answerMap.put("totalRows", totalRows);
+      answerMap.put("totalPages", totalPages);
 
-    Map<String, Object> answerMap = new HashMap<>();
-    answerMap.put("answerList", answerList);
-    answerMap.put("totalRows", totalRows);
-    answerMap.put("totalPages", totalPages);
-
-    log.info("answerMap: " + answerMap);
-
-    return answerMap;
+      return ResponseEntity.ok(answerMap);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    }
   }
 
   @PostMapping("/api/answer/add")

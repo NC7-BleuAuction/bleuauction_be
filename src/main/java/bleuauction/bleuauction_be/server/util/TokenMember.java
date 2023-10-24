@@ -33,6 +33,5 @@ public class TokenMember {
 
   private String memberName;
 
-
 }
 

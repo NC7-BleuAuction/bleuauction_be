@@ -7,8 +7,10 @@ import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
 
 import bleuauction.bleuauction_be.server.util.CustomTimeDeserializer;
+import bleuauction.bleuauction_be.server.util.TokenMember;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.sql.Time;
 
 import lombok.Getter;
@@ -22,6 +24,28 @@ public class StoreSignUpRequest {
 
     private MemberCategory memberCategory = MemberCategory.S;
     private MemberStatus memberStatus = MemberStatus.Y;
+    private TokenMember tokenMember;
+
+    private Long memberNo;
+
+    private String memberEmail;
+
+    @NotNull
+    private String memberName;
+
+    @NotNull
+    private String memberZipcode;
+
+    @NotNull
+    private String memberAddr;
+
+    @NotNull
+    private String memberDetailAddr;
+
+    @NotNull
+    private String memberPhone;
+
+    private Long storeNo;
 
     @NotEmpty(message = "시장명이 입력되지 않았습니다.")
     private String marketName;

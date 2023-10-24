@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 @Slf4j
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Table(name = "ba_store")
 public class Store {
 

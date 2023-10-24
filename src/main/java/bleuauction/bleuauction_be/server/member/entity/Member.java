@@ -57,7 +57,6 @@ public class Member implements Serializable {
   @Column(name = "member_email", unique = true)
   private String memberEmail;
 
-
   private String memberPwd;
 
   @NotNull

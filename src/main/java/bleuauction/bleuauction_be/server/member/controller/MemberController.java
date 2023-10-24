@@ -50,13 +50,15 @@ import retrofit2.http.POST;
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
 public class MemberController {
-  private final CreateJwt createJwt;
-  private final MemberRepository memberRepository;
-  private final MemberService memberService;
-  private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-  private final NcpObjectStorageService ncpObjectStorageService;
-  private final AttachService attachService;
-  private final Member member;
+
+    private final CreateJwt createJwt;
+    private final MemberRepository memberRepository;
+    private final MemberService memberService;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final NcpObjectStorageService ncpObjectStorageService;
+    private final AttachService attachService;
+    private final Member member;
+    private final UpdateMemberService updateMemberService;
 
 
   @GetMapping("/{memberNo}")

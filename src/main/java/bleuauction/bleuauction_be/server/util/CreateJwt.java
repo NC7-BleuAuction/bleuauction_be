@@ -49,7 +49,6 @@ public class CreateJwt {
             .sign(Algorithm.HMAC256(jwtConfig.getSecret()));
   }
 
-
   public ResponseEntity<?> verifyAccessToken(String authorizationHeader, CreateJwt createJwt) {
     if (authorizationHeader == null || !authorizationHeader.startsWith(jwtConfig.getToekenPrefix())) {
       log.error("jwtConfig.getToekenPrefix()와 불일치! : " + authorizationHeader);

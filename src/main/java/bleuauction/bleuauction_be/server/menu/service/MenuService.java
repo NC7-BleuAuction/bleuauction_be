@@ -3,8 +3,11 @@ package bleuauction.bleuauction_be.server.menu.service;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.entity.MenuSize;
+import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
+import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.CurrentTimestamp;
 import org.springframework.stereotype.Service;
@@ -61,6 +64,10 @@ public class MenuService {
     Menu update = menuRepository.save(updatemenu);
 
     return updatemenu;
+  }
+
+  public List<Menu> findMenusByStatus(MenuStatus status) {
+    return menuRepository.findByMenuStatus(status);
   }
 
 }

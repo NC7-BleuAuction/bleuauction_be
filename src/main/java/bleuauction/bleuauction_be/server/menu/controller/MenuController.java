@@ -6,7 +6,6 @@ import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.menu.service.MenuService;
 import bleuauction.bleuauction_be.server.menu.web.MenuForm;
@@ -183,7 +182,7 @@ public class MenuController {
 
   //디테일(수정)
   @GetMapping("/api/menu/detail/{menuNo}")
-  public ResponseEntity<Menu> detailMenu(HttpSession session, @PathVariable("menuNo") Long menuNo) {
+  public ResponseEntity<Menu> detailMenu(@PathVariable("menuNo") Long menuNo) {
     Menu menu = menuService.findOne(menuNo);
     // 예를 들어, Menu 객체에 Attach 정보가 있을 경우:
     //Attach attach = menu.getMenuAttaches().isEmpty() ? null : menu.getMenuAttaches().get(0);
@@ -194,7 +193,7 @@ public class MenuController {
   }
 
   @PostMapping("/api/menu/update/{menuNo}")
-  public ResponseEntity<?> updateMenu(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader, HttpSession session, Menu menu,
+  public ResponseEntity<?> updateMenu(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, Menu menu,
                                            @PathVariable("menuNo") Long menuNo,
                                            @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
 
@@ -206,6 +205,7 @@ public class MenuController {
       return verificationResult;
     }
 
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     Long memberId = loginUser.get().getMemberNo();

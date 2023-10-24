@@ -79,7 +79,8 @@ public class MemberController {
   }
 
   @GetMapping("/form")
-  public ResponseEntity<Map<String, String>> form(@CookieValue(required = false) String memberEmail) {
+  public ResponseEntity<Map<String, String>> form(
+          @CookieValue(required = false) String memberEmail) {
     Map<String, String> response = new HashMap<>();
     response.put("memberEmail", memberEmail);
     return ResponseEntity.ok().body(response);
@@ -87,7 +88,8 @@ public class MemberController {
 
   @GetMapping("/delete")
   public void delete(Long memberNo) throws Exception {
-    memberRepository.findById(memberNo).ifPresentOrElse(memberRepository::delete, () -> new MemberNotFoundException("해당 번호의 회원이 없습니다."));
+    memberRepository.findById(memberNo).ifPresentOrElse(memberRepository::delete,
+            () -> new MemberNotFoundException("해당 번호의 회원이 없습니다."));
   }
 
   @GetMapping("/logout")
@@ -112,13 +114,16 @@ public class MemberController {
 
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) throws Exception {
-    log.error("로그인 정보 확인 >>> {} ,  >>> {}", loginRequest.getMemberEmail(), loginRequest.getMemberPwd());
+    log.error("로그인 정보 확인 >>> {} ,  >>> {}", loginRequest.getMemberEmail(),
+            loginRequest.getMemberPwd());
 
     try {
       if (loginRequest != null) {
-        Member loginUser = memberRepository.findByMemberEmail(loginRequest.getMemberEmail()).orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 이메일 입니다!"));
+        Member loginUser = memberRepository.findByMemberEmail(loginRequest.getMemberEmail())
+                .orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 이메일 입니다!"));
 
-        if (!passwordEncoder.matches(loginRequest.getMemberPwd(), loginUser.getMemberPwd())) {
+        if (!passwordEncoder.matches(loginRequest.getMemberPwd(),
+                loginUser.getMemberPwd())) {
           throw new MemberNotFoundException("패스워드가 유효하지 않습니다!");
         }
 
@@ -139,7 +144,8 @@ public class MemberController {
   }
 
   @PostMapping("/accTokRefresh")
-  public ResponseEntity<?> refreshAccessToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+  public ResponseEntity<?> refreshAccessToken(
+          @RequestBody RefreshTokenRequest refreshTokenRequest) {
     log.info("url ===========> /member/accTokRefresh");
 
     try {
@@ -157,37 +163,65 @@ public class MemberController {
       return ResponseEntity.ok(tokenMap);
 
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CreateJwt.REFRESH_ACCESS_TOKEN_ERROR);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body(CreateJwt.REFRESH_ACCESS_TOKEN_ERROR);
     }
   }
 
   // 회원정보수정
   @PostMapping("/update")
-  public ResponseEntity<String> updateMember(HttpSession session, UpdateMemberRequest updateMemberRequest, @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) throws Exception {
-    Member loginUser = (Member) session.getAttribute("loginUser");
-    if (loginUser == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-    }
-    try {
+  public ResponseEntity<?> updateMember(
+          @RequestHeader("Authorization") String authorizationHeader,
+          TokenMember tokenMember,
+          UpdateMemberRequest updateMemberRequest,
+          @RequestPart(value = "profileImage", required = false) MultipartFile profileImage)
+          throws Exception {
 
-      // UpdateMemberService 클래스를 사용하여 회원 정보 업데이트
-      UpdateMemberService updateMemberService = new UpdateMemberService(memberRepository);
-      // 첨부 파일 목록 추가
-      List<Attach> attaches = new ArrayList<>();
-      if (profileImage != null) {
-        log.info("첨부 파일 이름: {}", profileImage.getOriginalFilename());
-        if (profileImage.getSize() > 0) {
-          Attach attach = ncpObjectStorageService.uploadFile(new Attach(), "bleuauction-bucket", "member/", profileImage);
-          attach.setMemberNo(loginUser);
-          attaches.add(attach);
-        }
+    try {
+      ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(
+              authorizationHeader,
+              createJwt);
+      log.error("검증결과는? " + verificationResult);
+      if (verificationResult != null) {
+        return verificationResult;
       }
-      // 첨부 파일 저장 및 결과를 insertAttaches에 할당
-      ArrayList<Attach> insertAttaches = (ArrayList<Attach>) attachService.addAttachs((ArrayList<Attach>) attaches);
-      // 회원 정보 업데이트
-      updateMemberService.updateMember(loginUser.getMemberNo(), updateMemberRequest);
-      log.info("회원 정보가 업데이트되었습니다. 업데이트된 회원 정보: {}", updateMemberRequest);
-      return ResponseEntity.ok("회원 정보가 업데이트되었습니다.");
+
+      Optional<Member> loginUserOptional = memberService.findByMemberNo(tokenMember.getMemberNo());
+
+      if (loginUserOptional.isPresent()) {
+        Member loginUser = loginUserOptional.get();
+
+        // UpdateMemberRequest에 로그인 사용자 정보 채우기
+        updateMemberRequest.setMemberNo(loginUser.getMemberNo());
+
+        // UpdateMemberService 클래스를 사용하여 회원 정보 업데이트
+        UpdateMemberService updateMemberService = new UpdateMemberService(memberRepository);
+
+        log.error("업데이트는? " + updateMemberService);
+
+
+        // 첨부 파일 목록 추가
+        List<Attach> attaches = new ArrayList<>();
+        if (profileImage != null) {
+          log.info("첨부 파일 이름: {}", profileImage.getOriginalFilename());
+          if (profileImage.getSize() > 0) {
+            Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
+                    "bleuauction-bucket", "member/", profileImage);
+            attach.setMemberNo(loginUser);
+//                    log.info("첨부파일 회원 번호는? " + (tokenMember.getMemberNo()));
+            attaches.add(attach);
+          }
+        }
+        // 첨부 파일 저장 및 결과를 insertAttaches에 할당
+        ArrayList<Attach> insertAttaches = (ArrayList<Attach>) attachService.addAttachs(
+                (ArrayList<Attach>) attaches);
+        // 회원 정보 업데이트
+        updateMemberService.updateMember(tokenMember.getMemberNo(), updateMemberRequest);
+        log.info("회원 정보가 업데이트되었습니다. 업데이트된 회원 정보: {}", updateMemberRequest);
+        return ResponseEntity.ok("회원 정보가 업데이트되었습니다.");
+      } else {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원을 찾을 수 없습니다.");
+      }
     } catch (MemberNotFoundException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원을 찾을 수 없습니다.");
     }
@@ -211,7 +245,8 @@ public class MemberController {
       log.info("회원이 성공적으로 탈퇴되었습니다. 회원번호: {}", loginUser.getMemberNo());
       return ResponseEntity.ok("회원이 성공적으로 탈퇴되었습니다.");
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 탈퇴 중 오류가 발생했습니다.");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body("회원 탈퇴 중 오류가 발생했습니다.");
     }
   }
 

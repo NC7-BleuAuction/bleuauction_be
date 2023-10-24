@@ -224,28 +224,35 @@ public class MemberController {
     }
 
 
-    // 회원 탈퇴
-    @PutMapping("/withdraw")
-    public ResponseEntity<String> withdrawMember(HttpSession session) {
-        Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-        }
-        try {
-            // 회원 상태를 'N'으로 변경하여 탈퇴 처리
-            loginUser.setMemberStatus(MemberStatus.N);
-            memberRepository.save(loginUser);
+  // 회원 탈퇴
+  @PutMapping("/withdraw")
+  public ResponseEntity<?> withdrawMember(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader, HttpSession session) {
 
-            // 세션을 무효화하여 로그아웃 처리
-            session.invalidate();
-
-            log.info("회원이 성공적으로 탈퇴되었습니다. 회원번호: {}", loginUser.getMemberNo());
-            return ResponseEntity.ok("회원이 성공적으로 탈퇴되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("회원 탈퇴 중 오류가 발생했습니다.");
-        }
+    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+    if (verificationResult != null) {
+      return verificationResult;
     }
+
+    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+
+    if (loginUser == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+    }
+    try {
+      // 회원 상태를 'N'으로 변경하여 탈퇴 처리
+      loginUser.get().setMemberStatus(MemberStatus.N);
+      memberRepository.save(loginUser.get());
+
+      // 세션을 무효화하여 로그아웃 처리
+      session.invalidate();
+
+      log.info("회원이 성공적으로 탈퇴되었습니다. 회원번호: {}", loginUser.get().getMemberNo());
+      return ResponseEntity.ok("회원이 성공적으로 탈퇴되었습니다.");
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body("회원 탈퇴 중 오류가 발생했습니다.");
+    }
+  }
 
 
     // 회원 프로필 삭제

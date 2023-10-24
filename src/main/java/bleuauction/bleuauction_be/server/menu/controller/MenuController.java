@@ -93,6 +93,17 @@ public class MenuController {
   }
 
   //가게별 목록 조회
+  @GetMapping(value = "/api/menu/{storeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<Menu> findMenusByStoreNo(@PathVariable("storeNo") Long storeNo) throws Exception {
+    try {
+      List<Menu> menus = menuRepository.findMenusByStoreNo(storeNo);
+      return menus;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
+  }
+  //가게(회원)별 목록 조회
   @GetMapping(value = "/api/menu/store", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> findMenusByStoreNo(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader) throws Exception {
     try {

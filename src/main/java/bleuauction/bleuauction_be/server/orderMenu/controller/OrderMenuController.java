@@ -90,7 +90,7 @@ public class OrderMenuController {
     Order order = orderService.findOne(orderNo);
 
     try {
-      List<OrderMenu> orderMenus = orderMenuService.findOrderMenusByOrderNo(order.getOrderNo());
+      List<OrderMenu> orderMenus = orderMenuService.findOrderMenusByOrderNoAndStatusY(order.getOrderNo());
       return orderMenus;
     } catch (Exception e) {
       e.printStackTrace();
@@ -104,7 +104,7 @@ public class OrderMenuController {
     Order order = orderService.findOne(orderNo);
 
     try {
-      List<OrderMenu> orderMenus = orderMenuService.findOrderMenusByOrderNo(order.getOrderNo());
+      List<OrderMenu> orderMenus = orderMenuService.findOrderMenusByOrderNoAndStatusY(order.getOrderNo());
 
       // OrderMenu 엔터티를 OrderMenuDTO로 매핑하여 반환
       List<OrderMenuDTO> orderMenuDTOs = orderMenus.stream()

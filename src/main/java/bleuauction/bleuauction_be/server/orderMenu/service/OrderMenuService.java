@@ -4,6 +4,7 @@ import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
+import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
 import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,11 +57,31 @@ public class OrderMenuService {
   }
 
   //주문 번호 별 주문메뉴 조회
+//  @Transactional(readOnly = true)
+//  public List<OrderMenu> findOrderMenusByOrderNo(Long orderNo) {
+//    Order order = orderRepository.findOne(orderNo);
+//    if (order != null) {
+//      return order.getOrderMenus();
+//    } else {
+//      // 주어진 orderNo에 해당하는 주문을 찾지 못한 경우 또는 주문에 해당하는 메뉴가 없는 경우 처리
+//      return new ArrayList<>();
+//    }
+//  }
+
   @Transactional(readOnly = true)
-  public List<OrderMenu> findOrderMenusByOrderNo(Long orderNo) {
+  public List<OrderMenu> findOrderMenusByOrderNoAndStatusY(Long orderNo) {
     Order order = orderRepository.findOne(orderNo);
     if (order != null) {
-      return order.getOrderMenus();
+      List<OrderMenu> orderMenus = order.getOrderMenus();
+      List<OrderMenu> result = new ArrayList<>();
+
+      for (OrderMenu orderMenu : orderMenus) {
+        if (orderMenu.getOrderMenuStatus().equals(OrderMenuStatus.Y)) {
+          result.add(orderMenu);
+        }
+      }
+
+      return result;
     } else {
       // 주어진 orderNo에 해당하는 주문을 찾지 못한 경우 또는 주문에 해당하는 메뉴가 없는 경우 처리
       return new ArrayList<>();

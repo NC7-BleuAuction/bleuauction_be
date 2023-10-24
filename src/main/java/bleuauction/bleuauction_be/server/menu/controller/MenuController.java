@@ -6,6 +6,7 @@ import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.menu.service.MenuService;
 import bleuauction.bleuauction_be.server.menu.web.MenuForm;
@@ -95,7 +96,7 @@ public class MenuController {
   @GetMapping(value = "/api/menu/{storeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Menu> findMenusByStoreNo(@PathVariable("storeNo") Long storeNo) throws Exception {
     try {
-      List<Menu> menus = menuRepository.findMenusByStoreNo(storeNo);
+      List<Menu> menus = menuRepository.findMenusByStoreNoAndStatus(storeNo,MenuStatus.Y);
       return menus;
     } catch (Exception e) {
       e.printStackTrace();
@@ -118,7 +119,7 @@ public class MenuController {
 
       Optional<Store> store = storeRepository.findByMemberNo(loginUser.get());
 
-      List<Menu> menus = menuRepository.findMenusByStoreNo(store.get().getStoreNo());
+      List<Menu> menus = menuRepository.findMenusByStoreNoAndStatus(store.get().getStoreNo(), MenuStatus.Y);
       return ResponseEntity.ok(menus);
     } catch (Exception e) {
       e.printStackTrace();

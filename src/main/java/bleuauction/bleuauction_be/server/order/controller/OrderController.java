@@ -50,16 +50,44 @@ public class OrderController {
   }
 
   //회원별 주문 조회
+//  @GetMapping("/api/order")
+//  public ResponseEntity<?> findOrders(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader,  HttpSession session) {
+//
+//    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+//    if (verificationResult != null) {
+//      return verificationResult;
+//    }
+//    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+//
+//
+//    if (loginUser == null) {
+//      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인한 사용자가 아닙니다.");
+//    }
+//
+//    List<Order> orders = orderRepository.findByOrderMenusMemberMemberNo(loginUser.get());
+//
+//    if (orders.isEmpty()) {
+//      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문이 없습니다.");
+//    } else {
+//      for (Order order : orders) {
+//        order.calculateOrderPrice(); // 주문 가격 계산
+//      }
+//      return ResponseEntity.ok(orders);
+//    }
+//  }
+
+  // getTokenMember() 예시
+  //회원별 주문 조회
   @GetMapping("/api/order")
-  public ResponseEntity<?> findOrders(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader,  HttpSession session) {
+  public ResponseEntity<?> findOrders(@RequestHeader("Authorization") String  authorizationHeader) {
 
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
     if (verificationResult != null) {
       return verificationResult;
     }
 
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
-
 
     if (loginUser == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인한 사용자가 아닙니다.");

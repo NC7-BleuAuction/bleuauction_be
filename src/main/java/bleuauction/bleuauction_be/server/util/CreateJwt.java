@@ -38,11 +38,11 @@ public class CreateJwt {
             .sign(Algorithm.HMAC256(jwtConfig.getSecret()));
   }
 
-  public String createRefreshToken(TokenMember tokenMember, String AccessToken) {
+  public String createRefreshToken(TokenMember tokenMember, String accessToken) {
     return JWT.create()
             .withSubject(tokenMember.getMemberNo() + "")
             .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExprirationTiem() * 2))
-            .withClaim("AccessToken", AccessToken)
+            .withClaim("accessToken", accessToken)
             .withClaim("memberEmail", tokenMember.getMemberEmail())
             .withClaim("memberName", tokenMember.getMemberName())
             .withClaim("memberCategory", tokenMember.getMemberCategory().toString())
@@ -56,9 +56,10 @@ public class CreateJwt {
     }
 
     String token = authorizationHeader.replace(jwtConfig.getToekenPrefix(), "");
+    String validCheckStr = createJwt.isTokenValid(token);
 
-    if (CreateJwt.EXPIRED_TOKEN.equals(createJwt.isTokenValid(token)) || CreateJwt.INVALID_TOKEN.equals(createJwt.isTokenValid(token))) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createJwt.isTokenValid(token));
+    if (CreateJwt.EXPIRED_TOKEN.equals(validCheckStr) || CreateJwt.INVALID_TOKEN.equals(validCheckStr)) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(validCheckStr);
     }
 
     return null;
@@ -82,6 +83,7 @@ public class CreateJwt {
       }
     } catch (JWTVerificationException e) {
       log.error("잘못된 JWT 토큰 입니다: " + e.getMessage());
+      log.error("jwtToken: ", jwtToken);
       return INVALID_TOKEN;
     }
   }
@@ -107,6 +109,30 @@ public class CreateJwt {
       }
     } catch (Exception e) {
       log.error("accessToken 재발급 중 에러 발생! " + e.getMessage());
+    }
+    return null;
+  }
+
+  public TokenMember getTokenMember(String accessToken) {
+    log.info("isRefreshTokenValid(): ");
+    log.info("accessToken: " + accessToken);
+    try {
+      if (VALID_TOKEN.equals(isTokenValid(accessToken))) {
+        DecodedJWT decodedJWT = JWT.decode(accessToken);
+        String memberNo = decodedJWT.getSubject();
+        log.info("JWT memberNo: " + memberNo);
+        String memberEmail = decodedJWT.getClaim("memberEmail").asString();
+        log.info("JWT memberEmail: " + memberEmail);
+        String memberName = decodedJWT.getClaim("memberName").asString();
+        log.info("JWT memberName: " + memberName);
+        String memberCategory = decodedJWT.getClaim("memberCategory").asString();
+        log.info("JWT memberCategory: " + memberCategory);
+
+        TokenMember tokenMember = new TokenMember(Long.parseLong(memberNo), memberEmail, memberName, memberCategory);
+        return tokenMember;
+      }
+    } catch (Exception e) {
+      log.error("accessToken 디코딩 중 에러 발생! " + e.getMessage());
     }
     return null;
   }

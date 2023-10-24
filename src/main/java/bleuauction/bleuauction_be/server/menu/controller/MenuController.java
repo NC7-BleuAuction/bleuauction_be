@@ -54,12 +54,12 @@ public class MenuController {
   //등록처리
   @PostMapping("/api/menu/new")
   @Transactional
-  public ResponseEntity<?> menu(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader,  HttpSession session, Menu menu, @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
+  public ResponseEntity<?> menu(@RequestHeader("Authorization") String  authorizationHeader,  HttpSession session, Menu menu, @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
     if (verificationResult != null) {
       return verificationResult;
     }
-
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     Long memberId = loginUser.get().getMemberNo();
@@ -141,7 +141,7 @@ public class MenuController {
 
   //삭제
   @PostMapping("/api/menu/delete/{menuNo}")
-  public ResponseEntity<?> deleteMenu(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable("menuNo") Long menuNo) {
+  public ResponseEntity<?> deleteMenu(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable("menuNo") Long menuNo) {
     Menu menu = menuService.findOne(menuNo);
 
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
@@ -149,6 +149,7 @@ public class MenuController {
       return verificationResult;
     }
 
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     Long memberId = loginUser.get().getMemberNo();

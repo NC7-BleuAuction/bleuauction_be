@@ -50,6 +50,7 @@ import retrofit2.http.POST;
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
 public class MemberController {
+
   private final CreateJwt createJwt;
   private final MemberRepository memberRepository;
   private final MemberService memberService;
@@ -127,7 +128,9 @@ public class MemberController {
           throw new MemberNotFoundException("패스워드가 유효하지 않습니다!");
         }
 
-        TokenMember tokenMember = new TokenMember(loginUser.getMemberNo(), loginUser.getMemberEmail(), loginUser.getMemberName(), loginUser.getMemberCategory() + "");
+        TokenMember tokenMember = new TokenMember(loginUser.getMemberNo(),
+                loginUser.getMemberEmail(), loginUser.getMemberName(),
+                loginUser.getMemberCategory() + "");
         Map<String, Object> tokenMap = new HashMap<>();
         String accessToken = createJwt.createAccessToken(tokenMember);
         String refreshToken = createJwt.createRefreshToken(tokenMember, accessToken);
@@ -140,9 +143,9 @@ public class MemberController {
       }
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
     }
   }
-
   @PostMapping("/accTokRefresh")
   public ResponseEntity<?> refreshAccessToken(
           @RequestBody RefreshTokenRequest refreshTokenRequest) {
@@ -174,32 +177,25 @@ public class MemberController {
           @RequestHeader("Authorization") String authorizationHeader,
           TokenMember tokenMember,
           UpdateMemberRequest updateMemberRequest,
-          @RequestPart(value = "profileImage", required = false) MultipartFile profileImage)
-          throws Exception {
-
+          UpdateMemberService updateMemberService,
+          @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
     try {
       ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(
               authorizationHeader,
               createJwt);
-      log.error("검증결과는? " + verificationResult);
+
       if (verificationResult != null) {
         return verificationResult;
       }
 
       Optional<Member> loginUserOptional = memberService.findByMemberNo(tokenMember.getMemberNo());
-
       if (loginUserOptional.isPresent()) {
         Member loginUser = loginUserOptional.get();
-
         // UpdateMemberRequest에 로그인 사용자 정보 채우기
         updateMemberRequest.setMemberNo(loginUser.getMemberNo());
 
-        // UpdateMemberService 클래스를 사용하여 회원 정보 업데이트
-        UpdateMemberService updateMemberService = new UpdateMemberService(memberRepository);
-
-        log.error("업데이트는? " + updateMemberService);
-
-
+        // 회원 정보 업데이트
+        updateMemberService.updateMember(tokenMember.getMemberNo(), updateMemberRequest);
         // 첨부 파일 목록 추가
         List<Attach> attaches = new ArrayList<>();
         if (profileImage != null) {
@@ -207,7 +203,7 @@ public class MemberController {
           if (profileImage.getSize() > 0) {
             Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
                     "bleuauction-bucket", "member/", profileImage);
-            attach.setMemberNo(loginUser);
+            attach.setMemberNo(loginUserOptional.get());
 //                    log.info("첨부파일 회원 번호는? " + (tokenMember.getMemberNo()));
             attaches.add(attach);
           }
@@ -215,9 +211,7 @@ public class MemberController {
         // 첨부 파일 저장 및 결과를 insertAttaches에 할당
         ArrayList<Attach> insertAttaches = (ArrayList<Attach>) attachService.addAttachs(
                 (ArrayList<Attach>) attaches);
-        // 회원 정보 업데이트
-        updateMemberService.updateMember(tokenMember.getMemberNo(), updateMemberRequest);
-        log.info("회원 정보가 업데이트되었습니다. 업데이트된 회원 정보: {}", updateMemberRequest);
+
         return ResponseEntity.ok("회원 정보가 업데이트되었습니다.");
       } else {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원을 찾을 수 없습니다.");
@@ -229,20 +223,27 @@ public class MemberController {
 
   // 회원 탈퇴
   @PutMapping("/withdraw")
-  public ResponseEntity<String> withdrawMember(HttpSession session) {
-    Member loginUser = (Member) session.getAttribute("loginUser");
+  public ResponseEntity<?> withdrawMember(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader, HttpSession session) {
+
+    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+    if (verificationResult != null) {
+      return verificationResult;
+    }
+
+    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+
     if (loginUser == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
     }
     try {
       // 회원 상태를 'N'으로 변경하여 탈퇴 처리
-      loginUser.setMemberStatus(MemberStatus.N);
-      memberRepository.save(loginUser);
+      loginUser.get().setMemberStatus(MemberStatus.N);
+      memberRepository.save(loginUser.get());
 
       // 세션을 무효화하여 로그아웃 처리
       session.invalidate();
 
-      log.info("회원이 성공적으로 탈퇴되었습니다. 회원번호: {}", loginUser.getMemberNo());
+      log.info("회원이 성공적으로 탈퇴되었습니다. 회원번호: {}", loginUser.get().getMemberNo());
       return ResponseEntity.ok("회원이 성공적으로 탈퇴되었습니다.");
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

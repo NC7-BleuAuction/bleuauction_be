@@ -12,6 +12,7 @@ import bleuauction.bleuauction_be.server.menu.service.MenuService;
 import bleuauction.bleuauction_be.server.menu.web.MenuForm;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
+import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.util.TokenMember;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpSession;
@@ -41,6 +42,7 @@ public class MenuController {
   private final EntityManager entityManager;
   private final CreateJwt createJwt;
   private final MemberService memberService;
+  private final StoreRepository storeRepository;
 
   //등록
   @GetMapping("/api/menu/new")
@@ -91,14 +93,25 @@ public class MenuController {
   }
 
   //가게별 목록 조회
-  @GetMapping(value = "/api/menu/{storeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<Menu> findMenusByStoreNo(@PathVariable("storeNo") Long storeNo) throws Exception {
+  @GetMapping(value = "/api/menu/store", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> findMenusByStoreNo(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader) throws Exception {
     try {
-      List<Menu> menus = menuRepository.findMenusByStoreNo(storeNo);
-      return menus;
+
+      ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+      if (verificationResult != null) {
+        return verificationResult;
+      }
+
+      // 로그인 유저의 멤버 번호
+      Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+
+      Optional<Store> store = storeRepository.findByMemberNo(loginUser.get());
+
+      List<Menu> menus = menuRepository.findMenusByStoreNo(store.get().getStoreNo());
+      return ResponseEntity.ok(menus);
     } catch (Exception e) {
       e.printStackTrace();
-      return new ArrayList<>();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("등록된 메뉴가 없습니다.");
     }
   }
 

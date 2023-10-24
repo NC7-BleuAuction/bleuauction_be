@@ -66,8 +66,5 @@ public class MenuService {
     return updatemenu;
   }
 
-  public List<Menu> findMenusByStatus(MenuStatus status) {
-    return menuRepository.findByMenuStatus(status);
-  }
 
 }

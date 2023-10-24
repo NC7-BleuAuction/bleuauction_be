@@ -34,17 +34,29 @@ public class MenuRepository {
     return result;
   }
 
+  public List<Menu> findMenusByStoreNoAndStatus(Long storeNo, MenuStatus menuStatus) {
+    String jpql = "SELECT m FROM Menu m WHERE m.storeNo.storeNo = :storeNo AND m.menuStatus = :menuStatus";
+    TypedQuery<Menu> query = em.createQuery(jpql, Menu.class);
+    query.setParameter("storeNo", storeNo);
+    query.setParameter("menuStatus", menuStatus);
+    List<Menu> result = query.getResultList();
+    return result;
+  }
 
   public List<Menu> findAll() {
-    List<Menu> result = em.createQuery("select m from Menu m", Menu.class)
-            .getResultList();
+    String jpql = "SELECT m FROM Menu m WHERE m.menuStatus = :menuStatus";
+    TypedQuery<Menu> query = em.createQuery(jpql, Menu.class);
+    query.setParameter("menuStatus", MenuStatus.Y);
+    List<Menu> result = query.getResultList();
     return result;
   }
 
-  public List<Menu> findByMenuStatus(MenuStatus status) {
-    List<Menu> result = em.createQuery("select m from Menu n where m.menuStatus = :status", Menu.class)
-            .setParameter("status", status)
-            .getResultList();
-    return result;
-  }
+//  public List<Menu> findAll() {
+//    List<Menu> result = em.createQuery("select m from Menu m", Menu.class)
+//            .getResultList();
+//    return result;
+//  }
+
+
+
 }

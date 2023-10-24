@@ -1,5 +1,7 @@
 package bleuauction.bleuauction_be.server.store.dto;
 
+import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
+import bleuauction.bleuauction_be.server.util.TokenMember;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.sql.Time;
@@ -11,9 +13,27 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 public class UpdateStoreRequest {
 
-    private Long storeNo;
+    private MemberCategory memberCategory = MemberCategory.S;
+    private TokenMember tokenMember;
 
     private Long memberNo;
+
+    @NotNull
+    private String memberName;
+
+    @NotNull
+    private String memberZipcode;
+
+    @NotNull
+    private String memberAddr;
+
+    @NotNull
+    private String memberDetailAddr;
+
+    @NotNull
+    private String memberPhone;
+
+    private Long storeNo;
 
     @NotNull(message = "시장명은 필수 입력값입니다.")
     @Size(min = 2, max = 20)

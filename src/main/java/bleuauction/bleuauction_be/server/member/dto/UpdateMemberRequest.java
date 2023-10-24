@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.member.dto;
 
+import bleuauction.bleuauction_be.server.util.TokenMember;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UpdateMemberRequest {
 
     private Long memberNo;
+    private TokenMember tokenMember;
 
     @NotNull(message = "비밀번호는 필수 입력값입니다.")
     @Size(min = 4, max = 20, message = "비밀번호는 8자 이상 20자 이하로 입력해주세요.")

@@ -127,7 +127,7 @@ public class MemberController {
           throw new MemberNotFoundException("패스워드가 유효하지 않습니다!");
         }
 
-        TokenMember tokenMember = new TokenMember(loginUser.getMemberNo(), loginUser.getMemberEmail(), loginUser.getMemberName(), loginUser.getMemberCategory().toString());
+        TokenMember tokenMember = new TokenMember(loginUser.getMemberNo(), loginUser.getMemberEmail(), loginUser.getMemberName(), loginUser.getMemberCategory() + "");
         Map<String, Object> tokenMap = new HashMap<>();
         String accessToken = createJwt.createAccessToken(tokenMember);
         String refreshToken = createJwt.createRefreshToken(tokenMember, accessToken);

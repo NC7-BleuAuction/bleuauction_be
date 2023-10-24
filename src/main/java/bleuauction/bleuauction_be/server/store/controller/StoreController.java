@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,13 +50,19 @@ public class StoreController {
   private final UpdateStoreService updateStoreService;
 
 
-  @GetMapping("/list")
-  public ResponseEntity<?> storeList(@RequestHeader("Authorization") String  authorizationHeader, @RequestParam(name = "startPage", defaultValue = "0") int startPage, @RequestParam(name = "pageLowCount", defaultValue = "3") int pageLowCount) throws Exception {
+  @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> storeList(@RequestHeader("Authorization") String  authorizationHeader,
+          @RequestParam(name = "startPage", defaultValue = "0")
+          int startPage,
+          @RequestParam(name = "pageLowCount", defaultValue = "3")
+          int pageLowCount,
+          Store store) throws Exception {
     log.info("url ===========> /store/list");
     log.info("startPage: " + startPage);
     log.info("authorizationHeader: " + authorizationHeader);
 
     try {
+      Optional<Store> stores = storeRepository.findBystoreNo(store.getStoreNo());
       // 홈에 기본 출력되는 가게리스트에 대한 요청만 예외적으로 토큰검사 제외
       if (authorizationHeader != null && !CreateJwt.UNAUTHORIZED_ACCESS.equals(authorizationHeader)) {
         ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
@@ -86,11 +93,20 @@ public class StoreController {
 
   // 회원 번호로 가게 찾기
   @GetMapping("/detailByMember")
-  public ResponseEntity<?> detailByMemberNo(HttpSession session, @RequestParam Member member)
+  public ResponseEntity<?> detailByMemberNo(@RequestHeader("Authorization") String authorizationHeader,
+          @RequestParam Member member,
+          TokenMember tokenMember)
           throws Exception {
-    Member loginUser = (Member) session.getAttribute("loginUser");
+    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(
+            authorizationHeader,
+            createJwt);
+    if (verificationResult != null) {
+      return verificationResult;
+    }
+    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+
     if (loginUser == null) {
-      throw new Exception("로그인한 회원 정보를 찾을 수 없습니다.");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
     }
     Optional<Store> storeOptional = storeRepository.findByMemberNo(member);
 

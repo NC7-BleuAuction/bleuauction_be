@@ -115,57 +115,37 @@ public class MemberController {
 
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) throws Exception {
-    log.error("로그인 정보 확인 >>> {} ,  >>> {}", loginRequest.getMemberEmail(),
-            loginRequest.getMemberPwd());
+      log.error("로그인 정보 확인 >>> {} ,  >>> {}", loginRequest.getMemberEmail(),
+              loginRequest.getMemberPwd());
 
-    try {
-      if (loginRequest != null) {
-        Member loginUser = memberRepository.findByMemberEmail(loginRequest.getMemberEmail())
-                .orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 이메일 입니다!"));
+      try {
+          if (loginRequest != null) {
+              Member loginUser = memberRepository.findByMemberEmail(loginRequest.getMemberEmail())
+                      .orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 이메일 입니다!"));
 
-        if (!passwordEncoder.matches(loginRequest.getMemberPwd(),
-                loginUser.getMemberPwd())) {
-          throw new MemberNotFoundException("패스워드가 유효하지 않습니다!");
-        }
+              if (!passwordEncoder.matches(loginRequest.getMemberPwd(),
+                      loginUser.getMemberPwd())) {
+                  throw new MemberNotFoundException("패스워드가 유효하지 않습니다!");
+              }
 
-        TokenMember tokenMember = new TokenMember(loginUser.getMemberNo(), loginUser.getMemberEmail(), loginUser.getMemberName(), loginUser.getMemberCategory() + "");
-        Map<String, Object> tokenMap = new HashMap<>();
-        String accessToken = createJwt.createAccessToken(tokenMember);
-        String refreshToken = createJwt.createRefreshToken(tokenMember, accessToken);
+              TokenMember tokenMember = new TokenMember(loginUser.getMemberNo(),
+                      loginUser.getMemberEmail(), loginUser.getMemberName(),
+                      loginUser.getMemberCategory() + "");
+              Map<String, Object> tokenMap = new HashMap<>();
+              String accessToken = createJwt.createAccessToken(tokenMember);
+              String refreshToken = createJwt.createRefreshToken(tokenMember, accessToken);
 
-        tokenMap.put("accessToken", accessToken);
-        tokenMap.put("refreshToken", refreshToken);
-        return ResponseEntity.ok(tokenMap);
-      } else {
-        throw new MemberNotFoundException("이메일과 패스워드를 올바르게 입력해주십시오.");
+              tokenMap.put("accessToken", accessToken);
+              tokenMap.put("refreshToken", refreshToken);
+              return ResponseEntity.ok(tokenMap);
+          } else {
+              throw new MemberNotFoundException("이메일과 패스워드를 올바르게 입력해주십시오.");
+          }
+      } catch (Exception e) {
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
       }
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-
-    }
-
-    @GetMapping("/form")
-    public ResponseEntity<Map<String, String>> form(
-            @CookieValue(required = false) String memberEmail) {
-        Map<String, String> response = new HashMap<>();
-        response.put("memberEmail", memberEmail);
-        return ResponseEntity.ok().body(response);
-    }
-
-    @GetMapping("/delete")
-    public void delete(Long memberNo) throws Exception {
-        memberRepository.findById(memberNo).ifPresentOrElse(memberRepository::delete,
-                () -> new MemberNotFoundException("해당 번호의 회원이 없습니다."));
-    }
-
-    @GetMapping("/logout")
-    public ResponseEntity<String> logout(HttpSession session) throws Exception {
-        session.invalidate();
-        log.info("Call logout");
-        return ResponseEntity.ok().body("{\"message\": \"Logout successful\"}");
-    }
-
-
+  }
     @PostMapping("/accTokRefresh")
     public ResponseEntity<?> refreshAccessToken(
             @RequestBody RefreshTokenRequest refreshTokenRequest) {

@@ -1,11 +1,15 @@
 package bleuauction.bleuauction_be.server.order.controller;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.member.service.MemberService;
+import bleuauction.bleuauction_be.server.menu.service.MenuService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
+import bleuauction.bleuauction_be.server.util.CreateJwt;
+import bleuauction.bleuauction_be.server.util.TokenMember;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
@@ -14,10 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import bleuauction.bleuauction_be.server.util.CreateJwt;
 
 import java.util.List;
 
@@ -26,8 +28,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderController {
 
+  private final MemberService memberService;
   private final OrderService orderService;
   private final OrderRepository orderRepository;
+  private final CreateJwt createJwt;
 
   //등록
   @GetMapping("/api/order/new")
@@ -47,14 +51,21 @@ public class OrderController {
 
   //회원별 주문 조회
   @GetMapping("/api/order")
-  public ResponseEntity<?> findOrders(HttpSession session) {
-    Member loginUser = (Member) session.getAttribute("loginUser");
+  public ResponseEntity<?> findOrders(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader,  HttpSession session) {
+
+    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+    if (verificationResult != null) {
+      return verificationResult;
+    }
+
+    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+
 
     if (loginUser == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인한 사용자가 아닙니다.");
     }
 
-    List<Order> orders = orderRepository.findByOrderMenusMemberMemberNo(loginUser);
+    List<Order> orders = orderRepository.findByOrderMenusMemberMemberNo(loginUser.get());
 
     if (orders.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문이 없습니다.");
@@ -68,12 +79,18 @@ public class OrderController {
 
   // 가게(가게주인)별 주문 조회
   @GetMapping("/api/store/order")
-  public ResponseEntity<?> findOrdersbyStore(HttpSession session) {
-    Member loginUser = (Member) session.getAttribute("loginUser");
-    Long memberNo = loginUser.getMemberNo();
+  public ResponseEntity<?> findOrdersbyStore(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader,HttpSession session) {
+    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+    if (verificationResult != null) {
+      return verificationResult;
+    }
+
+    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+
+    Long memberNo = loginUser.get().getMemberNo();
 
 
-    if (loginUser == null) {
+    if (loginUser.get() == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인한 사용자가 아닙니다.");
     }
 

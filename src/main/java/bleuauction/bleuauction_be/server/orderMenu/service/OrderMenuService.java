@@ -74,15 +74,15 @@ public class OrderMenuService {
   }
 
   //주문 메뉴 수정
-//  public OrderMenu update(OrderMenu orderMenu) {
-//    OrderMenu updateom = orderMenuRepository.findOne(orderMenu.getOrderMenuNo());
-//
-//    updateom.setMemberNo(orderMenu.getMemberNo());
-//    updateom.setMenuNo(orderMenu.getMenuNo());
-//    //updateom.setOrderNo(orderMenu.getOrderNo());
-//    updateom.setOrderMenuCount(orderMenu.getOrderMenuCount());
-//    orderMenuRepository.save(orderMenu);
-//
-//    return updateom;
-//  }
+  public OrderMenu update(OrderMenu orderMenu) {
+    OrderMenu updateom = orderMenuRepository.findOne(orderMenu.getOrderMenuNo());
+
+    updateom.setMemberNo(orderMenu.getMemberNo());
+    updateom.setMenuNo(orderMenu.getMenuNo());
+    //updateom.setOrderNo(orderMenu.getOrderNo());
+    updateom.setOrderMenuCount(orderMenu.getOrderMenuCount());
+    orderMenuRepository.save(orderMenu);
+
+    return updateom;
+  }
 }

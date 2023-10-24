@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.orderMenu.controller;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.order.entity.Order;
@@ -10,6 +11,8 @@ import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
 import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
 import bleuauction.bleuauction_be.server.orderMenu.service.OrderMenuService;
+import bleuauction.bleuauction_be.server.util.CreateJwt;
+import bleuauction.bleuauction_be.server.util.TokenMember;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +25,7 @@ import retrofit2.http.Path;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,6 +37,8 @@ public class OrderMenuController {
   private final OrderService orderService;
   private final OrderMenuRepository orderMenuRepository;
   private final MenuRepository menuRepository;
+  private final CreateJwt createJwt;
+  private final MemberService memberService;
 
   //등록
   @GetMapping("/api/ordermenu/new")
@@ -41,38 +47,19 @@ public class OrderMenuController {
     return orderMenu;
   }
 
-//  @GetMapping("/api/ordermenu/new")
-//  public OrderMenuDTO createOrderMenuDTO(
-//          @RequestParam Long orderMenuNo,
-//          @RequestParam int orderMenuCount,
-//          @RequestParam Timestamp regDatetime,
-//          @RequestParam Timestamp mdfDatetime,
-//          @RequestParam OrderMenuStatus orderMenuStatus,
-//          @RequestParam Long menuNo,
-//          @RequestParam Long orderNo,
-//          @RequestParam Long memberNo
-//  ) {
-//    OrderMenuDTO orderMenuDTO = new OrderMenuDTO();
-//
-//    orderMenuDTO.setOrderMenuNo(orderMenuNo);
-//    orderMenuDTO.setOrderMenuCount(orderMenuCount);
-//    orderMenuDTO.setRegDatetime(regDatetime);
-//    orderMenuDTO.setMdfDatetime(mdfDatetime);
-//    orderMenuDTO.setOrderMenuStatus(orderMenuStatus);
-//    orderMenuDTO.setMenuNo(menuNo);
-//    orderMenuDTO.setOrderNo(orderNo);
-//    orderMenuDTO.setMemberNo(memberNo);
-//
-//    return orderMenuDTO;
-//  }
 
-
-  //프론트 페이지 만들어지면 확인 가능
   @PostMapping("/api/ordermenu/new")
   @Transactional
-  public ResponseEntity<String> orderMenu(HttpSession session, OrderMenuDTO orderMenuDTO) {
+  public ResponseEntity<?> orderMenu(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader,  HttpSession session, OrderMenuDTO orderMenuDTO) {
+
+    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+    if (verificationResult != null) {
+      return verificationResult;
+    }
+
     // 로그인 유저의 멤버 번호
-    Member member = (Member) session.getAttribute("loginUser");
+    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+
     // 오더 세션의 오더
     Order order = (Order) session.getAttribute("order");
 
@@ -82,7 +69,7 @@ public class OrderMenuController {
 
     if (selectedMenu != null) {
       OrderMenu orderMenu = new OrderMenu();
-      orderMenu.setMemberNo(member);
+      orderMenu.setMemberNo(loginUser.get());
       orderMenu.setOrderNo(order);
       orderMenu.setOrderMenuCount(orderMenuDTO.getOrderMenuCount());
       orderMenu.setMenuNo(selectedMenu);
@@ -99,7 +86,6 @@ public class OrderMenuController {
   //주문 번호별 주문메뉴 조회
   @GetMapping("/api/ordermenu/{orderNo}")
   public List<OrderMenu> findOM(HttpSession session, @PathVariable("orderNo") Long orderNo) throws Exception {
-    //Order order = (Order) session.getAttribute("order");
 
     Order order = orderService.findOne(orderNo);
 
@@ -111,6 +97,8 @@ public class OrderMenuController {
       return new ArrayList<>();
     }
   }
+
+  //주문 별 주문메뉴 조회
   @GetMapping("/api/ordermenu/order/{orderNo}")
   public List<OrderMenuDTO> findorderOM(HttpSession session, @PathVariable("orderNo") Long orderNo) throws Exception {
     Order order = orderService.findOne(orderNo);
@@ -158,10 +146,10 @@ public class OrderMenuController {
     return ResponseEntity.ok(OM);
   }
 
-//  @PostMapping("/api/ordermenu/update/{orderMenuNo}")
-//  public ResponseEntity<String> updateOM (OrderMenu orderMenu, @PathVariable("orderMenuNo") Long orderMenuNo) {
-//    orderMenuService.update(orderMenu);
-//    log.info("ordermenu/update");
-//    return ResponseEntity.ok("OrderMenu updated successfully");
-//  }
+  @PostMapping("/api/ordermenu/update/{orderMenuNo}")
+  public ResponseEntity<String> updateOM (OrderMenu orderMenu, @PathVariable("orderMenuNo") Long orderMenuNo) {
+    orderMenuService.update(orderMenu);
+    log.info("ordermenu/update");
+    return ResponseEntity.ok("OrderMenu updated successfully");
+  }
 }

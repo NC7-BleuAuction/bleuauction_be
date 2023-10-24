@@ -155,8 +155,10 @@ public class MemberController {
             String refreshToken = refreshTokenRequest.getRefreshToken();
             log.info("refreshToken: " + refreshToken);
 
+
             Map<String, Object> tokenMap = new HashMap<>();
             String renewAccessToken = createJwt.getRenewAccessToken(refreshToken);
+
 
             if (refreshToken == null) {
                 new Exception();
@@ -221,18 +223,43 @@ public class MemberController {
         }
     }
 
-  // 회원 프로필 삭제
-  @DeleteMapping("/delete/profileImage/{fileNo}")
-  public ResponseEntity<String> deleteProfileImage(@PathVariable Long fileNo) {
-    Attach attach = attachService.getProfileImageByFileNo(fileNo);
-    if (attach == null) {
-      return new ResponseEntity<>("첨부파일을 찾을 수 없습니다", HttpStatus.NOT_FOUND);
+
+    // 회원 탈퇴
+    @PutMapping("/withdraw")
+    public ResponseEntity<String> withdrawMember(HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        try {
+            // 회원 상태를 'N'으로 변경하여 탈퇴 처리
+            loginUser.setMemberStatus(MemberStatus.N);
+            memberRepository.save(loginUser);
+
+            // 세션을 무효화하여 로그아웃 처리
+            session.invalidate();
+
+            log.info("회원이 성공적으로 탈퇴되었습니다. 회원번호: {}", loginUser.getMemberNo());
+            return ResponseEntity.ok("회원이 성공적으로 탈퇴되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("회원 탈퇴 중 오류가 발생했습니다.");
+        }
     }
-    boolean isDeleted = attachService.deleteProfileImage(attach);
-    if (isDeleted) {
-      return new ResponseEntity<>("첨부파일이 성공적으로 삭제되었습니다", HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>("첨부파일 삭제에 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
+
+
+    // 회원 프로필 삭제
+    @DeleteMapping("/delete/profileImage/{fileNo}")
+    public ResponseEntity<String> deleteProfileImage(@PathVariable Long fileNo) {
+        Attach attach = attachService.getProfileImageByFileNo(fileNo);
+        if (attach == null) {
+            return new ResponseEntity<>("첨부파일을 찾을 수 없습니다", HttpStatus.NOT_FOUND);
+        }
+        boolean isDeleted = attachService.deleteProfileImage(attach);
+        if (isDeleted) {
+            return new ResponseEntity<>("첨부파일이 성공적으로 삭제되었습니다", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("첨부파일 삭제에 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-  }
 }

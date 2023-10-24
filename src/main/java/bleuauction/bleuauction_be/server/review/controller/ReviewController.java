@@ -51,7 +51,6 @@ public class ReviewController {
     }
   }
 
-
   @PostMapping("/api/review/add")
   public ResponseEntity<?> reviewAdd(HttpSession session, Review review, Member member,
                                      @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) throws Exception {

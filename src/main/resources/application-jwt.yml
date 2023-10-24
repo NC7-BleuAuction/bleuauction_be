@@ -1,5 +1,5 @@
 jwt:
   secret: "oui/AhgjSCW9/KgdgDYXjKZ7gkWsxOy66Rqlu4qaK1U="
-  expriration-tiem: 180000
+  expriration-tiem: 1800000 # 30분
   token-prefix: "Bearer "
 #  header-string: "Authorization"

@@ -1,7 +1,5 @@
 package bleuauction.bleuauction_be.server.store.controller;
 
-import static bleuauction.bleuauction_be.server.member.entity.MemberCategory.S;
-
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
@@ -18,13 +16,9 @@ import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
 import bleuauction.bleuauction_be.server.store.service.UpdateStoreService;
 import bleuauction.bleuauction_be.server.util.CreateJwt;
-import bleuauction.bleuauction_be.server.util.JwtConfig;
 import bleuauction.bleuauction_be.server.util.TokenMember;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -193,45 +187,44 @@ public class StoreController {
     }
   }
 
-  // 가게 탈퇴
+  // 가게 삭제
   @PutMapping("/withdraw/{storeNo}")
-  public ResponseEntity<?> withdrawStore(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable("storeNo") Long storeNo) {
-
+  public ResponseEntity<?> withdrawStore(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("storeNo") Long storeNo) {
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
     if (verificationResult != null) {
       return verificationResult;
     }
 
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
+    // 가게 정보 확인
     Optional<Store> storeOptional = storeService.selectStore(storeNo);
 
-    // 체크: storeOptional이 비어있는지 확인
-    if (!storeOptional.isPresent()) {
+    if (storeOptional.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("가게를 찾을 수 없습니다.");
     }
-    Store store = storeOptional.get();  // Store 객체 가져오기
 
-    if (store.getMemberNo() == loginUser.get()) {
+    Store store = storeOptional.get();
 
+    // 가게 소유자 확인
+    if (store.getMemberNo().getMemberNo().equals(tokenMember.getMemberNo())) {
       // 가게 상태를 'N'으로 변경하여 탈퇴 처리
       store.setStoreStatus(StoreStatus.N);
       storeRepository.save(store);
-      // 세션을 무효화하여 로그아웃 처리
 
-      log.info("가게가 성공적으로 폐업되었습니다. 가게번호: {}", loginUser.get());
+      // TODO: 토큰 무효화 (예: Token을 Blacklist에 추가하고, 클라이언트 측에서 로컬 스토리지 또는 쿠키에서 토큰 제거)
+
+      log.info("가게가 성공적으로 폐업되었습니다. 가게번호: {}", tokenMember.getMemberNo());
       return ResponseEntity.ok("가게가 성공적으로 폐업되었습니다.");
     } else {
-      log.error("가게정보는: {}", ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR));
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-              .body("올바른 가게 정보가 아닙니다.");
+      log.error("올바른 가게 정보가 아닙니다.");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("올바른 가게 정보가 아닙니다.");
     }
   }
 
   // 가게 프로필 삭제
   @DeleteMapping("/delete/profileImage/{fileNo}")
-  public ResponseEntity<String> deleteProfileImage(@PathVariable Long fileNo) {
+  public ResponseEntity<String> deleteProfileImage(@PathVariable("fileNo") Long fileNo) {
     Attach attach = attachService.getProfileImageByFileNo(fileNo);
     if (attach == null) {
       return new ResponseEntity<>("첨부파일을 찾을 수 없습니다", HttpStatus.NOT_FOUND);

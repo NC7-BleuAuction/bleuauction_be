@@ -222,7 +222,7 @@ public class MemberController {
 
   // 회원 탈퇴
   @PutMapping("/withdraw")
-  public ResponseEntity<String> withdrawMember(@RequestHeader("Authorization") String authorizationHeader) {
+  public ResponseEntity<?> withdrawMember(@RequestHeader("Authorization") String authorizationHeader) {
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
     if (verificationResult != null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 유효하지 않습니다.");
@@ -253,7 +253,6 @@ public class MemberController {
               .body("회원 탈퇴 중 오류가 발생했습니다.");
     }
   }
-
 
   // 회원 프로필 삭제
   @DeleteMapping("/delete/profileImage/{fileNo}")

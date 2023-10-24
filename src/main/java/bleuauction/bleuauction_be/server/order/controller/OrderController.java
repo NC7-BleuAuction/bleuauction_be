@@ -87,6 +87,7 @@ public class OrderController {
     }
 
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    log.info("token: " + tokenMember);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     if (loginUser == null) {

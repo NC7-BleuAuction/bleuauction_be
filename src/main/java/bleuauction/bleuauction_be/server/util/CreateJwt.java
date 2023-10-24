@@ -113,12 +113,18 @@ public class CreateJwt {
     return null;
   }
 
-  public TokenMember getTokenMember(String accessToken) {
-    log.info("isRefreshTokenValid(): ");
-    log.info("accessToken: " + accessToken);
+  public TokenMember getTokenMember(String authorizationHeader) {
+    log.info("getTokenMember(): ");
+    log.info("authorizationHeader: " + authorizationHeader);
     try {
-      if (VALID_TOKEN.equals(isTokenValid(accessToken))) {
-        DecodedJWT decodedJWT = JWT.decode(accessToken);
+      if (authorizationHeader == null || !authorizationHeader.startsWith(jwtConfig.getToekenPrefix())) {
+        log.error("jwtConfig.getToekenPrefix()와 불일치! : " + authorizationHeader);
+        return null;
+      }
+      String token = authorizationHeader.replace(jwtConfig.getToekenPrefix(), "");
+      if(VALID_TOKEN.equals(isTokenValid(token))) {
+
+        DecodedJWT decodedJWT = JWT.decode(token);
         String memberNo = decodedJWT.getSubject();
         log.info("JWT memberNo: " + memberNo);
         String memberEmail = decodedJWT.getClaim("memberEmail").asString();

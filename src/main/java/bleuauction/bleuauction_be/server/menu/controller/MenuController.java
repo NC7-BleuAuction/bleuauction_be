@@ -105,7 +105,7 @@ public class MenuController {
   }
   //가게(회원)별 목록 조회
   @GetMapping(value = "/api/menu/store", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> findMenusByStoreNo(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader) throws Exception {
+  public ResponseEntity<?> findMenusByStoreNo(@RequestHeader("Authorization") String  authorizationHeader) throws Exception {
     try {
 
       ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
@@ -113,6 +113,7 @@ public class MenuController {
         return verificationResult;
       }
 
+      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
       // 로그인 유저의 멤버 번호
       Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 

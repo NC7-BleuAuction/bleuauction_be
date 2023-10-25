@@ -17,6 +17,7 @@ import bleuauction.bleuauction_be.server.store.service.StoreService;
 import bleuauction.bleuauction_be.server.store.service.UpdateStoreService;
 import bleuauction.bleuauction_be.server.util.CreateJwt;
 import bleuauction.bleuauction_be.server.util.TokenMember;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,7 @@ public class StoreController {
   private final NcpObjectStorageService ncpObjectStorageService;
   private final AttachService attachService;
   private final UpdateStoreService updateStoreService;
+  private final EntityManager entityManager;
 
 
   @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -149,6 +151,7 @@ public class StoreController {
           @RequestPart("updateStoreRequest") UpdateStoreRequest updateStoreRequest,
           @RequestPart("profileImage") MultipartFile profileImage)
           throws Exception {
+
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(
             authorizationHeader,
             createJwt);
@@ -158,17 +161,27 @@ public class StoreController {
 
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+
+    Long memberId = loginUser.get().getMemberNo();
+    // Member ID를 사용하여 관련된 Store를 찾습니다.
+    Store store = entityManager.createQuery("SELECT s FROM Store s WHERE s.memberNo.memberNo = :memberId", Store.class)
+            .setParameter("memberId", memberId)
+            .getSingleResult();
+
+
     if (loginUser.isPresent() && loginUser.get().getMemberCategory() == MemberCategory.S) {
       try {
-        updateStoreService.updateStore(tokenMember.getMemberNo(), updateStoreRequest, profileImage);
+
         // 첨부 파일 목록 추가
         List<Attach> attaches = new ArrayList<>();
         if (profileImage != null) {
           log.info("첨부 파일 이름: {}", profileImage.getOriginalFilename());
+
           if (profileImage.getSize() > 0) {
+
             Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
                     "bleuauction-bucket", "store/", profileImage);
-            attach.setMemberNo(loginUser.get());
+            attach.setStoreNo(store);
             attaches.add(attach);
           }
         }
@@ -176,7 +189,7 @@ public class StoreController {
         ArrayList<Attach> insertAttaches = (ArrayList<Attach>) attachService.addAttachs(
                 (ArrayList<Attach>) attaches);
         // 가게 정보 업데이트
-        updateStoreService.updateStore(tokenMember.getMemberNo(), updateStoreRequest, profileImage);
+        updateStoreService.updateStore(store.getStoreNo(), updateStoreRequest, profileImage);
         log.info("가게 정보가 업데이트되었습니다. 업데이트된 가게 정보: {}", updateStoreRequest);
         return ResponseEntity.ok("가게 정보가 업데이트되었습니다.");
       } catch (StoreNotFoundException e) {

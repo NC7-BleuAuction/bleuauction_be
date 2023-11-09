@@ -54,12 +54,12 @@ public class MenuController {
   //등록처리
   @PostMapping("/api/menu/new")
   @Transactional
-  public ResponseEntity<?> menu(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader,  HttpSession session, Menu menu, @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
+  public ResponseEntity<?> menu(@RequestHeader("Authorization") String  authorizationHeader,  HttpSession session, Menu menu, @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
     if (verificationResult != null) {
       return verificationResult;
     }
-
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     Long memberId = loginUser.get().getMemberNo();
@@ -96,7 +96,7 @@ public class MenuController {
   @GetMapping(value = "/api/menu/{storeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Menu> findMenusByStoreNo(@PathVariable("storeNo") Long storeNo) throws Exception {
     try {
-      List<Menu> menus = menuRepository.findMenusByStoreNo(storeNo);
+      List<Menu> menus = menuRepository.findMenusByStoreNoAndStatus(storeNo,MenuStatus.Y);
       return menus;
     } catch (Exception e) {
       e.printStackTrace();
@@ -105,7 +105,7 @@ public class MenuController {
   }
   //가게(회원)별 목록 조회
   @GetMapping(value = "/api/menu/store", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> findMenusByStoreNo(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader) throws Exception {
+  public ResponseEntity<?> findMenusByStoreNo(@RequestHeader("Authorization") String  authorizationHeader) throws Exception {
     try {
 
       ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
@@ -113,12 +113,13 @@ public class MenuController {
         return verificationResult;
       }
 
+      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
       // 로그인 유저의 멤버 번호
       Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
       Optional<Store> store = storeRepository.findByMemberNo(loginUser.get());
 
-      List<Menu> menus = menuRepository.findMenusByStoreNo(store.get().getStoreNo());
+      List<Menu> menus = menuRepository.findMenusByStoreNoAndStatus(store.get().getStoreNo(), MenuStatus.Y);
       return ResponseEntity.ok(menus);
     } catch (Exception e) {
       e.printStackTrace();
@@ -140,7 +141,7 @@ public class MenuController {
 
   //삭제
   @PostMapping("/api/menu/delete/{menuNo}")
-  public ResponseEntity<?> deleteMenu(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable("menuNo") Long menuNo) {
+  public ResponseEntity<?> deleteMenu(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable("menuNo") Long menuNo) {
     Menu menu = menuService.findOne(menuNo);
 
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
@@ -148,6 +149,7 @@ public class MenuController {
       return verificationResult;
     }
 
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     Long memberId = loginUser.get().getMemberNo();
@@ -181,7 +183,7 @@ public class MenuController {
 
   //디테일(수정)
   @GetMapping("/api/menu/detail/{menuNo}")
-  public ResponseEntity<Menu> detailMenu(HttpSession session, @PathVariable("menuNo") Long menuNo) {
+  public ResponseEntity<Menu> detailMenu(@PathVariable("menuNo") Long menuNo) {
     Menu menu = menuService.findOne(menuNo);
     // 예를 들어, Menu 객체에 Attach 정보가 있을 경우:
     //Attach attach = menu.getMenuAttaches().isEmpty() ? null : menu.getMenuAttaches().get(0);
@@ -192,7 +194,7 @@ public class MenuController {
   }
 
   @PostMapping("/api/menu/update/{menuNo}")
-  public ResponseEntity<?> updateMenu(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader, HttpSession session, Menu menu,
+  public ResponseEntity<?> updateMenu(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, Menu menu,
                                            @PathVariable("menuNo") Long menuNo,
                                            @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
 
@@ -204,6 +206,7 @@ public class MenuController {
       return verificationResult;
     }
 
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     Long memberId = loginUser.get().getMemberNo();

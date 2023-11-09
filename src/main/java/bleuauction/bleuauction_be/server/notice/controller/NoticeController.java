@@ -3,7 +3,6 @@ package bleuauction.bleuauction_be.server.notice.controller;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
@@ -61,13 +60,14 @@ public class NoticeController {
   // 등록 처리(관리자 회원)
   @PostMapping("/api/notice/new")
   @Transactional
-  public ResponseEntity<?>  notice(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader, Notice notice, @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
+  public ResponseEntity<?>  notice(@RequestHeader("Authorization") String  authorizationHeader, Notice notice, @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
 
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
     if (verificationResult != null) {
       return verificationResult;
     }
 
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     if(loginUser.get().getMemberCategory() == A) {
@@ -112,7 +112,7 @@ public class NoticeController {
 
 // 삭제
   @PostMapping("/api/notice/delete/{noticeNo}")
-  public ResponseEntity<?> deleteNotice(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable("noticeNo") Long noticeNo) {
+  public ResponseEntity<?> deleteNotice(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable("noticeNo") Long noticeNo) {
     Notice notice = noticeService.findOne(noticeNo);
 
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
@@ -120,6 +120,7 @@ public class NoticeController {
       return verificationResult;
     }
 
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     if(loginUser.get().getMemberCategory() == A) {
@@ -144,12 +145,13 @@ public class NoticeController {
 
   //사진삭제
   @DeleteMapping("/api/notice/deletefile/{fileNo}")
-  public ResponseEntity<?> fileNoticeDelete(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable Long fileNo) {
+  public ResponseEntity<?> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable Long fileNo) {
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
     if (verificationResult != null) {
       return verificationResult;
     }
 
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     if(loginUser.get().getMemberCategory() == A) {
@@ -177,7 +179,7 @@ public class NoticeController {
 
   // 수정 처리
   @PostMapping("/api/notice/update/{noticeNo}")
-  public ResponseEntity<?> updateNotice(TokenMember tokenMember, @RequestHeader("Authorization") String  authorizationHeader, HttpSession session, Notice notice,
+  public ResponseEntity<?> updateNotice(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, Notice notice,
           @PathVariable("noticeNo") Long noticeNo,
            @RequestParam(name = "noticeTitle") String noticeTitle,
            @RequestParam(name = "noticeContent") String noticeContent,
@@ -189,6 +191,7 @@ public class NoticeController {
       return verificationResult;
     }
 
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     if(loginUser.get().getMemberCategory() == A) {

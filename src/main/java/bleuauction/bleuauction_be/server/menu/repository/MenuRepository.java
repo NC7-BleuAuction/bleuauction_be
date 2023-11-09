@@ -1,6 +1,9 @@
 package bleuauction.bleuauction_be.server.menu.repository;
 
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
+import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +34,29 @@ public class MenuRepository {
     return result;
   }
 
-
-  public List<Menu> findAll() {
-    List<Menu> result = em.createQuery("select m from Menu m", Menu.class)
-            .getResultList();
+  public List<Menu> findMenusByStoreNoAndStatus(Long storeNo, MenuStatus menuStatus) {
+    String jpql = "SELECT m FROM Menu m WHERE m.storeNo.storeNo = :storeNo AND m.menuStatus = :menuStatus";
+    TypedQuery<Menu> query = em.createQuery(jpql, Menu.class);
+    query.setParameter("storeNo", storeNo);
+    query.setParameter("menuStatus", menuStatus);
+    List<Menu> result = query.getResultList();
     return result;
   }
+
+  public List<Menu> findAll() {
+    String jpql = "SELECT m FROM Menu m WHERE m.menuStatus = :menuStatus";
+    TypedQuery<Menu> query = em.createQuery(jpql, Menu.class);
+    query.setParameter("menuStatus", MenuStatus.Y);
+    List<Menu> result = query.getResultList();
+    return result;
+  }
+
+//  public List<Menu> findAll() {
+//    List<Menu> result = em.createQuery("select m from Menu m", Menu.class)
+//            .getResultList();
+//    return result;
+//  }
+
+
+
 }

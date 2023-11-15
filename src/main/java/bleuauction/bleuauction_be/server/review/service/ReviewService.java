@@ -11,26 +11,25 @@ import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import bleuauction.bleuauction_be.server.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
 
+  final int PAGE_ROW_COUNT = 4;
   private final ReviewRepository reviewRepository;
   private final AnswerRepository answerRepository;
   private final AttachRepository attachRepository;
 
-  public List<Review> selectReviewList(Long storeNo, ReviewStatus reviewStatus, int startPage, int pageRowCount) {
-    Pageable pageable = PageRequest.of(startPage, pageRowCount);
+  public List<Review> selectReviewList(Long storeNo, ReviewStatus reviewStatus, int startPage) {
+    Pageable pageable = PageRequest.of(startPage, PAGE_ROW_COUNT);
     List<Review>  exitingReviewList = reviewRepository.findAllReviewsWithMembersByReviewStatus(storeNo, reviewStatus, pageable);
     for (int i = 0; i < exitingReviewList.size(); i++) {
       List<Attach> exitingAttachList = attachRepository.findAllByReviewAndFileStatus(exitingReviewList.get(i), FileStatus.Y);
@@ -39,22 +38,22 @@ public class ReviewService {
     return exitingReviewList;
   }
 
-  public Review addReview(Review review) throws Exception {
-    return reviewRepository.save(review);
+  public Optional<Review> addReview(Review review) throws Exception {
+    return Optional.of(reviewRepository.save(review));
   }
 
-  public Review updateReview(Review review) throws Exception {
+  public Optional<Review> updateReview(Review review) throws Exception {
     Review exitingReview = reviewRepository.findById(review.getReviewNo()).orElseThrow(() -> new Exception("해당 리뷰가 존재하지 않습니다!"));
 
     exitingReview.setReviewContent(review.getReviewContent());
     exitingReview.setReviewFreshness(review.getReviewFreshness());
-    Review updateReview = reviewRepository.save(exitingReview);
+    Optional<Review> updateReview = Optional.of(reviewRepository.save(exitingReview));
 
     return updateReview;
   }
 
 
-  public Review deleteReview(Long reviewNo) throws Exception {
+  public Optional<Review> deleteReview(Long reviewNo) throws Exception {
     Review exitingReview = reviewRepository.findByReviewNoAndReviewStatus(reviewNo, ReviewStatus.Y).orElseThrow(() -> new Exception("해당 리뷰가 존재하지 않습니다!"));
 
     List<Attach> exitingAttachList = attachRepository.findAllByReviewAndFileStatus(exitingReview, FileStatus.Y);
@@ -71,9 +70,7 @@ public class ReviewService {
       }
     }
     exitingReview.setReviewStatus(ReviewStatus.N);
-
-    Review deleteReview = reviewRepository.save(exitingReview);
-
+    Optional<Review> deleteReview = Optional.of(reviewRepository.save(exitingReview));
     return deleteReview;
   }
 }

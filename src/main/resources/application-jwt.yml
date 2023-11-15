@@ -1,4 +1,5 @@
 jwt:
+  issuer: "itkw87@naver.com"
   secret: "oui/AhgjSCW9/KgdgDYXjKZ7gkWsxOy66Rqlu4qaK1U="
   expriration-tiem: 1800000 # 30분
   token-prefix: "Bearer "

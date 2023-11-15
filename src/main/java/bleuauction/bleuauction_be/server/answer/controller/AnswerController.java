@@ -9,6 +9,7 @@ import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
 import bleuauction.bleuauction_be.server.util.CreateJwt;
+import bleuauction.bleuauction_be.server.util.TokenMember;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,13 +33,12 @@ public class AnswerController {
   private final AnswerService answerService;
 
   @GetMapping("/api/answer/list")
-  public ResponseEntity<?> answerList(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("reviewNo") Long reviewNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception {
+  public ResponseEntity<?> answerList(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("reviewNo") Long reviewNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) {
     log.info("url ===========> /api/answer/list");
     log.info("reivewNo: " + reviewNo);
     log.info("startPage: " + startPage);
 
     try {
-      // 토큰 검사
       ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
       if (verificationResult != null) {
         return verificationResult;
@@ -54,6 +54,8 @@ public class AnswerController {
       answerMap.put("totalRows", totalRows);
       answerMap.put("totalPages", totalPages);
 
+      log.info("answerMap: ", answerMap);
+
       return ResponseEntity.ok(answerMap);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -61,33 +63,51 @@ public class AnswerController {
   }
 
   @PostMapping("/api/answer/add")
-  public Answer answerAdd(HttpSession session, Answer answer) throws Exception {
+  public ResponseEntity<?> answerAdd(@RequestHeader("Authorization") String authorizationHeader, Answer answer) {
     log.info("url ===========> /api/answer/add");
+    log.info("authorizationHeader: ", authorizationHeader);
     log.info("Answer: " + answer);
 
-    Member loginUser = (Member) session.getAttribute("loginUser");
 
-    answer.setMember(loginUser);
+    try {
+      ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+      if (verificationResult != null) {
+        return verificationResult;
+      }
+      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
 
-    Answer insertAnswer = answerService.addAnswer(answer);
-    return insertAnswer;
+      Member m = new Member();
+      m.setMemberNo(tokenMember.getMemberNo());
+      answer.setMember(m);
+      Answer insertAnswer = answerService.addAnswer(answer);
+
+      return ResponseEntity.ok(insertAnswer);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    }
   }
 
   @PostMapping("/api/answer/update")
-  public ResponseEntity<?> answerUpdate(HttpSession session, Answer answer, Member member) throws Exception {
+  public ResponseEntity<?> answerUpdate(@RequestHeader("Authorization") String authorizationHeader, Answer answer, Long memberNo) {
     log.info("url ===========> /api/answer/update");
-
-    Optional<Member> loginUserOptional = Optional.ofNullable((Member) session.getAttribute("loginUser"));
-    Member loginUser = loginUserOptional.orElseThrow(() -> new Exception("로그인 유저가 없습니다!"));
-    log.info("loginUser: " + loginUser);
-
-    if (loginUser.getMemberNo() != member.getMemberNo()) {
-      throw new Exception("답글 수정 권한이 없습니다!");
-    }
+    log.info("authorizationHeader: " + authorizationHeader);
+    log.info("answer: " + answer);
+    log.info("memberNo: " + memberNo);
 
     try {
-      answer.setMember(loginUser);
-      log.info("Answer: " + answer);
+      ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+      if (verificationResult != null) {
+        return verificationResult;
+      }
+
+      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+      if (tokenMember.getMemberNo() != memberNo) {
+        throw new Exception("답글 수정 권한이 없습니다!");
+      }
+
+      Member m = new Member();
+      m.setMemberNo(tokenMember.getMemberNo());
+      answer.setMember(m);
 
       Answer updateAnswer = answerService.updateAnswer(answer);
       return ResponseEntity.ok(updateAnswer);
@@ -99,10 +119,27 @@ public class AnswerController {
 
 
   @GetMapping("/api/answer/delete")
-  public Answer answerDelete(@RequestParam("answerNo") Long answerNo) throws Exception {
+  public ResponseEntity<?> answerDelete(@RequestHeader("Authorization") String authorizationHeader, Long answerNo, Long memberNo) {
     log.info("url ===========> /api/answer/delete");
+    log.info("authorizationHeader: " + authorizationHeader);
     log.info("answerNo: " + answerNo);
-    Answer deleteAnswer = answerService.deleteAnswer(answerNo);
-    return deleteAnswer;
+    log.info("memberNo: " + memberNo);
+
+    try {
+      ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
+      if (verificationResult != null) {
+        return verificationResult;
+      }
+
+      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+      if (tokenMember.getMemberNo() != memberNo) {
+        throw new Exception("답글 삭제 권한이 없습니다!");
+      }
+      Answer deleteAnswer = answerService.deleteAnswer(answerNo);
+      return ResponseEntity.ok(deleteAnswer);
+
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
+    }
   }
 }

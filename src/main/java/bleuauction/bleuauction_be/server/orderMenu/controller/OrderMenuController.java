@@ -40,11 +40,11 @@ public class OrderMenuController {
   private final MemberService memberService;
 
   //등록
-  @GetMapping("/api/ordermenu/new")
-  public OrderMenu orderMenu() {
-    OrderMenu orderMenu = new OrderMenu();
-    return orderMenu;
-  }
+//  @GetMapping("/api/ordermenu/new")
+//  public OrderMenu orderMenu() {
+//    OrderMenu orderMenu = new OrderMenu();
+//    return orderMenu;
+//  }
 
 
   @PostMapping("/api/ordermenu/new")

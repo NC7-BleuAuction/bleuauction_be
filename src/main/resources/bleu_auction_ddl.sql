@@ -107,7 +107,7 @@ CREATE TABLE `ba_notice`
     `notice_no`      BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `member_no`      BIGINT       NOT NULL,
     `notice_title`   VARCHAR(255) NOT NULL,
-    `notice_content` VARCHAR(255) NOT NULL,
+    `notice_content` MEDIUMTEXT   NOT NULL,
     `reg_datetime`   DATETIME     NULL DEFAULT NOW(),
     `mdf_datetime`   DATETIME     NULL DEFAULT NOW(),
     `notice_status`  VARCHAR(1)   NULL DEFAULT 'Y'

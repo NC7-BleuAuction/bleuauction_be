@@ -74,4 +74,8 @@ public class StoreService {
     public Optional<Store> selectStore(Long storeNo) {
         return storeRepository.findById(storeNo);
     }
+
+    public Optional<Store> findStoresByMember(Member m) {
+        return storeRepository.findByMemberNo(m);
+    }
 }

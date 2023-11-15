@@ -7,11 +7,15 @@ import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import bleuauction.bleuauction_be.server.review.service.ReviewService;
+import bleuauction.bleuauction_be.server.store.entity.Store;
+import bleuauction.bleuauction_be.server.store.exception.StoreNotFoundException;
+import bleuauction.bleuauction_be.server.store.service.StoreService;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.DailyPriceStatus;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDailyPrice;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.service.StoreItemDailyPriceService;
 import bleuauction.bleuauction_be.server.util.CreateJwt;
 import bleuauction.bleuauction_be.server.util.JwtConfig;
+import bleuauction.bleuauction_be.server.util.TokenMember;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +31,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class StoreItemDailyPriceController {
   private final CreateJwt createJwt;
-  private final NcpObjectStorageService ncpObjectStorageService;
-  private final AttachService attachService;
+  private final StoreService storeService;
   private final StoreItemDailyPriceService storeItemDailyPriceService;
 
   @GetMapping("/api/sidp/list")
@@ -62,6 +65,14 @@ public class StoreItemDailyPriceController {
       if (verificationResult != null) {
         return verificationResult; // 토큰 인증 실패
       }
+
+      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+
+      Member m = new Member();
+      m.setMemberNo(tokenMember.getMemberNo());
+
+      Optional<Store> store = Optional.ofNullable(storeService.findStoresByMember(m).orElseThrow(() -> new StoreNotFoundException("sd")));
+      storeItemDailyPrice.setStoreNo(store.get().getStoreNo());
 
       StoreItemDailyPrice insertStoreItemDailyPrice = storeItemDailyPriceService.addStoreItemDailyPrice(storeItemDailyPrice);
       log.info("insertStoreItemDailyPrice: " + insertStoreItemDailyPrice);

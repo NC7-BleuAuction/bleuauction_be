@@ -5,6 +5,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,11 +25,9 @@ public class CreateJwt {
   public static final String INVALID_TOKEN = "I";
   public static final String UNAUTHORIZED_ACCESS = "UA";
 
-
   private final JwtConfig jwtConfig;
 
   public String createAccessToken(TokenMember tokenMember) {
-
     return JWT.create()
             .withSubject(tokenMember.getMemberNo() + "")
             .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExprirationTiem()))
@@ -113,12 +112,18 @@ public class CreateJwt {
     return null;
   }
 
-  public TokenMember getTokenMember(String accessToken) {
-    log.info("isRefreshTokenValid(): ");
-    log.info("accessToken: " + accessToken);
+  public TokenMember getTokenMember(String authorizationHeader) {
+    log.info("getTokenMember(): ");
+    log.info("authorizationHeader: " + authorizationHeader);
     try {
-      if (VALID_TOKEN.equals(isTokenValid(accessToken))) {
-        DecodedJWT decodedJWT = JWT.decode(accessToken);
+      if (authorizationHeader == null || !authorizationHeader.startsWith(jwtConfig.getToekenPrefix())) {
+        log.error("jwtConfig.getToekenPrefix()와 불일치! : " + authorizationHeader);
+        return null;
+      }
+      String token = authorizationHeader.replace(jwtConfig.getToekenPrefix(), "");
+      if (VALID_TOKEN.equals(isTokenValid(token))) {
+
+        DecodedJWT decodedJWT = JWT.decode(token);
         String memberNo = decodedJWT.getSubject();
         log.info("JWT memberNo: " + memberNo);
         String memberEmail = decodedJWT.getClaim("memberEmail").asString();

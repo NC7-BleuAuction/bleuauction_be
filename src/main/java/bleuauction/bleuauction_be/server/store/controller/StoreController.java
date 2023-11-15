@@ -51,14 +51,12 @@ public class StoreController {
           @RequestParam(name = "startPage", defaultValue = "0")
           int startPage,
           @RequestParam(name = "pageLowCount", defaultValue = "3")
-          int pageLowCount,
-          Store store) throws Exception {
+          int pageLowCount) throws Exception {
     log.info("url ===========> /store/list");
     log.info("startPage: " + startPage);
     log.info("authorizationHeader: " + authorizationHeader);
 
     try {
-      Optional<Store> stores = storeRepository.findBystoreNo(store.getStoreNo());
       // 홈에 기본 출력되는 가게리스트에 대한 요청만 예외적으로 토큰검사 제외
       if (authorizationHeader != null && !CreateJwt.UNAUTHORIZED_ACCESS.equals(authorizationHeader)) {
         ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);

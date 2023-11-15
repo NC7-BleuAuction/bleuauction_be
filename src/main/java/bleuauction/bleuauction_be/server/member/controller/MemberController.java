@@ -115,9 +115,8 @@ public class MemberController {
 
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) throws Exception {
-    log.error("로그인 정보 확인 >>> {} ,  >>> {}", loginRequest.getMemberEmail(),
+    log.info("로그인 정보 확인 >>> {} ,  >>> {}", loginRequest.getMemberEmail(),
             loginRequest.getMemberPwd());
-
     try {
       if (loginRequest != null) {
         Member loginUser = memberRepository.findByMemberEmail(loginRequest.getMemberEmail())

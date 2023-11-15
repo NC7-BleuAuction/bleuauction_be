@@ -120,7 +120,7 @@ public class ReviewController {
     log.info("url ===========> /api/review/deleteFile");
     log.info("fileNo: " + fileNo);
     try {
-      Attach deleteAttch = attachService.update(fileNo);
+      Attach deleteAttch = attachService.changeFileStatusToDeleteByFileNo(fileNo);
       return ResponseEntity.ok(deleteAttch);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");

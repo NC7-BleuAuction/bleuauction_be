@@ -242,7 +242,7 @@ public class StoreController {
     if (attach == null) {
       return new ResponseEntity<>("첨부파일을 찾을 수 없습니다", HttpStatus.NOT_FOUND);
     }
-    boolean isDeleted = attachService.deleteProfileImage(attach);
+    boolean isDeleted = attachService.changeProfileImageToDeleteByAttachEntity(attach);
     if (isDeleted) {
       return new ResponseEntity<>("첨부파일이 성공적으로 삭제되었습니다", HttpStatus.OK);
     } else {

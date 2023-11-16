@@ -46,6 +46,15 @@ public class AttachService {
     }
 
     /**
+     * 단건의 파일에 대하여 Insert한다.
+     * @param attach
+     * @return
+     */
+    public Attach insertAttach(Attach attach) {
+        return attachRepository.save(attach);
+    }
+
+    /**
      * FiltNo(Id)값을 기반으로 Attach객체를 획득한다.
      * @param fileNo
      * @return

@@ -1,12 +1,12 @@
 package bleuauction.bleuauction_be.server.attach.service;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.exception.AttachNotFoundFileIdException;
 import bleuauction.bleuauction_be.server.attach.repository.AttachRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +19,11 @@ public class AttachService {
 
     private final AttachRepository attachRepository;
 
-    //수정(삭제)
+    /**
+     * FileId(FileNo)를 매개변수르 받아 파일의 상태를 조회후 존재할 경우 FileStatus를 N으로 업데이트한다.
+     * @param fileNo
+     * @return
+     */
     public Attach changeFileStatusToDeleteByFileNo(Long fileNo) {
         return changeFileStatusToDeleteAndSaveByAttach(findAttachByFileNo(fileNo));
     }
@@ -60,7 +64,7 @@ public class AttachService {
      * @return
      */
     private Attach findAttachByFileNo(Long fileNo) {
-        return attachRepository.findById(fileNo).orElseThrow(()-> new RuntimeException("No Such File"));
+        return attachRepository.findById(fileNo).orElseThrow(()-> new AttachNotFoundFileIdException(fileNo));
     }
 
     /**

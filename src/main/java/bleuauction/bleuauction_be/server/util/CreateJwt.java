@@ -1,6 +1,5 @@
 package bleuauction.bleuauction_be.server.util;
 
-import bleuauction.bleuauction_be.server.member.entity.Member;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
@@ -34,18 +33,18 @@ public class CreateJwt {
             .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExprirationTiem()))
             .withClaim("memberEmail", tokenMember.getMemberEmail())
             .withClaim("memberName", tokenMember.getMemberName())
-            .withClaim("memberCategory", tokenMember.getMemberCategory().toString())
+            .withClaim("memberCategory", tokenMember.getMemberCategory())
             .sign(Algorithm.HMAC256(jwtConfig.getSecret()));
   }
 
   public String createRefreshToken(TokenMember tokenMember, String accessToken) {
     return JWT.create()
             .withSubject(tokenMember.getMemberNo() + "")
-            .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExprirationTiem() * 2))
+            .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExprirationTiem() * 2L))
             .withClaim("accessToken", accessToken)
             .withClaim("memberEmail", tokenMember.getMemberEmail())
             .withClaim("memberName", tokenMember.getMemberName())
-            .withClaim("memberCategory", tokenMember.getMemberCategory().toString())
+            .withClaim("memberCategory", tokenMember.getMemberCategory())
             .sign(Algorithm.HMAC256(jwtConfig.getSecret()));
   }
 
@@ -94,18 +93,7 @@ public class CreateJwt {
 
     try {
       if (EXPIRED_TOKEN.equals(isTokenValid(refreshToken))) {
-        DecodedJWT decodedJWT = JWT.decode(refreshToken);
-        String memberNo = decodedJWT.getSubject();
-        log.info("JWT memberNo: " + memberNo);
-        String memberEmail = decodedJWT.getClaim("memberEmail").asString();
-        log.info("JWT memberEmail: " + memberEmail);
-        String memberName = decodedJWT.getClaim("memberName").asString();
-        log.info("JWT memberName: " + memberName);
-        String memberCategory = decodedJWT.getClaim("memberCategory").asString();
-        log.info("JWT memberCategory: " + memberCategory);
-
-        TokenMember tokenMember = new TokenMember(Long.parseLong(memberNo), memberEmail, memberName, memberCategory);
-        return createAccessToken(tokenMember);
+        return createAccessToken(TokenMember.of(refreshToken));
       }
     } catch (Exception e) {
       log.error("accessToken 재발급 중 에러 발생! " + e.getMessage());
@@ -123,19 +111,7 @@ public class CreateJwt {
       }
       String token = authorizationHeader.replace(jwtConfig.getToekenPrefix(), "");
       if(VALID_TOKEN.equals(isTokenValid(token))) {
-
-        DecodedJWT decodedJWT = JWT.decode(token);
-        String memberNo = decodedJWT.getSubject();
-        log.info("JWT memberNo: " + memberNo);
-        String memberEmail = decodedJWT.getClaim("memberEmail").asString();
-        log.info("JWT memberEmail: " + memberEmail);
-        String memberName = decodedJWT.getClaim("memberName").asString();
-        log.info("JWT memberName: " + memberName);
-        String memberCategory = decodedJWT.getClaim("memberCategory").asString();
-        log.info("JWT memberCategory: " + memberCategory);
-
-        TokenMember tokenMember = new TokenMember(Long.parseLong(memberNo), memberEmail, memberName, memberCategory);
-        return tokenMember;
+        return TokenMember.of(token);
       }
     } catch (Exception e) {
       log.error("accessToken 디코딩 중 에러 발생! " + e.getMessage());

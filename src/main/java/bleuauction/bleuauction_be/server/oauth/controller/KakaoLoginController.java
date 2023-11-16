@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/*
+ * TODO : 문자열 전부 Properties에서 주입하도록 변경 및 통신 객체 RestTemplate 또는 Spring Cloud OpenFeign으로 변경 필요하며, RestTemplate로만 Mock객체 생성가능하기 RestTemplate를 채택해야 한다.
+ */
 @Slf4j
 @RestController
 @RequiredArgsConstructor

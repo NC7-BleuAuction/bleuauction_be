@@ -4,7 +4,10 @@ import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -14,18 +17,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
 import java.util.Random;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class KakaoLoginService {
 
-    @Autowired
-    private MemberService memberService;
+    private final MemberService memberService;
 
-    public static String getKaKaoAccessToken(String code) {
+    public String getKaKaoAccessToken(String code) {
         String access_Token = "";
         String refresh_Token = "";
         String reqURL = "https://kauth.kakao.com/oauth/token";
@@ -80,7 +80,7 @@ public class KakaoLoginService {
         return access_Token;
     }
 
-    public static void createKakaoUser(String token, HttpServletRequest request, MemberService memberService) throws Exception {
+    public void createKakaoUser(String token) throws Exception {
 
         String reqURL = "https://kapi.kakao.com/v2/user/me";
 
@@ -107,7 +107,6 @@ public class KakaoLoginService {
             while ((line = br.readLine()) != null) {
                 result += line;
             }
-            System.out.println("response body : " + result);
 
             //Gson 라이브러리로 JSON파싱
             JsonParser parser = new JsonParser();
@@ -124,7 +123,6 @@ public class KakaoLoginService {
             Optional<Member> member = memberService.findByMemberEmail(email);
 
             if (member.isEmpty()) {
-                Random random = new Random();
                 Member newMember = new Member();
                 newMember.setMemberEmail(email);
                 newMember.setMemberPwd(createRandomPassword(12));

@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.util;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,5 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class RefreshTokenRequest {
-  private String refreshToken;
+    @NotNull(message = "Refresh Token이 Null이면 요청이 불가합니다.₩")
+    private String refreshToken;
 }

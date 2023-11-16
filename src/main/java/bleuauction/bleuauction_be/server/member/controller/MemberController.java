@@ -2,6 +2,7 @@ package bleuauction.bleuauction_be.server.member.controller;
 
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.dto.LoginRequest;
 import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;
@@ -12,13 +13,26 @@ import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.member.service.UpdateMemberService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
-
-import bleuauction.bleuauction_be.server.store.entity.Store;
-import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
 import bleuauction.bleuauction_be.server.util.CreateJwt;
 import bleuauction.bleuauction_be.server.util.RefreshTokenRequest;
 import bleuauction.bleuauction_be.server.util.TokenMember;
-import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,27 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import retrofit2.http.POST;
-
 @Slf4j
 @RestController
+@RequestMapping("/api/member")
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
 public class MemberController {
@@ -253,18 +249,21 @@ public class MemberController {
     }
   }
 
-  // 회원 프로필 삭제
-  @DeleteMapping("/delete/profileImage/{fileNo}")
-  public ResponseEntity<String> deleteProfileImage(@PathVariable Long fileNo) {
-    Attach attach = attachService.getProfileImageByFileNo(fileNo);
-    if (attach == null) {
-      return new ResponseEntity<>("첨부파일을 찾을 수 없습니다", HttpStatus.NOT_FOUND);
+    /**
+     * 회원의 프로필 이미지를 삭제하는 기능으로 <br />
+     * 해당 기능은 Controller가 적합함. <br />
+     * [TODO] : 현재 해당 기능의 문제점은 인증 인가없이 그냥 fileNo를 입력할때 삭제가 된다는 점, 그러므로 타인이 삭제시킬수도 있음. 추후 보완이 필요하다.
+     *
+     * @param fileNo
+     * @return
+     */
+    @DeleteMapping("/profileImage/{fileNo}")
+    public ResponseEntity<String> deleteProfileImage(@PathVariable Long fileNo) {
+        if (FileStatus.N.equals(attachService.changeFileStatusToDeleteByFileNo(fileNo).getFileStatus())) {
+            return ResponseEntity.ok("Profile Image Delete Success");
+        }
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Profile Image Delete Failed");
     }
-    boolean isDeleted = attachService.changeProfileImageToDeleteByAttachEntity(attach);
-    if (isDeleted) {
-      return new ResponseEntity<>("첨부파일이 성공적으로 삭제되었습니다", HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>("첨부파일 삭제에 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
 }

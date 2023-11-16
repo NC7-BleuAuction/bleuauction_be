@@ -28,21 +28,17 @@ public class AttachService {
         return changeFileStatusToDeleteAndSaveByAttach(findAttachByFileNo(fileNo));
     }
 
-    //삭제
-    public boolean changeProfileImageToDeleteByAttachEntity(Attach attach) {
-        try {
-            // 파일 삭제 관련 로직을 구현
-            changeFileStatusToDeleteAndSaveByAttach(attach);
-            return true;
-        } catch (Exception e) {
-            // 파일 삭제 실패 시 예외 처리
-            log.error("[{}] {} >>> 삭제처리 진행도중 예외 발생, Attach ID : {}", this.getClass().getName(), "changeProfileImageToDeleteByAttachEntity", String.valueOf(attach.getFileNo()));
-            return false;
-        }
-    }
-
     public Attach getProfileImageByFileNo(Long fileNo) {
         return findAttachByFileNo(fileNo);
+    }
+
+    /**
+     * FileNo를 기반으로 존재유무 확인
+     * @param fileNo
+     * @return
+     */
+    public boolean isExistsAttachByFileNo(Long fileNo) {
+        return attachRepository.existsById(fileNo);
     }
 
     public void addAttachs(List<Attach> attaches) {
@@ -74,7 +70,6 @@ public class AttachService {
      */
     private Attach changeFileStatusToDeleteAndSaveByAttach(Attach attach) {
         attach.changeFileStatusToDelete();
-        attachRepository.save(attach);
-        return attach;
+        return attachRepository.save(attach);
     }
 }

@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Optional;
 import java.util.Random;
 
 /*
@@ -123,9 +122,8 @@ public class KakaoLoginService {
                 email = element.getAsJsonObject().get("kakao_account").getAsJsonObject()
                         .get("email").getAsString();
             }
-            Optional<Member> member = memberService.findByMemberEmail(email);
 
-            if (member.isEmpty()) {
+            if (!memberService.duplicateMemberEmail(email)) {
                 Member newMember = new Member();
                 newMember.setMemberEmail(email);
                 newMember.setMemberPwd(createRandomPassword(12));

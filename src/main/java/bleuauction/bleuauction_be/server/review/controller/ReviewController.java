@@ -81,8 +81,7 @@ public class ReviewController {
           }
         }
         log.info("attaches: " + attaches);
-        List<Attach> insertAttaches = attachService.addAttachs(attaches);
-        log.info("insertAttaches: " + insertAttaches);
+        attachService.addAttachs(attaches);
       }
       return ResponseEntity.ok(insertReview);
     } catch (Exception e) {

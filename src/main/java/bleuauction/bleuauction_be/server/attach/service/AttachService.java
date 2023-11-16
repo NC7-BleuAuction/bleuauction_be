@@ -41,8 +41,8 @@ public class AttachService {
         return findAttachByFileNo(fileNo);
     }
 
-    public List<Attach> addAttachs(ArrayList<Attach> attaches) {
-        return attachRepository.saveAll(attaches);
+    public void addAttachs(List<Attach> attaches) {
+        attachRepository.saveAll(attaches);
     }
 
     /**
@@ -50,8 +50,8 @@ public class AttachService {
      * @param attach
      * @return
      */
-    public Attach insertAttach(Attach attach) {
-        return attachRepository.save(attach);
+    public void insertAttach(Attach attach) {
+        attachRepository.save(attach);
     }
 
     /**

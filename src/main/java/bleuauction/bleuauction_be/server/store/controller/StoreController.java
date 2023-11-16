@@ -186,8 +186,7 @@ public class StoreController {
           }
         }
         // 첨부 파일 저장 및 결과를 insertAttaches에 할당
-        ArrayList<Attach> insertAttaches = (ArrayList<Attach>) attachService.addAttachs(
-                (ArrayList<Attach>) attaches);
+        attachService.addAttachs(attaches);
         // 가게 정보 업데이트
         updateStoreService.updateStore(store.getStoreNo(), updateStoreRequest, profileImage);
         log.info("가게 정보가 업데이트되었습니다. 업데이트된 가게 정보: {}", updateStoreRequest);

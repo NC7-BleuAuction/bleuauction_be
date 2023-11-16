@@ -209,8 +209,7 @@ public class MemberController {
         }
       }
       // 첨부 파일 저장 및 결과를 insertAttaches에 할당
-      ArrayList<Attach> insertAttaches = (ArrayList<Attach>) attachService.addAttachs(
-              (ArrayList<Attach>) attaches);
+      attachService.addAttachs(attaches);
 
       updateMemberService.updateMember(memberNo, updateMemberRequest, profileImage);
       log.info("회원정보가 업데이트 되었습니다. 업데이트 된 회원 정보: {}", updateMemberRequest);

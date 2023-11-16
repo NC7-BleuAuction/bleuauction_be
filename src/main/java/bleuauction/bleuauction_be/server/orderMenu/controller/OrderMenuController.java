@@ -30,25 +30,24 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/ordermenu")
 public class OrderMenuController {
 
   private final OrderMenuService orderMenuService;
   private final OrderService orderService;
-  private final OrderMenuRepository orderMenuRepository;
   private final MenuRepository menuRepository;
   private final CreateJwt createJwt;
   private final MemberService memberService;
 
   //등록
-  @GetMapping("/api/ordermenu/new")
+  @GetMapping("/new")
   public OrderMenu orderMenu() {
     OrderMenu orderMenu = new OrderMenu();
     return orderMenu;
   }
 
 
-  @PostMapping("/api/ordermenu/new")
-  @Transactional
+  @PostMapping("/new")
   public ResponseEntity<?> orderMenu(@RequestHeader("Authorization") String  authorizationHeader,  HttpSession session, OrderMenuDTO orderMenuDTO) {
 
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
@@ -78,13 +77,12 @@ public class OrderMenuController {
       log.info("ordermenu/postnew");
       return ResponseEntity.status(HttpStatus.CREATED).body("OrderMenu created successfully");
     } else {
-      // 선택한 메뉴가 없을 때 처리
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Selected menu not found");
     }
   }
 
   //주문 번호별 주문메뉴 조회
-  @GetMapping("/api/ordermenu/{orderNo}")
+  @GetMapping("/{orderNo}")
   public List<OrderMenu> findOM(@PathVariable("orderNo") Long orderNo) throws Exception {
 
     Order order = orderService.findOne(orderNo);
@@ -99,7 +97,7 @@ public class OrderMenuController {
   }
 
   //주문 별 주문메뉴 조회
-  @GetMapping("/api/ordermenu/order/{orderNo}")
+  @GetMapping("/order/{orderNo}")
   public List<OrderMenuDTO> findorderOM(@PathVariable("orderNo") Long orderNo) throws Exception {
     Order order = orderService.findOne(orderNo);
 
@@ -129,7 +127,7 @@ public class OrderMenuController {
   }
 
   // 삭제
-  @PostMapping("api/ordermenu/delete/{orderMenuNo}")
+  @PostMapping("/delete/{orderMenuNo}")
   public ResponseEntity<String> deleteOM(@PathVariable("orderMenuNo") Long orderMenuNo) {
     OrderMenu OM = orderMenuService.findOne(orderMenuNo);
     if (OM != null) {
@@ -140,13 +138,13 @@ public class OrderMenuController {
   }
 
   //디테일(수정)
-  @GetMapping("/api/ordermenu/detail/{orderMenuNo}")
+  @GetMapping("/detail/{orderMenuNo}")
   public ResponseEntity<OrderMenu> detailOM(@PathVariable("orderMenuNo") Long orderMenuNo) {
     OrderMenu OM = orderMenuService.findOne(orderMenuNo);
     return ResponseEntity.ok(OM);
   }
 
-  @PostMapping("/api/ordermenu/update/{orderMenuNo}")
+  @PostMapping("/update/{orderMenuNo}")
   public ResponseEntity<String> updateOM (OrderMenu orderMenu, @PathVariable("orderMenuNo") Long orderMenuNo) {
     orderMenuService.update(orderMenu);
     log.info("ordermenu/update");

@@ -22,6 +22,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/order")
 public class OrderController {
 
   private final MemberService memberService;
@@ -30,14 +31,14 @@ public class OrderController {
   private final CreateJwt createJwt;
 
   //등록
-  @GetMapping("/api/order/new")
+  @GetMapping("/new")
   public Order order() {
     Order order = new Order();
     return order;
   }
 
-  @Transactional
-  @PostMapping("/api/order/new")
+
+  @PostMapping("/new")
   public ResponseEntity<String> order(Order order, HttpSession session) {
     orderService.enroll(order);
     session.setAttribute("order", order);
@@ -47,7 +48,7 @@ public class OrderController {
 
 
   //회원별 주문 조회
-  @GetMapping("/api/order")
+  @GetMapping
   public ResponseEntity<?> findOrders(@RequestHeader("Authorization") String  authorizationHeader) {
 
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
@@ -76,7 +77,7 @@ public class OrderController {
   }
 
   // 가게(가게주인)별 주문 조회
-  @GetMapping("/api/store/order")
+  @GetMapping("/store")
   public ResponseEntity<?> findOrdersbyStore( @RequestHeader("Authorization") String  authorizationHeader,HttpSession session) {
     ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
     if (verificationResult != null) {
@@ -103,7 +104,7 @@ public class OrderController {
   }
 
   // 삭제--오더메뉴도 같이
-  @PostMapping("api/order/delete/{orderNo}")
+  @PostMapping("/delete/{orderNo}")
   public ResponseEntity<String> deleteOrder(@PathVariable("orderNo") Long orderNo) {
     Order order = orderService.findOne(orderNo);
     if (order != null) {
@@ -114,14 +115,14 @@ public class OrderController {
   }
 
   //디테일(수정)
-  @GetMapping("/api/order/detail/{orderNo}")
+  @GetMapping("detail/{orderNo}")
   public ResponseEntity<Order> detailOrder(HttpSession session, @PathVariable("orderNo") Long orderNo) {
     Order order = orderService.findOne(orderNo);
     session.setAttribute("order", order);
     return ResponseEntity.ok(order);
   }
 
-  @PostMapping("/api/order/update/{orderNo}")
+  @PostMapping("/update/{orderNo}")
   public ResponseEntity<String> updateOrder (Order order, @PathVariable("orderNo") Long orderNo) {
     orderService.update(order);
     log.info("order/update");

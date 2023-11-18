@@ -125,6 +125,7 @@ public class MemberService {
     public void deleteMemberById(Long memberNo) {
         if(memberRepository.existsById(memberNo)) {
             memberRepository.deleteById(memberNo);
+            return;
         }
         throw new MemberNotFoundException(memberNo);
     }

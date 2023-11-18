@@ -1,6 +1,8 @@
 package bleuauction.bleuauction_be.server.member.service;
 
+import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.member.dto.LoginResponseDto;
+import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
 import bleuauction.bleuauction_be.server.member.exception.DuplicateMemberEmailException;
@@ -24,10 +26,9 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class MemberService {
-
-    private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
     private final CreateJwt createJwt;
+    private final PasswordEncoder passwordEncoder;
+    private final MemberRepository memberRepository;
 
     // no로 회원찾기
     public Optional<Member> findByMemberNo(Long memberNo) {
@@ -37,7 +38,7 @@ public class MemberService {
     /**
      * Id기준 사용자 정보 조회 및 존재하지 않는 경우, Exception
      *
-     * @param memberNo
+     * @param memberNo 사용자 Entity의 Id
      * @return
      */
     public Member findMemberById(Long memberNo) {
@@ -46,8 +47,8 @@ public class MemberService {
 
     /**
      * 로그인 처리 로직
-     * @param email
-     * @param requestPassword
+     * @param email 로그인을 요청한 사용자 ID
+     * @param requestPassword 로그인을 요청한 사용자의 패스워드
      * @return
      */
     public LoginResponseDto login(String email, String requestPassword) {
@@ -78,8 +79,8 @@ public class MemberService {
     /**
      * Page와 Limit를 매개변수로 하여 최근 가입일의 사용자를 전체 조회함
      *
-     * @param page
-     * @param limit
+     * @param page 조회 희망 페이지
+     * @param limit 조회희망 건수
      * @return
      */
     @Transactional(readOnly = true)
@@ -94,7 +95,7 @@ public class MemberService {
 
     /**
      * 사용자 회원가입
-     * @param member
+     * @param member 회원가입을 위한 사용자 Entity
      * @return
      */
     public Member signUp(Member member) {
@@ -108,6 +109,10 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
+    /**
+     * 회원탈퇴 로직
+     * @param tokenMember 로그인한 사용자의 토큰정보 내부의 값
+     */
     @Transactional
     public void withDrawMember(TokenMember tokenMember) {
         Member member = memberFindById(tokenMember.getMemberNo());
@@ -120,7 +125,7 @@ public class MemberService {
 
     /**
      * 사용자 정보 삭제 처리, 해당 사용자가 존재하지 않는 사용자인 경우 MemberNotFoundException 발생
-     * @param memberNo
+     * @param memberNo 사용자 Entity의 Id
      */
     public void deleteMemberById(Long memberNo) {
         if(memberRepository.existsById(memberNo)) {
@@ -132,7 +137,7 @@ public class MemberService {
 
     /**
      * 사용자 Email 존재유무 확인
-     * @param email
+     * @param email 사용자 Email
      * @return
      */
     public boolean duplicateMemberEmail(String email){
@@ -141,12 +146,35 @@ public class MemberService {
 
     /**
      * 사용자의 MemberNo가 존재하는지 유뭏 확인
-     * @param memberNo
+     * @param memberNo 사용자 Entity의 Id
      * @return
      */
     public boolean isExistsByMemberNo(Long memberNo) {
         return memberRepository.existsById(memberNo);
     }
+
+    @Transactional
+    public Member updateMember(TokenMember tokenMember, UpdateMemberRequest request, Attach profileImage) {
+        Member loginUser = memberFindById(tokenMember.getMemberNo());
+        if(profileImage != null) {
+            profileImage.setMemberNo(loginUser);
+        }
+
+        loginUser.setMemberPwd(passwordEncoder.encode(request.getMemberPwd()));
+        loginUser.setMemberName(request.getMemberName());
+        loginUser.setMemberAddr(request.getMemberAddr());
+        loginUser.setMemberZipcode(request.getMemberZipcode());
+        loginUser.setMemberDetailAddr(request.getMemberDetailAddr());
+        loginUser.setMemberPhone(request.getMemberPhone());
+        loginUser.setMemberBank(request.getMemberBank());
+        loginUser.setMemberAccount(request.getMemberAccount());
+        loginUser.addAttaches(profileImage);
+
+
+        memberRepository.save(loginUser);
+        return loginUser;
+    }
+
 
     /**
      * Email 중복검사 실시 로직으로, Email이 존재하는 경우 DuplicatememberEmailException 발생
@@ -162,7 +190,7 @@ public class MemberService {
     /**
      * MemberNo로 사용자 정보 조회후 반환하며, 존재하지 않는 경우 MemberNotFoundException 발생
      *
-     * @param memberNo
+     * @param memberNo 사용자 Entity의 Id
      * @return
      */
     private Member memberFindById(Long memberNo) {

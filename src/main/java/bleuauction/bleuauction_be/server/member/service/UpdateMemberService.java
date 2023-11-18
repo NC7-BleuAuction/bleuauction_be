@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * MemberService로 다시 구현하여서 불필요함, 일단 남겨놓을 예정
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor

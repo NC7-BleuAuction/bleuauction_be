@@ -56,4 +56,36 @@ public class NcpObjectStorageService {
       throw new RuntimeException("파일 업로드 오류", e);
     }
   }
+
+  /**
+   * 메소드 내부에서 객체 생성후 반환
+   * @param bucketName
+   * @param dirPath
+   * @param part
+   * @return
+   */
+  public Attach uploadFile(String bucketName, String dirPath, MultipartFile part) {
+    if (part.isEmpty()) {
+      return null; // 업로드된 파일이 없으면 null 반환
+    }
+
+    try {
+      Attach attach = new Attach();
+      String saveFileName = UUID.randomUUID().toString();
+      attach.setOriginFilename(part.getOriginalFilename());
+      attach.setSaveFilename(saveFileName);
+      attach.setFilePath(dirPath);
+
+      ObjectMetadata objectMetadata = new ObjectMetadata();
+      objectMetadata.setContentType(part.getContentType());
+
+      // Amazon S3에 파일 업로드
+      s3.putObject(new PutObjectRequest(bucketName, dirPath + saveFileName, part.getInputStream(), objectMetadata)
+              .withCannedAcl(CannedAccessControlList.PublicRead));
+
+      return attach;
+    } catch (IOException e) {
+      throw new RuntimeException("파일 업로드 오류", e);
+    }
+  }
 }

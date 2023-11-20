@@ -127,7 +127,7 @@ class OrderServiceTest {
     }
 
         @Test
-        @DisplayName("가게 별 주문 조회 - 주문이 없는 경우")
+        @DisplayName("가게 별 주문 조회 - 로그인 문제")
         void testFindOrdersByMemberAndStore_NoOrders() {
             // given
             Long memberNo = 123L;
@@ -169,7 +169,7 @@ class OrderServiceTest {
     }
 
     @Test
-    @DisplayName("회원 별 주문 조회 - 주문이 없는 경우")
+    @DisplayName("회원 별 주문 조회 - 로그인 문제")
     void testFindOrdersByMemberNo_NoOrders() {
         // given
         Long memberNo = 123L;

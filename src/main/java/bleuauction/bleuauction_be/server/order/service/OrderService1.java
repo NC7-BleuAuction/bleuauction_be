@@ -24,18 +24,14 @@ public class OrderService1 {
   private final OrderRepository1 orderRepository;
   private final MemberService memberService;
 
-  //등록
 
+
+  //등록
   public ResponseEntity<?> addOrder(Order order) throws Exception{
     orderRepository.save(order);
     return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully");
   }
 
-  //주문 전체 조회
-  @Transactional(readOnly = true)
-  public List<Order> findOrders() {
-    return orderRepository.findAll();
-  }
 
   //주문 1건 조회
   @Transactional(readOnly = true)
@@ -114,6 +110,9 @@ public class OrderService1 {
       return ResponseEntity.ok("Order is not existed");
     }
   }
+
+
+
 
 
 }

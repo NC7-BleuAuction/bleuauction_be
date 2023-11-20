@@ -1,7 +1,6 @@
 package bleuauction.bleuauction_be.server.orderMenu.service;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.order.entity.Order;
@@ -30,7 +29,6 @@ public class OrderMenuService1 {
 
   private final OrderMenuRepository1 orderMenuRepository;
   private final OrderRepository1 orderRepository;
-  private final MemberService memberService;
   private final MenuRepository menuRepository;
 
   //등록

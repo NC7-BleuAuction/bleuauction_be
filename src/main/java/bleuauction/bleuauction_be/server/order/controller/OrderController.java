@@ -104,7 +104,7 @@ public class OrderController {
   }
 
   // 삭제--오더메뉴도 같이
-  @PostMapping("/delete/{orderNo}")
+  @PutMapping("/delete/{orderNo}")
   public ResponseEntity<String> deleteOrder(@PathVariable("orderNo") Long orderNo) {
     Order order = orderService.findOne(orderNo);
     if (order != null) {
@@ -122,7 +122,7 @@ public class OrderController {
     return ResponseEntity.ok(order);
   }
 
-  @PostMapping("/update/{orderNo}")
+  @PutMapping("/update/{orderNo}")
   public ResponseEntity<String> updateOrder (Order order, @PathVariable("orderNo") Long orderNo) {
     orderService.update(order);
     log.info("order/update");

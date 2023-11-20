@@ -27,11 +27,6 @@ public class OrderService {
     return order.getOrderNo();
   }
 
-  //주문 전체 조회
-  @Transactional(readOnly = true)
-  public List<Order> findOrders() {
-    return orderRepository.findAll();
-  }
 
   //주문 1건 조회
   @Transactional(readOnly = true)

@@ -81,8 +81,7 @@ public class ReviewController {
           }
         }
         log.info("attaches: " + attaches);
-        List<Attach> insertAttaches = attachService.addAttachs(attaches);
-        log.info("insertAttaches: " + insertAttaches);
+        attachService.addAttachs(attaches);
       }
       return ResponseEntity.ok(insertReview);
     } catch (Exception e) {
@@ -120,7 +119,7 @@ public class ReviewController {
     log.info("url ===========> /api/review/deleteFile");
     log.info("fileNo: " + fileNo);
     try {
-      Attach deleteAttch = attachService.update(fileNo);
+      Attach deleteAttch = attachService.changeFileStatusToDeleteByFileNo(fileNo);
       return ResponseEntity.ok(deleteAttch);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");

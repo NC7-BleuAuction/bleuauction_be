@@ -209,8 +209,7 @@ public class MemberController {
         }
       }
       // 첨부 파일 저장 및 결과를 insertAttaches에 할당
-      ArrayList<Attach> insertAttaches = (ArrayList<Attach>) attachService.addAttachs(
-              (ArrayList<Attach>) attaches);
+      attachService.addAttachs(attaches);
 
       updateMemberService.updateMember(memberNo, updateMemberRequest, profileImage);
       log.info("회원정보가 업데이트 되었습니다. 업데이트 된 회원 정보: {}", updateMemberRequest);
@@ -261,7 +260,7 @@ public class MemberController {
     if (attach == null) {
       return new ResponseEntity<>("첨부파일을 찾을 수 없습니다", HttpStatus.NOT_FOUND);
     }
-    boolean isDeleted = attachService.deleteProfileImage(attach);
+    boolean isDeleted = attachService.changeProfileImageToDeleteByAttachEntity(attach);
     if (isDeleted) {
       return new ResponseEntity<>("첨부파일이 성공적으로 삭제되었습니다", HttpStatus.OK);
     } else {

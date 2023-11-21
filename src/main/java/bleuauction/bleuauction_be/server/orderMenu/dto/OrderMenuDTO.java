@@ -1,8 +1,10 @@
 package bleuauction.bleuauction_be.server.orderMenu.dto;
 
+import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
 import lombok.Getter;
 import lombok.Setter;
+import org.reactivestreams.Publisher;
 
 import java.sql.Timestamp;
 

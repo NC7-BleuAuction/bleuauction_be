@@ -26,37 +26,37 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class) // Mockito의 기능을 JUnit 5 테스트에 활성화시켜 Mockito 관련 애노테이션을 사용가능
 class OrderServiceTest {
-        @Mock // 가짜 객체
-        private OrderRepository1 orderRepository;
+    @Mock // 가짜 객체
+    private OrderRepository1 orderRepository;
 
-        @InjectMocks
-        // 가짜(Mock) 객체(@Mock로 표시된 객체)를 테스트 대상 객체에 자동으로 주입할 수 있고 이를 통해 주입된 가짜 객체를 사용하여 테스트 대상 객체의 메소드를 호출하고 동작을 검증할 수 있습니다.
-        private OrderService1 orderService;
+    @InjectMocks
+    // 가짜(Mock) 객체(@Mock로 표시된 객체)를 테스트 대상 객체에 자동으로 주입할 수 있고 이를 통해 주입된 가짜 객체를 사용하여 테스트 대상 객체의 메소드를 호출하고 동작을 검증할 수 있습니다.
+    private OrderService1 orderService;
 
     @Mock
     private MemberService memberService; // MemberService를 Mock으로 만들기
 
-        @Test
-        void testEnroll() throws Exception{
-            // Given
-            Order mockOrder = new Order();
-            mockOrder.setOrderType(T);
-            mockOrder.setOrderPrice(10000);
-            mockOrder.setOrderRequest("많이 주세요");
-            mockOrder.setRecipientPhone("010-3499-4444");
-            mockOrder.setRecipientName("박승현");
-            mockOrder.setRecipientZipcode("9999");
-            mockOrder.setRecipientAddr("서울시 강남구");
-            mockOrder.setRecipientDetailAddr("502-1호");
+    @Test
+    void testEnroll() throws Exception{
+        // Given
+        Order mockOrder = new Order();
+        mockOrder.setOrderType(T);
+        mockOrder.setOrderPrice(10000);
+        mockOrder.setOrderRequest("많이 주세요");
+        mockOrder.setRecipientPhone("010-3499-4444");
+        mockOrder.setRecipientName("박승현");
+        mockOrder.setRecipientZipcode("9999");
+        mockOrder.setRecipientAddr("서울시 강남구");
+        mockOrder.setRecipientDetailAddr("502-1호");
 
-            // When
-            ResponseEntity<?> responseEntity = orderService.addOrder(mockOrder);
+        // When
+        ResponseEntity<?> responseEntity = orderService.addOrder(mockOrder);
 
-            // Then
-            assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-            assertEquals("Order created successfully", responseEntity.getBody());
+        // Then
+        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+        assertEquals("Order created successfully", responseEntity.getBody());
 
-        }
+    }
 
     @Test
     @DisplayName("주문 수정")

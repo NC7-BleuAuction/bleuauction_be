@@ -3,6 +3,7 @@ package bleuauction.bleuauction_be.server.orderMenu.service;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
+import bleuauction.bleuauction_be.server.menu.repository.MenuRepository1;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository1;
 import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
@@ -32,9 +33,26 @@ public class OrderMenuService1 {
   private final MenuRepository menuRepository;
 
   //등록
-
+//
+//  public ResponseEntity<?> addOrderMenuDTO(Member memberNo, Order order, OrderMenuDTO orderMenuDTO) throws Exception {
+//    Menu selectedMenu = menuRepository.findMenusByMenuNo(orderMenuDTO.getMenuNo());
+//
+//    if (selectedMenu != null) {
+//      OrderMenu orderMenu = new OrderMenu();
+//      orderMenu.setMemberNo(memberNo);
+//      orderMenu.setOrderNo(order);
+//      orderMenu.setOrderMenuCount(orderMenuDTO.getOrderMenuCount());
+//      orderMenu.setMenuNo(selectedMenu);
+//
+//      orderMenuRepository.save(orderMenu);
+//      log.info("ordermenu/postnew");
+//      return ResponseEntity.status(HttpStatus.CREATED).body("OrderMenu created successfully");
+//    } else {
+//      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Selected menu not found");
+//    }
+//  }
   public ResponseEntity<?> addOrderMenuDTO(Member memberNo, Order order, OrderMenuDTO orderMenuDTO) throws Exception {
-    Menu selectedMenu = menuRepository.findOne(orderMenuDTO.getMenuNo());
+    Menu selectedMenu = menuRepository.findMenusByMenuNo(orderMenuDTO.getMenuNo());
 
     if (selectedMenu != null) {
       OrderMenu orderMenu = new OrderMenu();
@@ -43,24 +61,24 @@ public class OrderMenuService1 {
       orderMenu.setOrderMenuCount(orderMenuDTO.getOrderMenuCount());
       orderMenu.setMenuNo(selectedMenu);
 
-      orderMenuRepository.save(orderMenu);
-      log.info("ordermenu/postnew");
-      return ResponseEntity.status(HttpStatus.CREATED).body("OrderMenu created successfully");
+
+
+        orderMenuRepository.save(orderMenu);
+        log.info("ordermenu/postnew");
+        return ResponseEntity.status(HttpStatus.CREATED).body("OrderMenu created successfully");
+
     } else {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Selected menu not found");
     }
   }
+
+
 
   // DTO 등록
   public OrderMenuDTO save(OrderMenuDTO orderMenuDTO) {
     return orderMenuRepository.save(orderMenuDTO);
   }
 
-  //주문메뉴 전체 조회
-  @Transactional(readOnly = true)
-  public List<OrderMenu> findOrderMenus() {
-    return orderMenuRepository.findAll();
-  }
 
   //주문메뉴 1건 조회
   @Transactional(readOnly = true)
@@ -80,10 +98,6 @@ public class OrderMenuService1 {
 //      return new ArrayList<>();
 //    }
 //  }
-
-
-
-
 
 
 

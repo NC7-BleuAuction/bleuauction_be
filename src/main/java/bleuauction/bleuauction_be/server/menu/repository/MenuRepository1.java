@@ -6,5 +6,5 @@ import org.reactivestreams.Publisher;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MenuRepository1 extends JpaRepository<Menu, Long> {
-    public Publisher<?> findMenusByMenuNo(Long menuNo);
+    public Menu findMenusByMenuNo(Long menuNo);
 }

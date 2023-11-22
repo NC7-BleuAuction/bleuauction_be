@@ -5,7 +5,7 @@ import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.entity.OrderStatus;
-import bleuauction.bleuauction_be.server.order.repository.OrderRepository1;
+import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,17 +24,16 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 
-@ExtendWith(MockitoExtension.class) // Mockito의 기능을 JUnit 5 테스트에 활성화시켜 Mockito 관련 애노테이션을 사용가능
+@ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
-    @Mock // 가짜 객체
-    private OrderRepository1 orderRepository;
+    @Mock
+    private OrderRepository orderRepository;
 
     @InjectMocks
-    // 가짜(Mock) 객체(@Mock로 표시된 객체)를 테스트 대상 객체에 자동으로 주입할 수 있고 이를 통해 주입된 가짜 객체를 사용하여 테스트 대상 객체의 메소드를 호출하고 동작을 검증할 수 있습니다.
-    private OrderService1 orderService;
+    private OrderService orderService;
 
     @Mock
-    private MemberService memberService; // MemberService를 Mock으로 만들기
+    private MemberService memberService;
 
     @Test
     void testEnroll() throws Exception{
@@ -148,14 +147,11 @@ class OrderServiceTest {
         // given
         Long memberNo = 123L;
 
-        // 가짜로 로그인한 사용자를 생성
         Member fakeLoginUser = new Member();
         fakeLoginUser.setMemberNo(memberNo);
 
-        // 로그인한 사용자를 찾았다고 설정
         when(memberService.findByMemberNo(memberNo)).thenReturn(Optional.of(fakeLoginUser));
 
-        // 가짜 주문 리스트를 생성
         List<Order> fakeOrders = Arrays.asList(new Order(), new Order());
 
         // 주문이 있는 상황을 가정하고, 주문 리스트를 반환하도록 설정
@@ -190,7 +186,6 @@ class OrderServiceTest {
         // given
         Long memberNo = 123L;
 
-        // 가짜로 로그인한 사용자를 생성
         Member fakeLoginUser = new Member();
         fakeLoginUser.setMemberNo(memberNo);
 

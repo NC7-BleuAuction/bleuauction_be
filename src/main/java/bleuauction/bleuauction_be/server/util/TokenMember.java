@@ -1,38 +1,38 @@
 package bleuauction.bleuauction_be.server.util;
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
-import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
-import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
-import bleuauction.bleuauction_be.server.notice.entity.Notice;
-import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
-import bleuauction.bleuauction_be.server.review.entity.Review;
-import bleuauction.bleuauction_be.server.store.entity.Store;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.annotation.Nullable;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.lang.reflect.Field;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TokenMember {
-  private Long memberNo;
+    private Long memberNo;
+    private String memberEmail;
+    private String memberName;
+    private String memberCategory;
 
-  private String memberEmail;
+    @Builder
+    public TokenMember(Long memberNo, String memberEmail, String memberName, String memberCategory) {
+        this.memberNo = memberNo;
+        this.memberEmail = memberEmail;
+        this.memberName = memberName;
+        this.memberCategory = memberCategory;
+    }
 
-  private String memberName;
-
-  private String memberCategory;
+    public static TokenMember of(String token) {
+        DecodedJWT decodedJWT = JWT.decode(token);
+        return TokenMember.builder()
+                .memberNo(Long.parseLong(decodedJWT.getSubject()))
+                .memberEmail(decodedJWT.getClaim("memberEmail").asString())
+                .memberName(decodedJWT.getClaim("memberName").asString())
+                .memberCategory(decodedJWT.getClaim("memberCategory").asString())
+                .build();
+    }
 }
 

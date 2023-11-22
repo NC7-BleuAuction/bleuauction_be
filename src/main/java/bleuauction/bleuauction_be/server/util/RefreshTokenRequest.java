@@ -1,13 +1,14 @@
 package bleuauction.bleuauction_be.server.util;
 
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
 public class RefreshTokenRequest {
-  private String refreshToken;
-
-  public String getRefreshToken() {
-    return refreshToken;
-  }
-
-  public void setRefreshToken(String refreshToken) {
-    this.refreshToken = refreshToken;
-  }
+    @NotNull(message = "Refresh Token이 Null이면 요청이 불가합니다.₩")
+    private String refreshToken;
 }

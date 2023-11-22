@@ -13,9 +13,7 @@ import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
 import bleuauction.bleuauction_be.server.store.exception.StoreNotFoundException;
 import bleuauction.bleuauction_be.server.store.exception.StoreUpdateUnAuthorizedException;
-import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
-import bleuauction.bleuauction_be.server.store.service.UpdateStoreService;
 import bleuauction.bleuauction_be.server.util.CreateJwt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,10 +39,8 @@ public class StoreController {
     private final CreateJwt createJwt;
     private final StoreService storeService;
     private final MemberService memberService;
-    private final StoreRepository storeRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final AttachService attachService;
-    private final UpdateStoreService updateStoreService;
 
     /**
      * 가게정보 리스트를 반환하는 기능

@@ -5,6 +5,7 @@ import bleuauction.bleuauction_be.server.answer.service.AnswerService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
+import bleuauction.bleuauction_be.server.review.entity.Review;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,72 +24,51 @@ public class AnswerController {
   private final AnswerService answerService;
 
   @GetMapping
-  public ResponseEntity<?> answerList(@RequestHeader("Authorization") String authorizationHeader, Long reviewNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) {
+  public ResponseEntity<Map<String, Object>> answerList(@RequestHeader("Authorization") String authorizationHeader, Long reviewNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) {
     log.info("@GetMapping ===========> /api/answer");
     log.info("reivewNo: {}", reviewNo);
     log.info("startPage: {}", startPage);
 
-    try {
-      createJwt.verifyAccessToken(authorizationHeader);
-      Map<String, Object> answerMap = answerService.selectAnswerList(reviewNo, startPage);
-      return ResponseEntity.ok(answerMap);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
+    createJwt.verifyAccessToken(authorizationHeader);
+    return ResponseEntity.ok(answerService.selectAnswerList(reviewNo, startPage));
   }
 
   @PostMapping
-  public ResponseEntity<?> answerAdd(@RequestHeader("Authorization") String authorizationHeader, Answer answer) {
+  public ResponseEntity<Answer> answerAdd(@RequestHeader("Authorization") String authorizationHeader, Answer answer) {
     log.info("@PostMapping ===========> /api/answer");
     log.info("authorizationHeader: {}", authorizationHeader);
     log.info("Answer: {}", answer);
 
-    try {
-      createJwt.verifyAccessToken(authorizationHeader);
-      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-      Answer insertAnswer = answerService.addAnswer(tokenMember, answer);
+    createJwt.verifyAccessToken(authorizationHeader);
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    Answer insertAnswer = answerService.addAnswer(tokenMember, answer);
 
-      return ResponseEntity.ok(insertAnswer);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
+    return ResponseEntity.ok(insertAnswer);
   }
 
   @PutMapping
-  public ResponseEntity<?> answerUpdate(@RequestHeader("Authorization") String authorizationHeader, Answer answer, Member member) {
+  public ResponseEntity<Answer> answerUpdate(@RequestHeader("Authorization") String authorizationHeader, Answer answer, Member member) throws Exception {
     log.info("@PutMapping ===========> /api/answer");
     log.info("authorizationHeader: {}", authorizationHeader);
     log.info("answer: {}", answer);
     log.info("member: {}", member);
 
-    try {
-      createJwt.verifyAccessToken(authorizationHeader);
-
-      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-      Answer updateAnswer = answerService.updateAnswer(tokenMember, answer, member);
-      return ResponseEntity.ok(updateAnswer);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
-    }
-
+    createJwt.verifyAccessToken(authorizationHeader);
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    return ResponseEntity.ok(answerService.updateAnswer(tokenMember, answer, member));
   }
 
 
   @DeleteMapping
-  public ResponseEntity<?> answerDelete(@RequestHeader("Authorization") String authorizationHeader, Long answerNo,  Long memberNo) {
+  public ResponseEntity<Answer> answerDelete(@RequestHeader("Authorization") String authorizationHeader, Long answerNo, Long memberNo) throws Exception {
     log.info("@DeleteMapping ===========> /api/answer/delete");
     log.info("authorizationHeader: {}", authorizationHeader);
     log.info("answerNo: {}", answerNo);
     log.info("memberNo: {}", memberNo);
 
-    try {
       createJwt.verifyAccessToken(authorizationHeader);
       TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
 
-      Answer deleteAnswer = answerService.deleteAnswer(tokenMember, answerNo, memberNo);
-      return ResponseEntity.ok(deleteAnswer);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
-    }
+      return ResponseEntity.ok(answerService.deleteAnswer(tokenMember, answerNo, memberNo));
   }
 }

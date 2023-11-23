@@ -45,7 +45,7 @@ public class ReviewService {
     Pageable pageable = PageRequest.of(startPage, PAGE_ROW_COUNT);
     List<Review> exitingReviewList = reviewRepository.findAllReviewsWithMembersByReviewStatus(storeNo, ReviewStatus.Y, pageable);
     for (int i = 0; i < exitingReviewList.size(); i++) {
-      Optional<List<Attach>> optionalAttachList = attachRepository.findAllByReviewAndFileStatus(exitingReviewList.get(i), FileStatus.Y);
+      Optional<List<Attach>> optionalAttachList = Optional.ofNullable(attachRepository.findAllByReviewAndFileStatus(exitingReviewList.get(i), FileStatus.Y));
       if (optionalAttachList.isPresent()) {
         exitingReviewList.get(i).setReviewAttaches(optionalAttachList.get());
       }
@@ -66,11 +66,7 @@ public class ReviewService {
           attaches.add(attach);
         }
       }
-      List<Attach> insertAttaches = attachService.addAttachs(attaches);
-      if (insertAttaches.isEmpty()) {
-        throw new Exception("파일 업로드에 실패하였습니다.");
-      }
-      insertReview.setReviewAttaches(insertAttaches);
+      insertReview.setReviewAttaches(attaches);
     }
     return insertReview;
   }
@@ -88,7 +84,7 @@ public class ReviewService {
   public Review deleteReview(Long reviewNo) throws Exception {
     Review exitingReview = reviewRepository.findByReviewNoAndReviewStatus(reviewNo, ReviewStatus.Y).orElseThrow(() -> new Exception("해당 리뷰가 존재하지 않습니다!"));
 
-    Optional<List<Attach>> optionalAttachList = attachRepository.findAllByReviewAndFileStatus(exitingReview, FileStatus.Y);
+    Optional<List<Attach>> optionalAttachList = Optional.ofNullable(attachRepository.findAllByReviewAndFileStatus(exitingReview, FileStatus.Y));
     if (optionalAttachList.isPresent()) {
       for (Attach exitingAttach : optionalAttachList.get()) {
         exitingAttach.setFileStatus(FileStatus.N);

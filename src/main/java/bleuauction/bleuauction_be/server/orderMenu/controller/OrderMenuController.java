@@ -39,11 +39,7 @@ public class OrderMenuController {
 
   @PostMapping("/new")
   public ResponseEntity<?> orderMenu(@RequestHeader("Authorization") String authorizationHeader, HttpSession session, OrderMenuDTO orderMenuDTO)  throws Exception {
-    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-    if (verificationResult != null) {
-      return verificationResult;
-    }
-
+    createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 

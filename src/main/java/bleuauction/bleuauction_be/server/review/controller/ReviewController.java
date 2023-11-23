@@ -33,83 +33,59 @@ public class ReviewController {
   private final ReviewService reviewService;
 
   @GetMapping
-  public ResponseEntity<?> reviewList(@RequestHeader("Authorization") String authorizationHeader,
-                                      @RequestParam(value = "storeNo") Long storeNo,
-                                      @RequestParam(value = "startPage", defaultValue = "0") int startPage) {
+  public ResponseEntity<List<Review>> reviewList(@RequestHeader("Authorization") String authorizationHeader,
+                                                 @RequestParam(value = "storeNo") Long storeNo,
+                                                 @RequestParam(value = "startPage", defaultValue = "0") int startPage) {
     log.info("@GetMapping ===========> /api/reviews");
     log.info("storeNo: {}", storeNo);
     log.info("startPage: {}", startPage);
-    try {
-      createJwt.verifyAccessToken(authorizationHeader);
-      List<Review> reviewList = reviewService.selectReviewList(storeNo, startPage);
-      log.info("reviewList: {}", reviewList);
+    createJwt.verifyAccessToken(authorizationHeader);
+    List<Review> reviewList = reviewService.selectReviewList(storeNo, startPage);
+    log.info("reviewList: {}", reviewList);
 
-      return ResponseEntity.ok(reviewList);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
+    return ResponseEntity.ok(reviewList);
   }
 
   @PostMapping
-  public ResponseEntity<?> reviewAdd(@RequestHeader("Authorization") String authorizationHeader, Review review, Member member,
-                                     @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
+  public ResponseEntity<Review> reviewAdd(@RequestHeader("Authorization") String authorizationHeader, Review review, Member member,
+                                          @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) throws Exception {
     log.info("@PostMapping ===========> /api/review");
-    log.info("authorizationHeader: {}",  authorizationHeader);
+    log.info("authorizationHeader: {}", authorizationHeader);
     log.info("Review: {}", review);
     log.info("MultipartFile: {}", multipartFiles);
 
 
-    try {
-      createJwt.verifyAccessToken(authorizationHeader);
+    createJwt.verifyAccessToken(authorizationHeader);
 
-      review.setMember(member);
-      Review insertReview = reviewService.addReview(review, multipartFiles);
-      log.info("insertReview: " + insertReview);
-
-      return ResponseEntity.ok(insertReview);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
+    review.setMember(member);
+    Review insertReview = reviewService.addReview(review, multipartFiles);
+    log.info("insertReview: " + insertReview);
+    return ResponseEntity.ok(insertReview);
   }
 
   @PutMapping
-  public ResponseEntity<?>  reviewUpdate(@RequestHeader("Authorization") String authorizationHeader, Review review) {
+  public ResponseEntity<Review> reviewUpdate(@RequestHeader("Authorization") String authorizationHeader, Review review) throws Exception {
     log.info("@PutMapping ===========> /api/review");
-    try {
-      createJwt.verifyAccessToken(authorizationHeader);
 
-      Review updateReview = reviewService.updateReview(review);
-      return ResponseEntity.ok(updateReview);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
+    createJwt.verifyAccessToken(authorizationHeader);
+    Review updateReview = reviewService.updateReview(review);
+    return ResponseEntity.ok(updateReview);
   }
 
   @DeleteMapping
-  public ResponseEntity<?> reviewDelete(@RequestHeader("Authorization") String authorizationHeader, Long reviewNo) {
+  public ResponseEntity<Review> reviewDelete(@RequestHeader("Authorization") String authorizationHeader, Long reviewNo) throws Exception {
     log.info("@DeleteMapping ===========> /api/review");
     log.info("reviewNo: {}", reviewNo);
-    try {
-      createJwt.verifyAccessToken(authorizationHeader);
-
-      Review deleteReview = reviewService.deleteReview(reviewNo);
-      return ResponseEntity.ok(deleteReview);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
+    createJwt.verifyAccessToken(authorizationHeader);
+    return ResponseEntity.ok(reviewService.deleteReview(reviewNo));
   }
 
   @DeleteMapping("/attach")
-  public ResponseEntity<?> reviewDeleteFile(@RequestHeader("Authorization") String authorizationHeader, Long fileNo) {
+  public ResponseEntity<Attach> reviewDeleteFile(@RequestHeader("Authorization") String authorizationHeader, Long fileNo) {
     log.info("@DeleteMapping ===========> api/review/attach");
     log.info("authorizationHeader: {}", authorizationHeader);
     log.info("fileNo: {}", fileNo);
-    try {
-      createJwt.verifyAccessToken(authorizationHeader);
-      Attach deleteAttch = attachService.changeFileStatusToDeleteByFileNo(fileNo);
-      return ResponseEntity.ok(deleteAttch);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
+    createJwt.verifyAccessToken(authorizationHeader);
+    return ResponseEntity.ok(attachService.changeFileStatusToDeleteByFileNo(fileNo));
   }
 }

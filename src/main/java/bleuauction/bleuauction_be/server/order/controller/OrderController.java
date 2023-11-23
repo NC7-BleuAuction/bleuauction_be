@@ -1,16 +1,22 @@
 package bleuauction.bleuauction_be.server.order.controller;
 
+import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
-import bleuauction.bleuauction_be.server.util.CreateJwt;
-import bleuauction.bleuauction_be.server.util.TokenMember;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
@@ -44,11 +50,7 @@ public class OrderController {
   //회원별 주문 조회
   @GetMapping
   public ResponseEntity<?> findOrders(@RequestHeader("Authorization") String authorizationHeader) {
-
-    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-    if (verificationResult != null) {
-      return verificationResult;
-    }
+    createJwt.verifyAccessToken(authorizationHeader);
 
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     log.info("token: " + tokenMember);
@@ -58,11 +60,8 @@ public class OrderController {
 
   // 가게(가게주인)별 주문 조회
   @GetMapping("/store")
-  public ResponseEntity<?> findOrdersbyStore(@RequestHeader("Authorization") String  authorizationHeader,HttpSession session) {
-    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-    if (verificationResult != null) {
-      return verificationResult;
-    }
+  public ResponseEntity<?> findOrdersbyStore(@RequestHeader("Authorization") String  authorizationHeader) {
+    createJwt.verifyAccessToken(authorizationHeader);
 
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     log.info("token: " + tokenMember);

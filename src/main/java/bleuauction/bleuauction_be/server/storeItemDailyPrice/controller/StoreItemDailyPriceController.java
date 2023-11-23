@@ -25,30 +25,22 @@ public class StoreItemDailyPriceController {
   private final StoreItemDailyPriceService storeItemDailyPriceService;
 
   @GetMapping
-  public ResponseEntity<?> sidpList(@RequestHeader("Authorization") String authorizationHeader) {
+  public ResponseEntity<List<StoreItemDailyPrice>> sidpList(@RequestHeader("Authorization") String authorizationHeader) throws Exception {
     log.info("@GetMapping ===========> /api/sidp");
 
-    try {
       createJwt.verifyAccessToken(authorizationHeader);
-
       List<StoreItemDailyPrice> sidpList = storeItemDailyPriceService.selectSidpList();
       log.info("storeItemDailyPriceList: {}", sidpList);
-
       return ResponseEntity.ok(sidpList);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
   }
 
   @PostMapping
-  public ResponseEntity<?> sidpAdd(@RequestHeader("Authorization") String authorizationHeader,
-                                   @RequestBody StoreItemDailyPrice storeItemDailyPrice) {
+  public ResponseEntity<StoreItemDailyPrice> sidpAdd(@RequestHeader("Authorization") String authorizationHeader,
+                                   @RequestBody StoreItemDailyPrice storeItemDailyPrice) throws Exception {
     log.info("@PostMapping ===========> /api/sidp");
     log.info("StoreItemDailyPrice: {}", storeItemDailyPrice);
 
-    try {
       createJwt.verifyAccessToken(authorizationHeader);
-
       TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
 
       Member m = new Member();
@@ -60,8 +52,5 @@ public class StoreItemDailyPriceController {
       log.info("insertStoreItemDailyPrice: {} ", insertStoreItemDailyPrice);
 
       return ResponseEntity.ok(insertStoreItemDailyPrice);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
   }
 }

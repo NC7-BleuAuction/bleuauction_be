@@ -121,7 +121,7 @@ public class NoticeController {
       if (notice != null) {
         if (notice.getNoticeAttaches() != null && !notice.getNoticeAttaches().isEmpty()) {
           for (Attach attach : notice.getNoticeAttaches()) {
-            attachService.update(attach.getFileNo());
+            attachService.changeFileStatusToDeleteByFileNo(attach.getFileNo());
           }
         }
         noticeService.deleteNotice(noticeNo);
@@ -143,7 +143,7 @@ public class NoticeController {
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     if(loginUser.get().getMemberCategory() == A) {
-      attachService.update(fileNo);
+      attachService.changeFileStatusToDeleteByFileNo(fileNo);
       return ResponseEntity.ok("File deleted successfully");
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");

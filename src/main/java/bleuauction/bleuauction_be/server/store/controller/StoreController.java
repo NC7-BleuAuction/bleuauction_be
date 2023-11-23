@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.store.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
@@ -169,8 +170,7 @@ public class StoreController {
           }
         }
         // 첨부 파일 저장 및 결과를 insertAttaches에 할당
-        ArrayList<Attach> insertAttaches = (ArrayList<Attach>) attachService.addAttachs(
-                (ArrayList<Attach>) attaches);
+        attachService.addAttachs(attaches);
         // 가게 정보 업데이트
         updateStoreService.updateStore(store.getStoreNo(), updateStoreRequest, profileImage);
         log.info("가게 정보가 업데이트되었습니다. 업데이트된 가게 정보: {}", updateStoreRequest);
@@ -215,18 +215,21 @@ public class StoreController {
     }
   }
 
-  // 가게 프로필 삭제
+  /**
+   * 가게의 프로필 이미지를 삭제하는 기능으로 <br />
+   * 해당 기능은 Controller가 적합함. <br />
+   * [TODO] : 현재 해당 기능의 문제점은 인증 인가없이 그냥 fileNo를 입력할때 삭제가 된다는 점, 그러므로 타인이 삭제시킬수도 있음. 추후 보완이 필요하다.
+   *
+   * @param fileNo
+   * @return
+   */
   @DeleteMapping("/delete/profileImage/{fileNo}")
   public ResponseEntity<String> deleteProfileImage(@PathVariable("fileNo") Long fileNo) {
-    Attach attach = attachService.getProfileImageByFileNo(fileNo);
-    if (attach == null) {
-      return new ResponseEntity<>("첨부파일을 찾을 수 없습니다", HttpStatus.NOT_FOUND);
+    if (FileStatus.N.equals(attachService.changeFileStatusToDeleteByFileNo(fileNo).getFileStatus())) {
+      return ResponseEntity.ok("Profile Image Delete Success");
     }
-    boolean isDeleted = attachService.deleteProfileImage(attach);
-    if (isDeleted) {
-      return new ResponseEntity<>("첨부파일이 성공적으로 삭제되었습니다", HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>("첨부파일 삭제에 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Profile Image Delete Failed");
   }
 }

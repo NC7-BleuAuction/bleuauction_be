@@ -152,7 +152,7 @@ public class MenuController {
 
       // 사진 상태를 'N'으로 변경
       for (Attach attach : menu.getMenuAttaches()) {
-        attachService.update(attach.getFileNo());
+        attachService.changeFileStatusToDeleteByFileNo(attach.getFileNo());
       }
       menuService.deleteMenu(menuNo);
       return ResponseEntity.ok("Menu deleted successfully");
@@ -165,7 +165,7 @@ public class MenuController {
   //사진삭제
   @DeleteMapping("/api/menu/deletefile/{fileNo}")
   public ResponseEntity<String> fileMenuDelete(@PathVariable Long fileNo) {
-    attachService.update(fileNo);
+    attachService.changeFileStatusToDeleteByFileNo(fileNo);
     return ResponseEntity.ok("File deleted successfully");
   }
 

@@ -21,7 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@ActiveProfiles("test")
 @WebMvcTest(
         controllers = TestController.class,
         excludeFilters = {
@@ -61,4 +60,6 @@ class TestControllerTest {
         ).andExpect(status().isOk())
         .andExpect(content().string("자동 CI/CD Test"));
     }
+
+
 }

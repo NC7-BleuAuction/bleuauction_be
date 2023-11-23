@@ -106,8 +106,7 @@ public class ReviewController {
     log.info("fileNo: {}", fileNo);
     try {
       createJwt.verifyAccessToken(authorizationHeader);
-
-      Attach deleteAttch = attachService.update(fileNo);
+      Attach deleteAttch = attachService.changeFileStatusToDeleteByFileNo(fileNo);
       return ResponseEntity.ok(deleteAttch);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

@@ -1,4 +1,4 @@
-package bleuauction.bleuauction_be.server.util;
+package bleuauction.bleuauction_be.server.common.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;

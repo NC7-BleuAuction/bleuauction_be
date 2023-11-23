@@ -74,4 +74,12 @@ public class StoreService {
     public Optional<Store> selectStore(Long storeNo) {
         return storeRepository.findById(storeNo);
     }
+
+//    public Optional<Store> findStoresByMember(Member m) {
+//        return storeRepository.findByMemberNo(m);
+//    }
+
+    public Store findStoresByMember(Member m) throws Exception {
+        return storeRepository.findByMemberNo(m).orElseThrow(() -> new Exception("등록된 가게가 존재하지 않는 회원입니다!"));
+    }
 }

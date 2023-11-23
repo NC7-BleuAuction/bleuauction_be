@@ -1,9 +1,11 @@
-package bleuauction.bleuauction_be.server.util;
+package bleuauction.bleuauction_be.server.common.jwt;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@Getter
 public class JwtConfig {
   @Value("${jwt.secret}")
   private String secret;
@@ -17,19 +19,4 @@ public class JwtConfig {
 //  @Value("${jwt.header-string}")
 //  private String headerString;
 
-  public String getSecret() {
-    return secret;
-  }
-
-  public int getExprirationTiem() {
-    return exprirationTiem;
-  }
-
-  public String getToekenPrefix() {
-    return toekenPrefix;
-  }
-
-//  public String getHeaderString() {
-//    return headerString;
-//  }
 }

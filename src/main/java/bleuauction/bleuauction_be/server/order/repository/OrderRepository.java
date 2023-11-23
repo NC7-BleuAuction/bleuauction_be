@@ -30,7 +30,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
   @Query("SELECT o " +
           "FROM Order o " +
-          "JOIN o.OrderMenus om " +
+          "JOIN o.orderMenus om " +
           "JOIN om.menuNo menu " +
           "JOIN menu.storeNo store " +
           "JOIN store.memberNo member " +

@@ -1,13 +1,11 @@
 package bleuauction.bleuauction_be.server.orderMenu.dto;
 
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 
-@Getter
-@Setter
+@Data
 public class OrderMenuDTO {
   private Long orderMenuNo;
   private int orderMenuCount;

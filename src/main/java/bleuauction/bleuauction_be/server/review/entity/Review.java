@@ -7,10 +7,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
@@ -59,4 +56,13 @@ public class Review {
   @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private List<Attach> reviewAttaches;
 
+
+  @Builder
+  public Review(Long storeNo, Member member, String reviewContent, String reviewFreshness, List<Attach> reviewAttaches) {
+    this.storeNo = storeNo;
+    this.member = member;
+    this.reviewContent = reviewContent;
+    this.reviewFreshness = reviewFreshness;
+    this.reviewAttaches = reviewAttaches;
+  }
 }

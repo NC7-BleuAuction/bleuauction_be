@@ -28,5 +28,4 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
   );
 
   Optional<Review> findByReviewNoAndReviewStatus(Long reviewNo, ReviewStatus reviewStatus);
-
 }

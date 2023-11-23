@@ -29,7 +29,6 @@ public class Answer {
 
   private Long reviewNo;
 
-
   @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name ="member_no")
   private Member member;

@@ -75,7 +75,7 @@ public class StoreService {
         if (member.getMemberCategory() != MemberCategory.S) {
             throw new IllegalAccessException("판매자 회원만 등록 가능합니다.");
         }
-        validateDuplicateStore(request.getMarketName());
+        validateDuplicateStore(request.getStoreName());
         storeRepository.save(request.getStoreEntity(member));
     }
 

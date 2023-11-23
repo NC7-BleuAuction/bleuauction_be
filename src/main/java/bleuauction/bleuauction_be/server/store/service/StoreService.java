@@ -79,12 +79,18 @@ public class StoreService {
         storeRepository.save(request.getStoreEntity(member));
     }
 
-    // 가게 정보 수정
+    /**
+     * 가게 정보 수정
+     * @param store
+     */
     public void update(Store store) {
         storeRepository.save(store);
     }
 
-    // 가게 정보 삭제
+    /**
+     * 가게 정보 삭제
+     * @param storeNo
+     */
     public void delete(Long storeNo) {
         storeRepository.deleteById(storeNo);
     }

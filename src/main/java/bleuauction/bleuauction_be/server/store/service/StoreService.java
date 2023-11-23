@@ -11,6 +11,7 @@ import bleuauction.bleuauction_be.server.store.exception.StoreUpdateUnAuthorized
 import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,10 +59,10 @@ public class StoreService {
      * @return
      */
     public List<Store> selectStoreList(StoreStatus storeStatus, int page, int limit) {
-        List<Store> storeList = storeRepository.findAllByStoreStatus(storeStatus, PageRequest.of(page, limit));
-        log.info("[{}] FindStoreList By StoreStatus, FindResult >>> {}", this.getClass().getName(), storeList);
+        Page<Store> findResult = storeRepository.findAllByStoreStatus(storeStatus, PageRequest.of(page, limit));
+        log.info("[{}] FindStoreList By StoreStatus, FindResult >>> {}", this.getClass().getName(), findResult);
 
-        return storeList;
+        return findResult.getContent();
     }
 
     /**

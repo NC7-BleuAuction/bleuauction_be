@@ -13,12 +13,9 @@ import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.member.service.UpdateMemberService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 
-import bleuauction.bleuauction_be.server.store.entity.Store;
-import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
-import bleuauction.bleuauction_be.server.util.CreateJwt;
-import bleuauction.bleuauction_be.server.util.RefreshTokenRequest;
-import bleuauction.bleuauction_be.server.util.TokenMember;
-import jakarta.servlet.http.HttpSession;
+import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.jwt.RefreshTokenRequest;
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,22 +25,12 @@ import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import retrofit2.http.POST;
 
 @Slf4j
 @RestController
@@ -51,14 +38,14 @@ import retrofit2.http.POST;
 @RequestMapping("/api/member")
 public class MemberController {
 
-    private final CreateJwt createJwt;
-    private final MemberRepository memberRepository;
-    private final MemberService memberService;
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    private final NcpObjectStorageService ncpObjectStorageService;
-    private final AttachService attachService;
-    private final Member member;
-    private final UpdateMemberService updateMemberService;
+  private final CreateJwt createJwt;
+  private final MemberRepository memberRepository;
+  private final MemberService memberService;
+  private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+  private final NcpObjectStorageService ncpObjectStorageService;
+  private final AttachService attachService;
+  private final Member member;
+  private final UpdateMemberService updateMemberService;
 
 
   @GetMapping("/{memberNo}")
@@ -95,7 +82,7 @@ public class MemberController {
   }
 
   @GetMapping("/logout")
-  public ResponseEntity<String> logout(@RequestHeader("Authorization") String  authorizationHeader) throws Exception {
+  public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorizationHeader) throws Exception {
     log.info("Call logout");
     return ResponseEntity.ok().body("{\"message\": \"Logout successful\"}");
   }
@@ -145,28 +132,17 @@ public class MemberController {
   }
 
   @PostMapping("/accTokRefresh")
-  public ResponseEntity<?> refreshAccessToken(
-          @RequestBody RefreshTokenRequest refreshTokenRequest) {
+  public ResponseEntity<?> refreshAccessToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
     log.info("url ===========> /member/accTokRefresh");
 
-    try {
-      String refreshToken = refreshTokenRequest.getRefreshToken();
-      log.info("refreshToken: " + refreshToken);
+    String refreshToken = refreshTokenRequest.getRefreshToken();
+    log.info("refreshToken: " + refreshToken);
 
-      Map<String, Object> tokenMap = new HashMap<>();
-      String renewAccessToken = createJwt.getRenewAccessToken(refreshToken);
+    Map<String, Object> tokenMap = new HashMap<>();
+    String renewAccessToken = createJwt.getRenewAccessToken(refreshToken);
+    tokenMap.put("accessToken", renewAccessToken);
 
-      if (refreshToken == null) {
-        new Exception();
-      }
-
-      tokenMap.put("accessToken", renewAccessToken);
-      return ResponseEntity.ok(tokenMap);
-
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-              .body(CreateJwt.REFRESH_ACCESS_TOKEN_ERROR);
-    }
+    return ResponseEntity.ok(tokenMap);
   }
 
   // 회원정보수정
@@ -175,12 +151,9 @@ public class MemberController {
           @RequestHeader("Authorization") String authorizationHeader,
           @RequestPart("updateMemberRequest") UpdateMemberRequest updateMemberRequest,
           @RequestPart("profileImage") MultipartFile profileImage) throws Exception {
-    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(
-            authorizationHeader,
-            createJwt);
-    if (verificationResult != null) {
-      return verificationResult;
-    }
+
+    createJwt.verifyAccessToken(authorizationHeader);
+
     Long memberNo = updateMemberRequest.getMemberNo();
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     log.info("token: " + tokenMember);
@@ -222,11 +195,9 @@ public class MemberController {
 
   // 회원 탈퇴
   @PutMapping("/withdraw")
-  public ResponseEntity<?> withdrawMember(@RequestHeader("Authorization") String authorizationHeader) {
-    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-    if (verificationResult != null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 유효하지 않습니다.");
-    }
+  public ResponseEntity<?> withdrawMember(@RequestHeader("Authorization") String authorizationHeader) throws Exception {
+
+    createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     log.info("token: " + tokenMember);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());

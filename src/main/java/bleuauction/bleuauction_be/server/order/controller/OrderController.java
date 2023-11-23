@@ -5,8 +5,8 @@ import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
-import bleuauction.bleuauction_be.server.util.CreateJwt;
-import bleuauction.bleuauction_be.server.util.TokenMember;
+import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -50,11 +50,7 @@ public class OrderController {
   @GetMapping("/api/order")
   public ResponseEntity<?> findOrders(@RequestHeader("Authorization") String  authorizationHeader) {
 
-    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-    if (verificationResult != null) {
-      return verificationResult;
-    }
-
+    createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     log.info("token: " + tokenMember);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
@@ -78,11 +74,8 @@ public class OrderController {
   // 가게(가게주인)별 주문 조회
   @GetMapping("/api/store/order")
   public ResponseEntity<?> findOrdersbyStore( @RequestHeader("Authorization") String  authorizationHeader,HttpSession session) {
-    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-    if (verificationResult != null) {
-      return verificationResult;
-    }
 
+    createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 

@@ -1,7 +1,7 @@
 package bleuauction.bleuauction_be.server.store.dto;
 
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
-import bleuauction.bleuauction_be.server.util.TokenMember;
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.sql.Time;

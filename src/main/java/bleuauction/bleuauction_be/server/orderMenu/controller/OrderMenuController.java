@@ -8,11 +8,10 @@ import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
 import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
-import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
 import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
 import bleuauction.bleuauction_be.server.orderMenu.service.OrderMenuService;
-import bleuauction.bleuauction_be.server.util.CreateJwt;
-import bleuauction.bleuauction_be.server.util.TokenMember;
+import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,11 +50,7 @@ public class OrderMenuController {
   @Transactional
   public ResponseEntity<?> orderMenu(@RequestHeader("Authorization") String  authorizationHeader,  HttpSession session, OrderMenuDTO orderMenuDTO) {
 
-    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-    if (verificationResult != null) {
-      return verificationResult;
-    }
-
+    createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     // 로그인 유저의 멤버 번호
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());

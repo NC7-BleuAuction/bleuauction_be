@@ -5,7 +5,7 @@ import bleuauction.bleuauction_be.server.order.service.OrderService;
 import bleuauction.bleuauction_be.server.pay.dto.PayInsertRequest;
 import bleuauction.bleuauction_be.server.pay.entity.Pay;
 import bleuauction.bleuauction_be.server.pay.repository.PayRepository;
-import bleuauction.bleuauction_be.server.util.CreateJwt;
+import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
@@ -52,12 +52,7 @@ public class PayController {
     @PostMapping("/createPayment")
     public ResponseEntity<?> createPayment(@RequestHeader("Authorization") String authorizationHeader,
     @RequestBody PayInsertRequest payInsertRequest) {
-        ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(
-                authorizationHeader,
-                createJwt);
-        if (verificationResult != null) {
-            return verificationResult;
-        }
+        createJwt.verifyAccessToken(authorizationHeader);
         Long orderNo = payInsertRequest.getOrderNo();
         Optional<Order> orderUser = Optional.ofNullable(orderService.findOne(orderNo));
 

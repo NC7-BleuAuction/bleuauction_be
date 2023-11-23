@@ -1,9 +1,8 @@
 package bleuauction.bleuauction_be.server.review.controller;
 
-import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import bleuauction.bleuauction_be.server.review.service.ReviewService;
-import bleuauction.bleuauction_be.server.util.CreateJwt;
-import bleuauction.bleuauction_be.server.util.TokenMember;
+import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -76,7 +75,7 @@ public class ReviewControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk());
 
     // storeService.selectStoreList 메서드가 예상된 매개변수로 호출되었는지 확인합니다.
-    verify(reviewService, times(1)).selectReviewList(storeNo, ReviewStatus.Y,startPage);
+    verify(reviewService, times(1)).selectReviewList(storeNo, startPage);
   }
 }
 

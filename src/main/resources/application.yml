@@ -5,6 +5,7 @@ spring:
       - auth
       - pay
       - jwt
+
   mvc:
     static-path-pattern: static/**
   thymeleaf:

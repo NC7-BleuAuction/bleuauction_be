@@ -2,6 +2,8 @@ package bleuauction.bleuauction_be.server.store.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
@@ -15,15 +17,23 @@ import bleuauction.bleuauction_be.server.store.exception.StoreNotFoundException;
 import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
 import bleuauction.bleuauction_be.server.store.service.UpdateStoreService;
-import bleuauction.bleuauction_be.server.util.CreateJwt;
-import bleuauction.bleuauction_be.server.util.TokenMember;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -47,7 +57,7 @@ public class StoreController {
 
 
   @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> storeList(@RequestHeader("Authorization") String  authorizationHeader,
+  public ResponseEntity<List<Store>> storeList(@RequestHeader("Authorization") String  authorizationHeader,
           @RequestParam(name = "startPage", defaultValue = "0")
           int startPage,
           @RequestParam(name = "pageLowCount", defaultValue = "3")
@@ -56,21 +66,14 @@ public class StoreController {
     log.info("startPage: " + startPage);
     log.info("authorizationHeader: " + authorizationHeader);
 
-    try {
       // 홈에 기본 출력되는 가게리스트에 대한 요청만 예외적으로 토큰검사 제외
-      if (authorizationHeader != null && !CreateJwt.UNAUTHORIZED_ACCESS.equals(authorizationHeader)) {
-        ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-        if (verificationResult != null) {
-          return verificationResult;
-        }
+      if (!authorizationHeader.isEmpty() && !CreateJwt.UNAUTHORIZED_ACCESS.equals(authorizationHeader)) {
+        createJwt.verifyAccessToken(authorizationHeader);
       }
 
       List<Store> storeList = storeService.selectStoreList(StoreStatus.Y, startPage, pageLowCount);
       log.info("storeList: " + storeList);
       return ResponseEntity.ok(storeList);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CreateJwt.SERVER_ERROR);
-    }
   }
 
   @GetMapping("{storeNo}")
@@ -88,14 +91,9 @@ public class StoreController {
   // 회원 번호로 가게 찾기
   @GetMapping("/detailByMember")
   public ResponseEntity<?> detailByMemberNo(@RequestHeader("Authorization") String authorizationHeader,
-          @RequestParam Member member)
-          throws Exception {
-    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(
-            authorizationHeader,
-            createJwt);
-    if (verificationResult != null) {
-      return verificationResult;
-    }
+          @RequestParam Member member) {
+    createJwt.verifyAccessToken(
+            authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
@@ -116,14 +114,8 @@ public class StoreController {
   @PostMapping("/signup")
   public ResponseEntity<?> storeSignUp(@RequestHeader("Authorization") String authorizationHeader,
           @RequestBody StoreSignUpRequest request) throws Exception {
-    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(
-            authorizationHeader,
-            createJwt);
 
-    if (verificationResult != null) {
-      return verificationResult;
-    }
-
+    createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
@@ -147,16 +139,9 @@ public class StoreController {
   @PutMapping("/update")
   public ResponseEntity<?> updateStore(@RequestHeader("Authorization") String authorizationHeader,
           @RequestPart("updateStoreRequest") UpdateStoreRequest updateStoreRequest,
-          @RequestPart("profileImage") MultipartFile profileImage)
-          throws Exception {
+          @RequestPart("profileImage") MultipartFile profileImage) {
 
-    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(
-            authorizationHeader,
-            createJwt);
-    if (verificationResult != null) {
-      return verificationResult;
-    }
-
+    createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
@@ -201,10 +186,7 @@ public class StoreController {
   // 가게 삭제
   @PutMapping("/withdraw/{storeNo}")
   public ResponseEntity<?> withdrawStore(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("storeNo") Long storeNo) {
-    ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-    if (verificationResult != null) {
-      return verificationResult;
-    }
+    createJwt.verifyAccessToken(authorizationHeader);
 
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
 

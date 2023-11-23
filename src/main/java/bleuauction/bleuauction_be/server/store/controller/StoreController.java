@@ -173,8 +173,6 @@ public class StoreController {
             // TODO : 추후 Service레벨에 Attach Service넣을 수 있도록 구조 개선이 필요함;
             // 첨부 파일 목록 추가
             if (updateStoreRequest.getProfileImage() != null && updateStoreRequest.getProfileImage().getSize() > 0) {
-                log.info("첨부 파일 이름: {}", updateStoreRequest.getProfileImage().getOriginalFilename());
-
                 Attach attach = ncpObjectStorageService.uploadFile("bleuauction-bucket", "store/", updateStoreRequest.getProfileImage());
                 attach.setStoreNo(store);
 
@@ -184,25 +182,31 @@ public class StoreController {
             }
             // 가게 정보 업데이트
             storeService.updateStore(store, updateStoreRequest);
-            log.info("가게 정보가 업데이트되었습니다. 업데이트된 가게 정보: {}", updateStoreRequest);
             return ResponseEntity.ok("가게 정보가 업데이트되었습니다.");
         } catch (StoreNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("가게를 찾을 수 없습니다.");
         }
     }
 
-    // 가게 삭제
+    /**
+     * 가게정보를 삭제한다.
+     *
+     * @param authorizationHeader
+     * @param storeNo
+     * @return
+     */
     @DeleteMapping("/{storeNo}")
     public ResponseEntity<?> withdrawStore(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("storeNo") Long storeNo) {
         ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
         if (verificationResult != null) {
             return verificationResult;
         }
-        // 요청자 정보
-        Member requestMember = memberService.findMemberById(createJwt.getTokenMember(authorizationHeader).getMemberNo());
 
         // 가게 정보 확인
-        storeService.withDrawStore(storeService.findStoreById(storeNo), requestMember);
+        storeService.withDrawStore(
+                storeService.findStoreById(storeNo),
+                memberService.findMemberById(createJwt.getTokenMember(authorizationHeader).getMemberNo())
+        );
 
         // TODO: 토큰 무효화 (예: Token을 Blacklist에 추가하고, 클라이언트 측에서 로컬 스토리지 또는 쿠키에서 토큰 제거)
         return ResponseEntity.ok("가게가 성공적으로 폐업되었습니다.");
@@ -216,13 +220,10 @@ public class StoreController {
      * @param fileNo
      * @return
      */
-    @DeleteMapping("/delete/profileImage/{fileNo}")
+    @DeleteMapping("/profile/{fileNo}")
     public ResponseEntity<String> deleteProfileImage(@PathVariable("fileNo") Long fileNo) {
-        if (FileStatus.N.equals(attachService.changeFileStatusToDeleteByFileNo(fileNo).getFileStatus())) {
-            return ResponseEntity.ok("Profile Image Delete Success");
-        }
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Profile Image Delete Failed");
+        return (FileStatus.N.equals(attachService.changeFileStatusToDeleteByFileNo(fileNo).getFileStatus())) ?
+                ResponseEntity.ok("Profile Image Delete Success")
+                : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Profile Image Delete Failed");
     }
 }

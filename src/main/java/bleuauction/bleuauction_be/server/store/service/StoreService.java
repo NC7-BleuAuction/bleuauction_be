@@ -99,6 +99,8 @@ public class StoreService {
      * @throws StoreNotFoundException
      */
     public void updateStore(Store updateStore, UpdateStoreRequest updateStoreRequest)throws StoreNotFoundException {
+        log.info("[{}] Store Info Update Start, Store [ID : {}, Name : {}]",
+                this.getClass().getName(), updateStore.getStoreNo(), updateStoreRequest.getStoreName());
         updateStore.setStoreName(updateStoreRequest.getStoreName());
         updateStore.setMarketName(updateStoreRequest.getMarketName());
         updateStore.setLicenseNo(updateStoreRequest.getLicenseNo());
@@ -111,6 +113,8 @@ public class StoreService {
         updateStore.setWeekendEndTime(updateStoreRequest.getWeekendEndTime());
 
         storeRepository.save(updateStore);
+        log.info("[{}] Store Info Update End, Store [ID : {}, Name : {}]",
+                this.getClass().getName(), updateStore.getStoreNo(), updateStore.getStoreName());
     }
 
     public void withDrawStore(Store store, Member member){

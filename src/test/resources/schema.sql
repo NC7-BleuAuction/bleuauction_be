@@ -22,7 +22,7 @@ CREATE TABLE `ba_store`
     `member_no`          BIGINT       NOT NULL,
     `market_name`        VARCHAR(20)  NOT NULL,
     `store_name`         VARCHAR(30)  NOT NULL,
-    `license_no`         VARCHAR(10)  NOT NULL,
+    `license_no`         VARCHAR(12)  NOT NULL,
     `store_zipcode`      VARCHAR(10)  NOT NULL,
     `store_addr`         VARCHAR(255) NOT NULL,
     `store_detail_addr`  VARCHAR(255) NOT NULL,

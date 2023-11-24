@@ -45,7 +45,7 @@ public class StoreItemDailyPriceController {
 
       Member m = new Member();
       m.setMemberNo(tokenMember.getMemberNo());
-      Store store = storeService.findStoresByMember(m);
+      Store store = storeService.findStoreByMember(m);
 
       storeItemDailyPrice.setStoreNo(store.getStoreNo());
       StoreItemDailyPrice insertStoreItemDailyPrice = storeItemDailyPriceService.addStoreItemDailyPrice(storeItemDailyPrice);

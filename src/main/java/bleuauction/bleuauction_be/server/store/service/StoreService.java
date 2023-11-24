@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -145,13 +144,5 @@ public class StoreService {
         if (storeRepository.existsStoreByStoreName(storeName)) {
             throw new IllegalStateException("이미 존재하는 가게 입니다.");
         }
-    }
-
-//    public Optional<Store> findStoresByMember(Member m) {
-//        return storeRepository.findByMemberNo(m);
-//    }
-
-    public Store findStoresByMember(Member m) throws Exception {
-        return storeRepository.findByMemberNo(m).orElseThrow(() -> new Exception("등록된 가게가 존재하지 않는 회원입니다!"));
     }
 }

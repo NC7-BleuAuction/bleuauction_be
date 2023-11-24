@@ -113,8 +113,6 @@ public class StoreController {
         return ResponseEntity.ok(storeService.findStoreByMember(targetUser));
     }
 
-}
-
     // 가게등록
     @PostMapping
     public ResponseEntity<String> storeSignUp(

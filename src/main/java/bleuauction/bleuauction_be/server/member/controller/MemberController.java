@@ -4,15 +4,15 @@ package bleuauction.bleuauction_be.server.member.controller;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.jwt.RefreshTokenRequest;
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.member.dto.LoginRequest;
 import bleuauction.bleuauction_be.server.member.dto.LoginResponseDto;
 import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
-import bleuauction.bleuauction_be.server.util.CreateJwt;
-import bleuauction.bleuauction_be.server.util.RefreshTokenRequest;
-import bleuauction.bleuauction_be.server.util.TokenMember;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -123,14 +124,9 @@ public class MemberController {
     @PostMapping("/accTokRefresh")
     public ResponseEntity<?> refreshAccessToken(
             @RequestBody RefreshTokenRequest refreshTokenRequest) {
-        try {
-            String refreshToken = refreshTokenRequest.getRefreshToken();
-            log.info("[MemberController] RefreshAccessToken, RefreshTokenValue >>> {}", refreshToken);
-            return ResponseEntity.ok(Map.of("accessToken", createJwt.getRenewAccessToken(refreshToken)));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CreateJwt.REFRESH_ACCESS_TOKEN_ERROR);
-        }
+        String refreshToken = refreshTokenRequest.getRefreshToken();
+        log.info("[MemberController] RefreshAccessToken, RefreshTokenValue >>> {}", refreshToken);
+        return ResponseEntity.ok(Map.of("accessToken", createJwt.getRenewAccessToken(refreshToken)));
     }
 
     /**
@@ -140,17 +136,11 @@ public class MemberController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/update")
-    public ResponseEntity<?> updateMember(
+    @PutMapping
+    public ResponseEntity<String> updateMember(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody UpdateMemberRequest updateMemberRequest) throws Exception {
-        // TODO : JWT 검증기능이며 추후 기현님 작업완료되면 변경 예정
-        ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(
-                authorizationHeader,
-                createJwt);
-        if (verificationResult != null) {
-            return verificationResult;
-        }
+        createJwt.verifyAccessToken(authorizationHeader);
 
         // JWT토큰의 정보 추출
         TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
@@ -175,12 +165,7 @@ public class MemberController {
      */
     @DeleteMapping("/withdraw")
     public ResponseEntity<?> withdrawMember(@RequestHeader("Authorization") String authorizationHeader) {
-        // TODO : JWT 검증로직 변경될 경우 변경필요~
-        ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-        if (verificationResult != null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 유효하지 않습니다.");
-        }
-
+        createJwt.verifyAccessToken(authorizationHeader);
         //회원 탈퇴 처리 로직
         try {
             memberService.withDrawMember(createJwt.getTokenMember(authorizationHeader));

@@ -1,6 +1,6 @@
 package bleuauction.bleuauction_be.server.member.dto;
 
-import bleuauction.bleuauction_be.server.util.TokenMember;
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;

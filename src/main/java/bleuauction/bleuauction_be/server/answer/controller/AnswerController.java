@@ -1,108 +1,74 @@
 package bleuauction.bleuauction_be.server.answer.controller;
 
 import bleuauction.bleuauction_be.server.answer.entity.Answer;
-import bleuauction.bleuauction_be.server.answer.entity.AnswerStatus;
 import bleuauction.bleuauction_be.server.answer.service.AnswerService;
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.review.entity.Review;
-import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
-import bleuauction.bleuauction_be.server.store.service.StoreService;
-import bleuauction.bleuauction_be.server.util.CreateJwt;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/answer")
 public class AnswerController {
 
-  final int PAGE_ROW_COUNT = 2;
   private final CreateJwt createJwt;
   private final AnswerService answerService;
 
-  @GetMapping("/api/answer/list")
-  public ResponseEntity<?> answerList(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("reviewNo") Long reviewNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) throws Exception {
-    log.info("url ===========> /api/answer/list");
-    log.info("reivewNo: " + reviewNo);
-    log.info("startPage: " + startPage);
+  @GetMapping
+  public ResponseEntity<Map<String, Object>> answerList(@RequestHeader("Authorization") String authorizationHeader, Long reviewNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) {
+    log.info("@GetMapping ===========> /api/answer");
+    log.info("reivewNo: {}", reviewNo);
+    log.info("startPage: {}", startPage);
 
-    try {
-      // 토큰 검사
-      ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-      if (verificationResult != null) {
-        return verificationResult;
-      }
-      Page<Answer> page = answerService.selectAnswerList(reviewNo, AnswerStatus.Y, startPage, PAGE_ROW_COUNT);
-
-      List<Answer> answerList = page.getContent();
-      long totalRows = page.getTotalElements(); // 전체 행 수
-      int totalPages = page.getTotalPages(); // 전체 페이지 수
-
-      Map<String, Object> answerMap = new HashMap<>();
-      answerMap.put("answerList", answerList);
-      answerMap.put("totalRows", totalRows);
-      answerMap.put("totalPages", totalPages);
-
-      return ResponseEntity.ok(answerMap);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
+    createJwt.verifyAccessToken(authorizationHeader);
+    return ResponseEntity.ok(answerService.selectAnswerList(reviewNo, startPage));
   }
 
-  @PostMapping("/api/answer/add")
-  public Answer answerAdd(HttpSession session, Answer answer) throws Exception {
-    log.info("url ===========> /api/answer/add");
-    log.info("Answer: " + answer);
+  @PostMapping
+  public ResponseEntity<Answer> answerAdd(@RequestHeader("Authorization") String authorizationHeader, Answer answer) {
+    log.info("@PostMapping ===========> /api/answer");
+    log.info("authorizationHeader: {}", authorizationHeader);
+    log.info("Answer: {}", answer);
 
-    Member loginUser = (Member) session.getAttribute("loginUser");
+    createJwt.verifyAccessToken(authorizationHeader);
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    Answer insertAnswer = answerService.addAnswer(tokenMember, answer);
 
-    answer.setMember(loginUser);
-
-    Answer insertAnswer = answerService.addAnswer(answer);
-    return insertAnswer;
+    return ResponseEntity.ok(insertAnswer);
   }
 
-  @PostMapping("/api/answer/update")
-  public ResponseEntity<?> answerUpdate(HttpSession session, Answer answer, Member member) throws Exception {
-    log.info("url ===========> /api/answer/update");
+  @PutMapping
+  public ResponseEntity<Answer> answerUpdate(@RequestHeader("Authorization") String authorizationHeader, Answer answer, Member member) throws Exception {
+    log.info("@PutMapping ===========> /api/answer");
+    log.info("authorizationHeader: {}", authorizationHeader);
+    log.info("answer: {}", answer);
+    log.info("member: {}", member);
 
-    Optional<Member> loginUserOptional = Optional.ofNullable((Member) session.getAttribute("loginUser"));
-    Member loginUser = loginUserOptional.orElseThrow(() -> new Exception("로그인 유저가 없습니다!"));
-    log.info("loginUser: " + loginUser);
-
-    if (loginUser.getMemberNo() != member.getMemberNo()) {
-      throw new Exception("답글 수정 권한이 없습니다!");
-    }
-
-    try {
-      answer.setMember(loginUser);
-      log.info("Answer: " + answer);
-
-      Answer updateAnswer = answerService.updateAnswer(answer);
-      return ResponseEntity.ok(updateAnswer);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
-    }
-
+    createJwt.verifyAccessToken(authorizationHeader);
+    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    return ResponseEntity.ok(answerService.updateAnswer(tokenMember, answer, member));
   }
 
 
-  @GetMapping("/api/answer/delete")
-  public Answer answerDelete(@RequestParam("answerNo") Long answerNo) throws Exception {
-    log.info("url ===========> /api/answer/delete");
-    log.info("answerNo: " + answerNo);
-    Answer deleteAnswer = answerService.deleteAnswer(answerNo);
-    return deleteAnswer;
+  @DeleteMapping
+  public ResponseEntity<Answer> answerDelete(@RequestHeader("Authorization") String authorizationHeader, Long answerNo, Long memberNo) throws Exception {
+    log.info("@DeleteMapping ===========> /api/answer/delete");
+    log.info("authorizationHeader: {}", authorizationHeader);
+    log.info("answerNo: {}", answerNo);
+    log.info("memberNo: {}", memberNo);
+
+      createJwt.verifyAccessToken(authorizationHeader);
+      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+
+      return ResponseEntity.ok(answerService.deleteAnswer(tokenMember, answerNo, memberNo));
   }
 }

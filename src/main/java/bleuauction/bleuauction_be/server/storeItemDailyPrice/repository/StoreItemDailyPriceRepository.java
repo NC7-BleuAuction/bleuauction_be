@@ -6,9 +6,9 @@ import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDai
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface StoreItemDailyPriceRepository extends JpaRepository<StoreItemDailyPrice, Long> {
-
-  List<StoreItemDailyPrice> findAllByDailyPriceStatus(DailyPriceStatus dailyPriceStatus);
+  Optional<List<StoreItemDailyPrice>> findAllByDailyPriceStatus(DailyPriceStatus dailyPriceStatus);
 
 }

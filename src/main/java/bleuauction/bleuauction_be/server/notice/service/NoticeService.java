@@ -55,7 +55,6 @@ public class NoticeService {
 
     updatenotice.setNoticeTitle(notice.getNoticeTitle());
     updatenotice.setNoticeContent(notice.getNoticeContent());
-    Notice update = noticeRepository.save(updatenotice);
     return updatenotice;
   }
 

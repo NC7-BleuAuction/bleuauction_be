@@ -3,6 +3,7 @@ package bleuauction.bleuauction_be.server.store.controller;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
@@ -14,7 +15,6 @@ import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
 import bleuauction.bleuauction_be.server.store.exception.StoreNotFoundException;
 import bleuauction.bleuauction_be.server.store.exception.StoreUpdateUnAuthorizedException;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
-import bleuauction.bleuauction_be.server.util.CreateJwt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -52,7 +54,7 @@ public class StoreController {
      * @return
      */
     @GetMapping
-    public ResponseEntity<?> storeList(
+    public ResponseEntity<List<Store>> storeList(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "pageLowCount", defaultValue = "3") int limit
@@ -60,12 +62,9 @@ public class StoreController {
         log.info("[StoreController] GetStoreList, StartPage >>> {}, pageLowCount >>> {}, Authorization >>> {}"
                 , page, limit, authorizationHeader);
 
-        // [TODO] : JWT기능 void로 변경되면 로직 바꾸기
-        if (authorizationHeader != null && !CreateJwt.UNAUTHORIZED_ACCESS.equals(authorizationHeader)) {
-            ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-            if (verificationResult != null) {
-                return verificationResult;
-            }
+        // 홈에 기본 출력되는 가게리스트에 대한 요청만 예외적으로 토큰검사 제외
+        if (!authorizationHeader.isEmpty() && !CreateJwt.UNAUTHORIZED_ACCESS.equals(authorizationHeader)) {
+            createJwt.verifyAccessToken(authorizationHeader);
         }
         return ResponseEntity.ok(storeService.selectStoreList(StoreStatus.Y, page, limit));
     }
@@ -78,20 +77,17 @@ public class StoreController {
      * @return
      */
     @GetMapping("/{storeNo}")
-    public ResponseEntity<?> detail(
+    public ResponseEntity<Store> detail(
             @PathVariable Long storeNo,
             @RequestHeader("Authorization") String authorizationHeader
     ) {
-        // [TODO] : JWT기능 void로 변경되면 로직 바꾸기
-        if (authorizationHeader != null && !CreateJwt.UNAUTHORIZED_ACCESS.equals(authorizationHeader)) {
-            ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-            if (verificationResult != null) {
-                return verificationResult;
-            }
+        // 홈에 기본 출력되는 가게리스트에 대한 요청만 예외적으로 토큰검사 제외
+        if (!authorizationHeader.isEmpty() && !CreateJwt.UNAUTHORIZED_ACCESS.equals(authorizationHeader)) {
+            createJwt.verifyAccessToken(authorizationHeader);
         }
-
         return ResponseEntity.ok().body(storeService.findStoreById(storeNo));
     }
+
 
     /**
      * 요청한 사용자와 정보조회를 희망하는 사용자가 일치하는 경우 해당 사용자의 가게정보를 반환한다.
@@ -101,16 +97,12 @@ public class StoreController {
      * @return
      */
     @GetMapping("/member/{memberNo}")
-    public ResponseEntity<?> detailByMemberNo(
+    public ResponseEntity<Store> detailByMemberNo(
             @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable Long memberNo
     ) {
-        // [TODO] : JWT기능 void로 변경되면 로직 바꾸기
         // S : 인증 인가, 검증로직
-        ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-        if (verificationResult != null) {
-            return verificationResult;
-        }
+        createJwt.verifyAccessToken(authorizationHeader);
         Member requestUser = memberService.findMemberById(createJwt.getTokenMember(authorizationHeader).getMemberNo());
         Member targetUser = memberService.findMemberById(memberNo);
         if (!requestUser.getMemberNo().equals(targetUser.getMemberNo())) {
@@ -121,17 +113,15 @@ public class StoreController {
         return ResponseEntity.ok(storeService.findStoreByMember(targetUser));
     }
 
+}
+
     // 가게등록
     @PostMapping
-    public ResponseEntity<?> storeSignUp(
+    public ResponseEntity<String> storeSignUp(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody StoreSignUpRequest request
     ) throws Exception {
-        // [TODO] : JWT기능 void로 변경되면 로직 바꾸기
-        ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-        if (verificationResult != null) {
-            return verificationResult;
-        }
+        createJwt.verifyAccessToken(authorizationHeader);
 
         Member loginUser = memberService.findMemberById(createJwt.getTokenMember(authorizationHeader).getMemberNo());
         if (!MemberCategory.S.equals(loginUser.getMemberCategory())) {
@@ -151,15 +141,11 @@ public class StoreController {
 
     // 가게정보수정
     @PutMapping
-    public ResponseEntity<?> updateStore(
+    public ResponseEntity<String> updateStore(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestPart("updateStoreRequest") UpdateStoreRequest updateStoreRequest
     ) throws Exception {
-        // [TODO] : JWT기능 void로 변경되면 로직 바꾸기
-        ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-        if (verificationResult != null) {
-            return verificationResult;
-        }
+        createJwt.verifyAccessToken(authorizationHeader);
 
         Member loginUser = memberService.findMemberById(createJwt.getTokenMember(authorizationHeader).getMemberNo());
         if (!MemberCategory.S.equals(loginUser.getMemberCategory())) {
@@ -196,11 +182,8 @@ public class StoreController {
      * @return
      */
     @DeleteMapping("/{storeNo}")
-    public ResponseEntity<?> withdrawStore(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("storeNo") Long storeNo) {
-        ResponseEntity<?> verificationResult = createJwt.verifyAccessToken(authorizationHeader, createJwt);
-        if (verificationResult != null) {
-            return verificationResult;
-        }
+    public ResponseEntity<String> withdrawStore(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("storeNo") Long storeNo) {
+        createJwt.getTokenMember(authorizationHeader);
 
         // 가게 정보 확인
         storeService.withDrawStore(

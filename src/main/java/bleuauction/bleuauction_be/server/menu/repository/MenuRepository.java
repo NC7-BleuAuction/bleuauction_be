@@ -2,11 +2,10 @@ package bleuauction.bleuauction_be.server.menu.repository;
 
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
-import bleuauction.bleuauction_be.server.notice.entity.Notice;
-import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
+import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -49,6 +48,10 @@ public class MenuRepository {
     query.setParameter("menuStatus", MenuStatus.Y);
     List<Menu> result = query.getResultList();
     return result;
+  }
+
+  public Menu findMenusByMenuNo(Long menuNo) {
+    return em.find(Menu.class, menuNo);
   }
 
 //  public List<Menu> findAll() {

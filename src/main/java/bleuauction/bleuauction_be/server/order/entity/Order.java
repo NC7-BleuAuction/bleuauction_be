@@ -54,12 +54,12 @@ public class Order {
 
   @JsonManagedReference
   @OneToMany(mappedBy = "orderNo", cascade = CascadeType.ALL)
-  private List<OrderMenu> OrderMenus= new ArrayList<>();
+  private List<OrderMenu> orderMenus= new ArrayList<>();
 
   public int calculateOrderPrice() {
     int totalPrice = 0;
 
-    for (OrderMenu orderMenu : OrderMenus) {
+    for (OrderMenu orderMenu : orderMenus) {
       Menu menu = orderMenu.getMenuNo();
       if (menu != null) {
         totalPrice += menu.getMenuPrice();

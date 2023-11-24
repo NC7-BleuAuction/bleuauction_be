@@ -40,8 +40,7 @@ dependencies {
 
 	// JWT 토큰
 	implementation 'com.auth0:java-jwt:4.0.0'
-//	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2' // jjwt 버전을 사용 중인 버전으로 변경
-//	implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2' // jjwt 버전을 사용 중인 버전으로 변경
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
 	//예외처리
 	implementation 'org.springframework.boot:spring-boot-starter-validation'

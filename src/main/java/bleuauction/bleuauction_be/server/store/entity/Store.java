@@ -3,29 +3,34 @@ package bleuauction.bleuauction_be.server.store.entity;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.order.entity.Order;
-import bleuauction.bleuauction_be.server.notice.entity.Notice;
-import bleuauction.bleuauction_be.server.review.entity.Review;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
-
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.AccessLevel;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@Slf4j
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

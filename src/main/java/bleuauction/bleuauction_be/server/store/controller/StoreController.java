@@ -46,7 +46,6 @@ public class StoreController {
 
     /**
      * 가게정보 리스트를 반환하는 기능
-     * [TODO] : 추후 Return의 Generic을 ?가 아닌 List로 변경해야할듯 <br/>
      *
      * @param authorizationHeader
      * @param page

@@ -51,7 +51,6 @@ public class StoreService {
 
     /**
      * Store를 조회요청한 갯수만큼 가져가길 희망한 기능
-     * [TODO] : 현재 Page는 정상적으로 작동이 안되고 있을 확률이 높음. Page객체만 가져가게 변경이 필요는 함.
      *
      * @param storeStatus
      * @param page

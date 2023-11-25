@@ -2,7 +2,7 @@ package bleuauction.bleuauction_be.server.orderMenu.service;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.menu.repository.MenuRepository1;
+import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
@@ -29,7 +29,7 @@ public class OrderMenuService {
 
   private final OrderMenuRepository orderMenuRepository;
   private final OrderRepository orderRepository;
-  private final MenuRepository1 menuRepository;
+  private final MenuRepository menuRepository;
 
   //등록
   public ResponseEntity<?> addOrderMenuDTO(Member memberNo, Order order, OrderMenuDTO orderMenuDTO) throws Exception {

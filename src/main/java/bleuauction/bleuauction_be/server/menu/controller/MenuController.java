@@ -94,7 +94,7 @@ public class MenuController {
 
     // Member ID를 사용하여 관련된 Store를 찾습니다.
     Store store = storeService.findStoreByMember(loginUser.get());
-    menuService.deleteMenuByMenuNoAndStore(menuNo, store.getStoreNo());
+    menuService.deleteMenuByMenuNoAndStore(menuNo, store);
     return ResponseEntity.ok("Menu deleted successfully");
   }
 
@@ -121,7 +121,7 @@ public class MenuController {
 
     Store store = storeService.findStoreByMember(loginUser.get());
 
-    menuService.update(updatedMenu, multipartFiles, store.getStoreNo());
+    menuService.update(updatedMenu, multipartFiles, store);
     return ResponseEntity.ok("Menu updated successfully");
   }
 }

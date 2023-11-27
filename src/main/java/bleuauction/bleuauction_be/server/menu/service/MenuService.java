@@ -7,6 +7,7 @@ import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ public class MenuService {
   private final MenuRepository menuRepository;
   private final AttachService attachService;
   private final NcpObjectStorageService ncpObjectStorageService;
+
 
   //등록
   @Transactional
@@ -70,22 +72,22 @@ public class MenuService {
 
   //메뉴 삭제(N)
   @Transactional
-  public void deleteMenuByMenuNoAndStore(Long menuNo, Long storeNo) {
+  public void deleteMenuByMenuNoAndStore(Long menuNo, Store store) {
     Menu menu = menuRepository.findMenusByMenuNo(menuNo);
 
-    if (menu != null && menu.getStoreNo().equals(storeNo)) {
+    if (menu != null && menu.getStoreNo().equals(store)) {
       for (Attach attach : menu.getMenuAttaches()) {
         attachService.changeFileStatusToDeleteByFileNo(attach.getFileNo());
       }
       menu.delete();
     } else {
-      throw new IllegalArgumentException("Invalid menu number or store");
+      throw new IllegalArgumentException("메뉴와 가게 정보가 유효하지 않습니다.");
     }
   }
 
   //메뉴 수정
   @Transactional
-  public Menu update(Menu updatedMenu, List<MultipartFile> multipartFiles, Long store) {
+  public Menu update(Menu updatedMenu, List<MultipartFile> multipartFiles, Store store) {
     Menu existingMenu = menuRepository.findMenusByMenuNo(updatedMenu.getMenuNo());
 
     if (existingMenu.getStoreNo().equals(store)) {
@@ -95,7 +97,6 @@ public class MenuService {
       existingMenu.setMenuContent(updatedMenu.getMenuContent());
 
       if (multipartFiles != null && !multipartFiles.isEmpty()) {
-        List<Attach> attaches = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
           if (multipartFile.getSize() > 0) {
             Attach attach = ncpObjectStorageService.uploadFile(new Attach(),

@@ -3,6 +3,7 @@ package bleuauction.bleuauction_be.server.order.service;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
+import bleuauction.bleuauction_be.server.order.exception.OrderNotFoundException;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -111,8 +112,11 @@ public class OrderService {
     }
   }
 
-
-
-
+  //주문 1건 조회
+  @Transactional(readOnly = true)
+  public Order findOrderById(Long orderNo) {
+    return orderRepository.findById(orderNo)
+            .orElseThrow(() -> new OrderNotFoundException(orderNo));
+  }
 
 }

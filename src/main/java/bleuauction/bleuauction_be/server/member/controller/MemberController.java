@@ -116,7 +116,6 @@ public class MemberController {
 
     /**
      * Refresh Token을 바탕으로 AccessToken 갱신 <br />
-     * [TODO] : 전부 JWT기능이라 무서워서 못건드림
      *
      * @param refreshTokenRequest
      * @return

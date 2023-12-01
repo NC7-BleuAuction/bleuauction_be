@@ -36,6 +36,7 @@ import static bleuauction.bleuauction_be.server.member.entity.MemberCategory.A;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/notice")
 public class NoticeController {
 
   private final NoticeService noticeService;
@@ -49,16 +50,9 @@ public class NoticeController {
   private final AttachService attachService;
 
 
-  //등록
-  @GetMapping("/api/notice/new")
-  public NoticeForm createForm() {
-    NoticeForm noticeForm = new NoticeForm();
-    return noticeForm;
-  }
 
-//
   // 등록 처리(관리자 회원)
-  @PostMapping("/api/notice/new")
+  @PostMapping("/new")
   @Transactional
   public ResponseEntity<?>  notice(@RequestHeader("Authorization") String  authorizationHeader, Notice notice, @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) {
 
@@ -93,7 +87,7 @@ public class NoticeController {
 
 
   //목록조회
-  @GetMapping(value = "/api/notice", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Notice> findNotices() throws Exception {
     try {
       List<Notice> notices = noticeService.findNoticesByStatus(NoticeStatus.Y);
@@ -107,7 +101,7 @@ public class NoticeController {
 
 
 // 삭제
-  @PostMapping("/api/notice/delete/{noticeNo}")
+  @DeleteMapping("/{noticeNo}")
   public ResponseEntity<?> deleteNotice(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable("noticeNo") Long noticeNo) {
     Notice notice = noticeService.findOne(noticeNo);
 
@@ -136,7 +130,7 @@ public class NoticeController {
   }
 
   //사진삭제
-  @DeleteMapping("/api/notice/deletefile/{fileNo}")
+  @DeleteMapping("/deletefile/{fileNo}")
   public ResponseEntity<?> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable Long fileNo) {
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
@@ -153,7 +147,7 @@ public class NoticeController {
 
 
   //디테일(수정)
-  @GetMapping("/api/notice/detail/{noticeNo}")
+  @GetMapping("/detail/{noticeNo}")
   public ResponseEntity<Notice> detailNotice(@PathVariable("noticeNo") Long noticeNo) {
     Notice notice = noticeService.findOne(noticeNo);
 
@@ -166,7 +160,7 @@ public class NoticeController {
   }
 
   // 수정 처리
-  @PostMapping("/api/notice/update/{noticeNo}")
+  @PutMapping("/update/{noticeNo}")
   public ResponseEntity<?> updateNotice(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, Notice notice,
           @PathVariable("noticeNo") Long noticeNo,
            @RequestParam(name = "noticeTitle") String noticeTitle,

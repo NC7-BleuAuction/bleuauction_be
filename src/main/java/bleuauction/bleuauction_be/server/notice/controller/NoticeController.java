@@ -3,24 +3,18 @@ package bleuauction.bleuauction_be.server.notice.controller;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
-import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
 import bleuauction.bleuauction_be.server.notice.service.NoticeService;
-import bleuauction.bleuauction_be.server.notice.web.NoticeForm;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
-import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,11 +34,7 @@ import static bleuauction.bleuauction_be.server.member.entity.MemberCategory.A;
 public class NoticeController {
 
   private final NoticeService noticeService;
-  private final EntityManager entityManager;
   private final MemberService memberService;
-  private final NoticeRepository noticeRepository;
-  private final MemberRepository memberRepository;
-  private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
   private final CreateJwt createJwt;
   private final NcpObjectStorageService ncpObjectStorageService;
   private final AttachService attachService;
@@ -74,9 +64,7 @@ public class NoticeController {
       }
     }
 
-    notice = entityManager.merge(notice);
     noticeService.enroll(notice);
-
     log.info("notice/postnew");
 
     return ResponseEntity.status(HttpStatus.CREATED).body("Notice created successfully");}
@@ -94,7 +82,7 @@ public class NoticeController {
       return notices;
     } catch (Exception e) {
       // 예외 처리 코드 추가
-      e.printStackTrace(); // 또는 로깅 등의 작업을 수행하세요.
+      e.printStackTrace();
       return new ArrayList<>();
     }
   }
@@ -146,7 +134,7 @@ public class NoticeController {
 
 
 
-  //디테일(수정)
+  //디테일
   @GetMapping("/detail/{noticeNo}")
   public ResponseEntity<Notice> detailNotice(@PathVariable("noticeNo") Long noticeNo) {
     Notice notice = noticeService.findOne(noticeNo);
@@ -161,7 +149,7 @@ public class NoticeController {
 
   // 수정 처리
   @PutMapping("/update/{noticeNo}")
-  public ResponseEntity<?> updateNotice(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, Notice notice,
+  public ResponseEntity<?> updateNotice(@RequestHeader("Authorization") String  authorizationHeader,
           @PathVariable("noticeNo") Long noticeNo,
            @RequestParam(name = "noticeTitle") String noticeTitle,
            @RequestParam(name = "noticeContent") String noticeContent,
@@ -176,7 +164,6 @@ public class NoticeController {
     if(loginUser.get().getMemberCategory() == A) {
 
       if (multipartFiles != null && multipartFiles.size() > 0) {
-        ArrayList<Attach> attaches = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
           if (multipartFile.getSize() > 0) {
             Attach attach = ncpObjectStorageService.uploadFile(new Attach(),

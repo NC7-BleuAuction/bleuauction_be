@@ -2,7 +2,7 @@ package bleuauction.bleuauction_be.server.notice.service;
 
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
-import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
+import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository1;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 class NoticeServiceTest {
 
     @Mock // 가짜 객체
-    private NoticeRepository noticeRepository;
+    private NoticeRepository1 noticeRepository;
 
     @InjectMocks // 가짜(Mock) 객체(@Mock로 표시된 객체)를 테스트 대상 객체에 자동으로 주입할 수 있고 이를 통해 주입된 가짜 객체를 사용하여 테스트 대상 객체의 메소드를 호출하고 동작을 검증할 수 있습니다.
     private NoticeService noticeService;
@@ -49,7 +49,7 @@ class NoticeServiceTest {
         existingNotice.setNoticeContent("기존 내용");
 
         // findOne  호출될 때 existingNotice를 리턴하도록 설정
-        when(noticeRepository.findOne(existingNotice.getNoticeNo())).thenReturn(existingNotice);
+        when(noticeRepository.findByNoticeNo(existingNotice.getNoticeNo())).thenReturn(existingNotice);
 
         // 업데이트할 내용을 담은 새로운 Notice 객체 생성
         Notice updatedNotice = new Notice();
@@ -78,7 +78,7 @@ class NoticeServiceTest {
         mockNotice.setNoticeContent("가짜 내용");
 
         // findOne 메서드가 mockNotice를 반환하도록 설정
-        when(noticeRepository.findOne(anyLong())).thenReturn(mockNotice);
+        when(noticeRepository.findByNoticeNo(anyLong())).thenReturn(mockNotice);
 
         // When
         noticeService.deleteNotice(noticeNo);

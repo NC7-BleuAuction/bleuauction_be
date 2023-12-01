@@ -2,13 +2,11 @@ package bleuauction.bleuauction_be.server.notice.service;
 
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
-import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
+import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository1;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NoticeService {
 
-  private final NoticeRepository noticeRepository;
+  private final NoticeRepository1 noticeRepository;
 
   @Transactional
   public Long enroll(Notice notice) {
@@ -37,21 +35,21 @@ public class NoticeService {
 
   @Transactional(readOnly = true)
   public Notice findOne(Long noticeNo) {
-    return noticeRepository.findOne(noticeNo);
+    return noticeRepository.findByNoticeNo(noticeNo);
   }
 
 
   //노티스 삭제(N)
   @Transactional
   public void deleteNotice(Long noticeNo) {
-    Notice notice = noticeRepository.findOne(noticeNo);
+    Notice notice = noticeRepository.findByNoticeNo(noticeNo);
     notice.delete();
   }
 
   //노티스 수정
   @Transactional
   public Notice update(Notice notice) {
-    Notice updatenotice = noticeRepository.findOne(notice.getNoticeNo());
+    Notice updatenotice = noticeRepository.findByNoticeNo(notice.getNoticeNo());
 
     updatenotice.setNoticeTitle(notice.getNoticeTitle());
     updatenotice.setNoticeContent(notice.getNoticeContent());

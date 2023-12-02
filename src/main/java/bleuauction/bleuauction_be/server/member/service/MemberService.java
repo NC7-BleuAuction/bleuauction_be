@@ -54,7 +54,6 @@ public class MemberService {
     public LoginResponseDto login(String email, String requestPassword) {
         Member member = memberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("Bad Request Email"));
-
         if(!passwordEncoder.matches(requestPassword, member.getMemberPwd())){
             throw new MemberNotFoundException("Bad Request Password");
         }
@@ -102,7 +101,7 @@ public class MemberService {
         validateDuplicateMember(member.getMemberEmail());
 
         log.info("[MemberService] Member SignUp : RequestEmail >>> {}, RequestName >>> {} , RequestPhone >>> {}",
-                member.getMemberEmail(), member.getMemberEmail(), member.getMemberPhone());
+                member.getMemberEmail(), member.getMemberName(), member.getMemberPhone());
 
         // Password Encoded(암호화)
         member.setMemberPwd(passwordEncoder.encode(member.getMemberPwd()));

@@ -15,7 +15,8 @@ public enum ItemName {
   SQ("오징어"),    // Squid
   SH("새우"),      // Shrimp
   SC("가리비"),    // Scallop
-  AB("전복");      // Abalone
+  AB("전복"),      // Abalone
+  HT("고등어");    // Hairtail
 
   private final String value;
 }

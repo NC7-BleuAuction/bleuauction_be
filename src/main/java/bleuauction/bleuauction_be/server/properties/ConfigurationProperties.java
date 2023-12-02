@@ -5,7 +5,8 @@ import org.springframework.context.annotation.Configuration;
 
 @EnableConfigurationProperties(
         {
-                CorsProperties.class
+                CorsProperties.class,
+                IamportProperties.class
         }
 )
 @Configuration

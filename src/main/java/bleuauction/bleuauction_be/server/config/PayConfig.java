@@ -1,18 +1,21 @@
 package bleuauction.bleuauction_be.server.config;
 
+import bleuauction.bleuauction_be.server.properties.IamportProperties;
 import com.siot.IamportRestClient.IamportClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class PayConfig {
 
+    private final IamportProperties iamportProperties;
+
     @Bean
-    public IamportClient iamportClient(@Value("${iamport.key}") String restApiKey,
-            @Value("${iamport.secret}") String restApiSecret) {
-        return new IamportClient(restApiKey, restApiSecret);
+    public IamportClient iamportClientBean() {
+        return new IamportClient(iamportProperties.getKey(), iamportProperties.getSecret());
     }
 }

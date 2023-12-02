@@ -32,6 +32,13 @@ public class OrderController {
   private final CreateJwt createJwt;
 
   //등록
+  @GetMapping("/new")
+  public Order order() {
+    Order order = new Order();
+    return order;
+  }
+
+
   @PostMapping("/new")
   public ResponseEntity<?> addorder(Order order, HttpSession session) throws Exception{
     log.info("order/postnew");

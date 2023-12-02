@@ -71,5 +71,4 @@ public class Menu {
     attach.setMenuNo(this); // 이미지와 메뉴를 연결
   }
 
-
 }

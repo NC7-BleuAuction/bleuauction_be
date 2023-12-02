@@ -8,11 +8,11 @@ import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.menu.service.MenuService;
+import bleuauction.bleuauction_be.server.menu.web.MenuForm;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
-import bleuauction.bleuauction_be.server.store.service.StoreService;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -25,103 +25,203 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/menu")
 public class MenuController {
 
   private final MenuService menuService;
-  private final StoreService storeService;
+  private final MenuRepository menuRepository;
+  private final NcpObjectStorageService ncpObjectStorageService;
   private final AttachService attachService;
+  private final EntityManager entityManager;
   private final CreateJwt createJwt;
   private final MemberService memberService;
   private final StoreRepository storeRepository;
 
-
   //등록
-  @PostMapping("/new")
-  @Transactional
-  public ResponseEntity<?> menu(@RequestHeader("Authorization") String  authorizationHeader,
-                                @RequestBody Menu menu,
-                                @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
+  @GetMapping("/api/menu/new")
+  public MenuForm createForm() {
+    MenuForm menuForm = new MenuForm();
+    return menuForm;
+  }
 
+  //등록처리
+  @PostMapping("/api/menu/new")
+  @Transactional
+  public ResponseEntity<?> menu(@RequestHeader("Authorization") String  authorizationHeader,  HttpSession session, Menu menu, @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
+    Long memberId = loginUser.get().getMemberNo();
+
     // Member ID를 사용하여 관련된 Store를 찾습니다.
-    Store store = storeService.findStoreByMember(loginUser.get());
+    Store store = entityManager.createQuery("SELECT s FROM Store s WHERE s.memberNo.memberNo = :memberId", Store.class)
+            .setParameter("memberId", memberId)
+            .getSingleResult();
 
     if (store == null) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("메뉴 등록 권한이 없습니다.");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not associated with a store.");
     }
 
-    menuService.enroll(menu, store, multipartFiles);
+    menu.setStoreNo(store);
+
+    if (multipartFiles != null && multipartFiles.size() > 0) {
+      ArrayList<Attach> attaches = new ArrayList<>();
+      for (MultipartFile multipartFile : multipartFiles) {
+        if (multipartFile.getSize() > 0) {
+          Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
+                  "bleuauction-bucket", "menu/", multipartFile);
+          menu.addAttach(attach);
+        }
+      }
+    }
+
+    menu = entityManager.merge(menu);
+    menuService.enroll(menu);
     log.info("menu/postnew");
     return ResponseEntity.status(HttpStatus.CREATED).body("Menu created successfully");
   }
 
   //가게별 목록 조회
-  @GetMapping(value = "/{storeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/api/menu/{storeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Menu> findMenusByStoreNo(@PathVariable("storeNo") Long storeNo) throws Exception {
-    return menuService.findMenusByStoreNo(storeNo);
+    try {
+      List<Menu> menus = menuRepository.findMenusByStoreNoAndStatus(storeNo,MenuStatus.Y);
+      return menus;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
   }
-
   //가게(회원)별 목록 조회
-  @GetMapping(value = "/store", produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<?> findMenusByStoreNo(@RequestHeader("Authorization") String authorizationHeader)  {
+  @GetMapping(value = "/api/menu/store", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> findMenusByStoreNo(@RequestHeader("Authorization") String  authorizationHeader) throws Exception {
+    try {
+
       createJwt.verifyAccessToken(authorizationHeader);
+
       TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
       // 로그인 유저의 멤버 번호
       Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+
       Optional<Store> store = storeRepository.findByMemberNo(loginUser.get());
 
-      return menuService.findMenusByStoreNoAndStatus(store.get().getStoreNo(), MenuStatus.Y);
+      List<Menu> menus = menuRepository.findMenusByStoreNoAndStatus(store.get().getStoreNo(), MenuStatus.Y);
+      return ResponseEntity.ok(menus);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("등록된 메뉴가 없습니다.");
+    }
+  }
+
+  //목록 조회
+  @GetMapping(value = "/api/menu", produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<Menu> findmenus() throws Exception {
+    try {
+      List<Menu> menus = menuService.findmenus();
+      return menus;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
   }
 
   //삭제
-  @DeleteMapping
-  public ResponseEntity<?> deleteMenu(@RequestHeader("Authorization") String  authorizationHeader,
-                                      @PathVariable("menuNo") Long menuNo) {
+  @PostMapping("/api/menu/delete/{menuNo}")
+  public ResponseEntity<?> deleteMenu(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable("menuNo") Long menuNo) {
+    Menu menu = menuService.findOne(menuNo);
 
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
+    Long memberId = loginUser.get().getMemberNo();
+
     // Member ID를 사용하여 관련된 Store를 찾습니다.
-    Store store = storeService.findStoreByMember(loginUser.get());
-    menuService.deleteMenuByMenuNoAndStore(menuNo, store);
-    return ResponseEntity.ok("Menu deleted successfully");
+    Store store = entityManager.createQuery("SELECT s FROM Store s WHERE s.memberNo.memberNo = :memberId", Store.class)
+            .setParameter("memberId", memberId)
+            .getSingleResult();
+
+    if (menu.getStoreNo() == store) {
+
+      // 사진 상태를 'N'으로 변경
+      for (Attach attach : menu.getMenuAttaches()) {
+        attachService.changeFileStatusToDeleteByFileNo(attach.getFileNo());
+      }
+      menuService.deleteMenu(menuNo);
+      return ResponseEntity.ok("Menu deleted successfully");
+    } else {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("삭제 권한이 없습니다.");
+    }
   }
 
 
   //사진삭제
-  @DeleteMapping("/{fileNo}")
+  @DeleteMapping("/api/menu/deletefile/{fileNo}")
   public ResponseEntity<String> fileMenuDelete(@PathVariable Long fileNo) {
     attachService.changeFileStatusToDeleteByFileNo(fileNo);
     return ResponseEntity.ok("File deleted successfully");
   }
 
 
-  //수정
-  @PutMapping("/{menuNo}")
-  public ResponseEntity<?> updateMenu(@RequestHeader("Authorization") String  authorizationHeader,
-                                      @PathVariable("menuNo") Long menuNo,
-                                      @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
+  //디테일(수정)
+  @GetMapping("/api/menu/detail/{menuNo}")
+  public ResponseEntity<Menu> detailMenu(@PathVariable("menuNo") Long menuNo) {
+    Menu menu = menuService.findOne(menuNo);
+    // 예를 들어, Menu 객체에 Attach 정보가 있을 경우:
+    //Attach attach = menu.getMenuAttaches().isEmpty() ? null : menu.getMenuAttaches().get(0);
+
+    // Menu 엔티티와 Attach 엔티티를 함께 반환
+    menu.setMenuAttaches(menu.getMenuAttaches());
+    return ResponseEntity.ok(menu);
+  }
+
+  @PostMapping("/api/menu/update/{menuNo}")
+  public ResponseEntity<?> updateMenu(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, Menu menu,
+                                           @PathVariable("menuNo") Long menuNo,
+                                           @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
 
     Menu updatedMenu = menuService.findOne(menuNo);
+
 
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
-    Store store = storeService.findStoreByMember(loginUser.get());
+    Long memberId = loginUser.get().getMemberNo();
+    log.info("memberId ? " + memberId);
 
-    menuService.update(updatedMenu, multipartFiles, store);
-    return ResponseEntity.ok("Menu updated successfully");
+    // Member ID를 사용하여 관련된 Store를 찾습니다.
+    Store store = entityManager.createQuery("SELECT s FROM Store s WHERE s.memberNo.memberNo = :memberId", Store.class)
+            .setParameter("memberId", memberId)
+            .getSingleResult();
+
+    log.info("store ? " + store);
+
+    if (updatedMenu.getStoreNo() == store) {
+
+      if (multipartFiles != null && multipartFiles.size() > 0) {
+        ArrayList<Attach> attaches = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+          if (multipartFile.getSize() > 0) {
+            Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
+                    "bleuauction-bucket", "menu/", multipartFile);
+            updatedMenu.addAttach(attach);
+          }
+        }
+      }
+
+      menuService.update(menu);
+      log.info("menu/update");
+      return ResponseEntity.ok("Menu updated successfully");
+    } else {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("업데이트 권한이 없습니다.");
+    }
   }
 }

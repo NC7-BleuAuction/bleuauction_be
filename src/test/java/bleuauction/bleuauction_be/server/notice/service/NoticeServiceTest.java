@@ -7,7 +7,7 @@ import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
-import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository1;
+import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class NoticeServiceTest {
     @Mock
     AttachRepository attachRepository;
     @Mock // 가짜 객체
-    private NoticeRepository1 noticeRepository;
+    private NoticeRepository noticeRepository;
 
     @InjectMocks // 가짜(Mock) 객체(@Mock로 표시된 객체)를 테스트 대상 객체에 자동으로 주입할 수 있고 이를 통해 주입된 가짜 객체를 사용하여 테스트 대상 객체의 메소드를 호출하고 동작을 검증할 수 있습니다.
     private NoticeService noticeService;

@@ -7,10 +7,8 @@ import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
-import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository1;
+import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +23,7 @@ import static bleuauction.bleuauction_be.server.member.entity.MemberCategory.A;
 @RequiredArgsConstructor
 public class NoticeService {
 
-  private final NoticeRepository1 noticeRepository;
+  private final NoticeRepository noticeRepository;
   private final NcpObjectStorageService ncpObjectStorageService;
   private final AttachService attachService;
 

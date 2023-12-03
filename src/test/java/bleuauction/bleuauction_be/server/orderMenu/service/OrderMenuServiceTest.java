@@ -4,7 +4,7 @@ import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.entity.MenuSize;
-import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
+import bleuauction.bleuauction_be.server.menu.repository.MenuRepository1;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +43,7 @@ class OrderMenuServiceTest {
 
 
     @Mock
-    private MenuRepository menuRepository;
+    private MenuRepository1 menuRepository;
 
     @InjectMocks
     private OrderMenuService orderMenuService;

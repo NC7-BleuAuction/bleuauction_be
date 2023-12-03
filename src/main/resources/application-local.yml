@@ -15,6 +15,14 @@ spring:
     url: jdbc:mysql://localhost:3306/bleu_auction_db
     username: root
     password: 1111
+
+      # H2 InMemory Database
+#    driver-class-name: org.h2.Driver
+#    url: jdbc:h2:mem:bleuauction;MODE=MYSQL;DATABASE_TO_LOWER=TRUE
+#    username: sa
+#    password:
+
+      # NCP Database
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
 #    username: bleuauction
@@ -27,7 +35,7 @@ spring:
       hibernate:
         format_sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
       show-sql: true
     database-platform: org.hibernate.dialect.MySQLDialect
 

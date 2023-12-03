@@ -6,7 +6,8 @@ import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
-import bleuauction.bleuauction_be.server.member.service.MemberService;
+import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
+import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.store.dto.StoreSignUpRequest;
 import bleuauction.bleuauction_be.server.store.dto.UpdateStoreRequest;
@@ -40,7 +41,8 @@ import java.util.List;
 public class StoreController {
     private final CreateJwt createJwt;
     private final StoreService storeService;
-    private final MemberService memberService;
+    private final MemberComponentService memberComponentService;
+    private final MemberModuleService memberModuleService;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final AttachService attachService;
 
@@ -102,8 +104,8 @@ public class StoreController {
     ) {
         // S : 인증 인가, 검증로직
         createJwt.verifyAccessToken(authorizationHeader);
-        Member requestUser = memberService.findMemberById(createJwt.getTokenMember(authorizationHeader).getMemberNo());
-        Member targetUser = memberService.findMemberById(memberNo);
+        Member requestUser = memberModuleService.findById(createJwt.getTokenMember(authorizationHeader).getMemberNo());
+        Member targetUser = memberModuleService.findById(memberNo);
         if (!requestUser.getMemberNo().equals(targetUser.getMemberNo())) {
             throw new StoreUpdateUnAuthorizedException(requestUser, targetUser);
         }
@@ -120,7 +122,7 @@ public class StoreController {
     ) throws Exception {
         createJwt.verifyAccessToken(authorizationHeader);
 
-        Member loginUser = memberService.findMemberById(createJwt.getTokenMember(authorizationHeader).getMemberNo());
+        Member loginUser = memberModuleService.findById(createJwt.getTokenMember(authorizationHeader).getMemberNo());
         if (!MemberCategory.S.equals(loginUser.getMemberCategory())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("판매자 권한이 필요합니다");
         }
@@ -144,7 +146,7 @@ public class StoreController {
     ) throws Exception {
         createJwt.verifyAccessToken(authorizationHeader);
 
-        Member loginUser = memberService.findMemberById(createJwt.getTokenMember(authorizationHeader).getMemberNo());
+        Member loginUser = memberModuleService.findById(createJwt.getTokenMember(authorizationHeader).getMemberNo());
         if (!MemberCategory.S.equals(loginUser.getMemberCategory())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("판매자 권한이 필요합니다");
         }
@@ -185,7 +187,7 @@ public class StoreController {
         // 가게 정보 확인
         storeService.withDrawStore(
                 storeService.findStoreById(storeNo),
-                memberService.findMemberById(createJwt.getTokenMember(authorizationHeader).getMemberNo())
+                memberModuleService.findById(createJwt.getTokenMember(authorizationHeader).getMemberNo())
         );
 
         // TODO: 토큰 무효화 (예: Token을 Blacklist에 추가하고, 클라이언트 측에서 로컬 스토리지 또는 쿠키에서 토큰 제거)

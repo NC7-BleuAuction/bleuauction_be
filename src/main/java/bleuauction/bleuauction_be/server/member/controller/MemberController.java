@@ -11,7 +11,8 @@ import bleuauction.bleuauction_be.server.member.dto.LoginRequest;
 import bleuauction.bleuauction_be.server.member.dto.LoginResponseDto;
 import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.member.service.MemberService;
+import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
+import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,8 @@ import java.util.Map;
 public class MemberController {
 
     private final CreateJwt createJwt;
-    private final MemberService memberService;
+    private final MemberComponentService memberComponentService;
+    private final MemberModuleService memberModuleService;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final AttachService attachService;
 
@@ -57,7 +59,7 @@ public class MemberController {
             @RequestParam(defaultValue = "10", required = false) int limit
     ) throws Exception {
         return ResponseEntity.ok().body(
-                memberService.findAllMemberByPageableOrderByRegDateDesc(page, limit)
+                memberComponentService.findAllMemberByPageableOrderByRegDateDesc(page, limit)
         );
     }
 
@@ -70,8 +72,8 @@ public class MemberController {
      * @throws Exception
      */
     @GetMapping("/{memberNo}")
-    public ResponseEntity<Member> fileMemberDetail(@PathVariable Long memberNo) throws Exception {
-        return ResponseEntity.ok(memberService.findMemberById(memberNo));
+    public ResponseEntity<Member> getMemberDetail(@PathVariable Long memberNo) throws Exception {
+        return ResponseEntity.ok(memberModuleService.findById(memberNo));
     }
 
     /**
@@ -84,7 +86,7 @@ public class MemberController {
      */
     @DeleteMapping("/{memberNo}")
     public ResponseEntity<String> deleteMemberById(@PathVariable Long memberNo) throws Exception {
-        memberService.deleteMemberById(memberNo);
+        memberModuleService.deleteById(memberNo);
         return ResponseEntity.ok("Member Delete Success");
     }
 
@@ -99,7 +101,7 @@ public class MemberController {
      */
     @PostMapping("/signup")
     public Member signUp(Member member) throws Exception {
-        return memberService.signUp(member);
+        return memberComponentService.signUp(member);
     }
 
     /**
@@ -111,7 +113,7 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequest loginRequest) {
         log.info("[MemberController] LoginRequest, Email >>> {}, Request Time >>> {}", loginRequest.getMemberEmail(), LocalDateTime.now());
-        return ResponseEntity.ok(memberService.login(loginRequest.getMemberEmail(), loginRequest.getMemberPwd()));
+        return ResponseEntity.ok(memberComponentService.login(loginRequest.getMemberEmail(), loginRequest.getMemberPwd()));
     }
 
     /**
@@ -151,7 +153,7 @@ public class MemberController {
         }
 
         //회원정보 수정, Attach Table 파일 추가
-        Member updateMember = memberService.updateMember(tokenMember, updateMemberRequest, attach);
+        Member updateMember = memberComponentService.updateMember(tokenMember, updateMemberRequest, attach);
         attachService.addAttachs(updateMember.getMemberAttaches());
         return ResponseEntity.ok("회원 정보가 업데이트되었습니다.");
     }
@@ -167,7 +169,7 @@ public class MemberController {
         createJwt.verifyAccessToken(authorizationHeader);
         //회원 탈퇴 처리 로직
         try {
-            memberService.withDrawMember(createJwt.getTokenMember(authorizationHeader));
+            memberComponentService.withDrawMember(createJwt.getTokenMember(authorizationHeader));
             return ResponseEntity.ok("회원이 성공적으로 탈퇴되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

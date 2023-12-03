@@ -4,7 +4,7 @@ import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
-import bleuauction.bleuauction_be.server.member.service.MemberService;
+import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
@@ -40,7 +40,7 @@ public class NoticeController {
 
   private final NoticeService noticeService;
   private final EntityManager entityManager;
-  private final MemberService memberService;
+  private final MemberComponentService memberComponentService;
   private final NoticeRepository noticeRepository;
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -64,7 +64,7 @@ public class NoticeController {
 
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+    Optional<Member> loginUser = memberComponentService.findByMemberNo(tokenMember.getMemberNo());
 
     if(loginUser.get().getMemberCategory() == A) {
     notice.setMemberNo(loginUser.get());
@@ -113,7 +113,7 @@ public class NoticeController {
 
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+    Optional<Member> loginUser = memberComponentService.findByMemberNo(tokenMember.getMemberNo());
 
     if(loginUser.get().getMemberCategory() == A) {
 
@@ -140,7 +140,7 @@ public class NoticeController {
   public ResponseEntity<?> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable Long fileNo) {
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+    Optional<Member> loginUser = memberComponentService.findByMemberNo(tokenMember.getMemberNo());
 
     if(loginUser.get().getMemberCategory() == A) {
       attachService.changeFileStatusToDeleteByFileNo(fileNo);
@@ -177,7 +177,7 @@ public class NoticeController {
 
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+    Optional<Member> loginUser = memberComponentService.findByMemberNo(tokenMember.getMemberNo());
 
     if(loginUser.get().getMemberCategory() == A) {
 

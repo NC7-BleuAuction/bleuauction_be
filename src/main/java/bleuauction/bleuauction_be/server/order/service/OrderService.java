@@ -1,7 +1,7 @@
 package bleuauction.bleuauction_be.server.order.service;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.member.service.MemberService;
+import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.exception.OrderNotFoundException;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
@@ -23,7 +23,7 @@ import java.util.Optional;
 public class OrderService {
 
   private final OrderRepository orderRepository;
-  private final MemberService memberService;
+  private final MemberComponentService memberComponentService;
 
 
 
@@ -42,7 +42,7 @@ public class OrderService {
 
   //가게 별 주문 조회
   public ResponseEntity<?> findOrdersByMemberAndStore(Long memberNo) {
-    Optional<Member> loginUser = memberService.findByMemberNo(memberNo);
+    Optional<Member> loginUser = memberComponentService.findByMemberNo(memberNo);
 
     if (!loginUser.isPresent()) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인한 사용자가 아닙니다.");
@@ -59,7 +59,7 @@ public class OrderService {
 
   //회원 별 주문 조회
   public ResponseEntity<?> findOrdersByMemberNo(Long memberNo) {
-    Optional<Member> loginUser = memberService.findByMemberNo(memberNo);
+    Optional<Member> loginUser = memberComponentService.findByMemberNo(memberNo);
 
     if (!loginUser.isPresent()) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인한 사용자가 아닙니다.");

@@ -2,7 +2,7 @@ package bleuauction.bleuauction_be.server.order.controller;
 
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
-import bleuauction.bleuauction_be.server.member.service.MemberService;
+import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
@@ -26,7 +26,7 @@ import java.util.Optional;
 @RequestMapping("/api/order")
 public class OrderController {
 
-  private final MemberService memberService;
+  private final MemberComponentService memberComponentService;
   private final OrderService orderService;
   private final OrderRepository orderRepository;
   private final CreateJwt createJwt;

@@ -14,7 +14,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/bleu_auction_db
     username: root
-    password: 1111
+    password:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://db-isp7r-kr.vpc-pub-cdb.ntruss.com:3306/bleuauction
 #    username: bleuauction

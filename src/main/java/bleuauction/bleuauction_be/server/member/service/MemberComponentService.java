@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.member.service;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
@@ -17,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -119,10 +122,14 @@ public class MemberComponentService {
     }
 
     @Transactional
-    public Member updateMember(TokenMember tokenMember, UpdateMemberRequest request, Attach profileImage) {
+    public Member updateMember(TokenMember tokenMember, UpdateMemberRequest request) {
         Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
-        if(profileImage != null) {
+
+        //Profile Image ObjectStorage에 저장
+        if(!request.getProfileImage().isEmpty()){
+            Attach profileImage = ncpObjectStorageService.uploadFile("bleuauction-bucket", "member/", request.getProfileImage());
             profileImage.setMemberNo(loginUser);
+            loginUser.addAttaches(profileImage);
         }
 
         loginUser.setMemberPwd(passwordEncoder.encode(request.getMemberPwd()));
@@ -133,7 +140,6 @@ public class MemberComponentService {
         loginUser.setMemberPhone(request.getMemberPhone());
         loginUser.setMemberBank(request.getMemberBank());
         loginUser.setMemberAccount(request.getMemberAccount());
-        loginUser.addAttaches(profileImage);
 
         return memberModuleService.save(loginUser);
     }
@@ -148,6 +154,23 @@ public class MemberComponentService {
         if (memberModuleService.isExistsByEmail(email)) {
             throw new DuplicateMemberEmailException(email);
         }
+    }
+
+    /**
+     * 회원의 프로필 이미지를 삭제하는 기능으로 <br />
+     * 해당 기능은 Controller가 적합함. <br />
+     * [TODO] : 현재 해당 기능의 문제점은 인증 인가없이 그냥 fileNo를 입력할때 삭제가 된다는 점, 그러므로 타인이 삭제시킬수도 있음. 추후 보완이 필요하다.
+     *
+     * @param fileNo
+     * @return
+     */
+    public ResponseEntity<String> deleteProfileImage(Long fileNo) {
+        if (FileStatus.N.equals(attachService.changeFileStatusToDeleteByFileNo(fileNo).getFileStatus())) {
+            return ResponseEntity.ok("Profile Image Delete Success");
+        }
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Profile Image Delete Failed");
     }
 
 }

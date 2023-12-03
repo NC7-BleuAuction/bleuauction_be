@@ -1,9 +1,6 @@
 package bleuauction.bleuauction_be.server.member.controller;
 
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
-import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.RefreshTokenRequest;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
@@ -13,10 +10,8 @@ import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
 import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,8 +36,6 @@ public class MemberController {
     private final CreateJwt createJwt;
     private final MemberComponentService memberComponentService;
     private final MemberModuleService memberModuleService;
-    private final NcpObjectStorageService ncpObjectStorageService;
-    private final AttachService attachService;
 
     /**
      * 관리자 페이지로 인하여 추가한 것으로 보임, 페이지네이션 추가 <br />
@@ -145,16 +138,7 @@ public class MemberController {
 
         // JWT토큰의 정보 추출
         TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-
-        //Profile Image ObjectStorage에 저장
-        Attach attach = null;
-        if(!updateMemberRequest.getProfileImage().isEmpty()){
-            attach = ncpObjectStorageService.uploadFile("bleuauction-bucket", "member/", updateMemberRequest.getProfileImage());
-        }
-
-        //회원정보 수정, Attach Table 파일 추가
-        Member updateMember = memberComponentService.updateMember(tokenMember, updateMemberRequest, attach);
-        attachService.addAttachs(updateMember.getMemberAttaches());
+        memberComponentService.updateMember(tokenMember, updateMemberRequest);
         return ResponseEntity.ok("회원 정보가 업데이트되었습니다.");
     }
 
@@ -168,13 +152,8 @@ public class MemberController {
     public ResponseEntity<?> withdrawMember(@RequestHeader("Authorization") String authorizationHeader) {
         createJwt.verifyAccessToken(authorizationHeader);
         //회원 탈퇴 처리 로직
-        try {
-            memberComponentService.withDrawMember(createJwt.getTokenMember(authorizationHeader));
-            return ResponseEntity.ok("회원이 성공적으로 탈퇴되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("회원 탈퇴 중 오류가 발생했습니다.");
-        }
+        memberComponentService.withDrawMember(createJwt.getTokenMember(authorizationHeader));
+        return ResponseEntity.ok("회원이 성공적으로 탈퇴되었습니다.");
     }
 
     /**
@@ -187,11 +166,6 @@ public class MemberController {
      */
     @DeleteMapping("/profileImage/{fileNo}")
     public ResponseEntity<String> deleteProfileImage(@PathVariable Long fileNo) {
-        if (FileStatus.N.equals(attachService.changeFileStatusToDeleteByFileNo(fileNo).getFileStatus())) {
-            return ResponseEntity.ok("Profile Image Delete Success");
-        }
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Profile Image Delete Failed");
+        return memberComponentService.deleteProfileImage(fileNo);
     }
 }

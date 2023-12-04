@@ -2,6 +2,7 @@ package bleuauction.bleuauction_be.server.menu.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
+import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
@@ -9,7 +10,7 @@ import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.menu.service.MenuService;
 import bleuauction.bleuauction_be.server.menu.web.MenuForm;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
+import bleuauction.bleuauction_be.server.attach.util.NcpObjectStorageUtil;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
@@ -36,7 +37,7 @@ public class MenuController {
 
   private final MenuService menuService;
   private final MenuRepository menuRepository;
-  private final NcpObjectStorageService ncpObjectStorageService;
+  private final NcpObjectStorageUtil ncpObjectStorageUtil;
   private final AttachComponentService attachComponentService;
   private final EntityManager entityManager;
   private final CreateJwt createJwt;
@@ -58,6 +59,7 @@ public class MenuController {
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberComponentService.findByMemberNo(tokenMember.getMemberNo());
 
+
     Long memberId = loginUser.get().getMemberNo();
 
     // Member ID를 사용하여 관련된 Store를 찾습니다.
@@ -75,8 +77,7 @@ public class MenuController {
       ArrayList<Attach> attaches = new ArrayList<>();
       for (MultipartFile multipartFile : multipartFiles) {
         if (multipartFile.getSize() > 0) {
-          Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
-                  "bleuauction-bucket", "menu/", multipartFile);
+          Attach attach = ncpObjectStorageUtil.uploadFile(FileUploadUsage.MENU, multipartFile);
           menu.addAttach(attach);
         }
       }
@@ -210,8 +211,7 @@ public class MenuController {
         ArrayList<Attach> attaches = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
           if (multipartFile.getSize() > 0) {
-            Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
-                    "bleuauction-bucket", "menu/", multipartFile);
+            Attach attach = ncpObjectStorageUtil.uploadFile(FileUploadUsage.MENU, multipartFile);
             updatedMenu.addAttach(attach);
           }
         }

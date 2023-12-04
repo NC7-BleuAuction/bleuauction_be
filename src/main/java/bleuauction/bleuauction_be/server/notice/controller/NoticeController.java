@@ -2,10 +2,11 @@ package bleuauction.bleuauction_be.server.notice.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
+import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
+import bleuauction.bleuauction_be.server.attach.util.NcpObjectStorageUtil;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
@@ -45,7 +46,7 @@ public class NoticeController {
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
   private final CreateJwt createJwt;
-  private final NcpObjectStorageService ncpObjectStorageService;
+  private final NcpObjectStorageUtil ncpObjectStorageUtil;
   private final AttachComponentService attachComponentService;
 
 
@@ -73,8 +74,7 @@ public class NoticeController {
       ArrayList<Attach> attaches = new ArrayList<>();
       for (MultipartFile multipartFile : multipartFiles) {
         if (multipartFile.getSize() > 0) {
-          Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
-                  "bleuauction-bucket", "notice/", multipartFile);
+          Attach attach = ncpObjectStorageUtil.uploadFile(FileUploadUsage.NOTICE, multipartFile);
           notice.addNoticeAttach(attach);
         }
       }
@@ -185,8 +185,7 @@ public class NoticeController {
         ArrayList<Attach> attaches = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
           if (multipartFile.getSize() > 0) {
-            Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
-                    "bleuauction-bucket", "notice/", multipartFile);
+            Attach attach = ncpObjectStorageUtil.uploadFile( FileUploadUsage.NOTICE, multipartFile);
             updatedNotice.addNoticeAttach(attach);
           }
         }

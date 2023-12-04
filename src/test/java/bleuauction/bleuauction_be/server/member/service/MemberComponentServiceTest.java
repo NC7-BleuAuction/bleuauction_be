@@ -10,7 +10,7 @@ import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.exception.DuplicateMemberEmailException;
 import bleuauction.bleuauction_be.server.member.exception.MemberNotFoundException;
 import bleuauction.bleuauction_be.server.member.util.MemberEntityFactory;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
+import bleuauction.bleuauction_be.server.attach.util.NcpObjectStorageUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +42,7 @@ class MemberComponentServiceTest {
     @Mock
     private AttachComponentService attachComponentService;
     @Mock
-    private NcpObjectStorageService ncpObjectStorageService;
+    private NcpObjectStorageUtil ncpObjectStorageUtil;
 
     @InjectMocks
     private MemberComponentService memberComponentService;

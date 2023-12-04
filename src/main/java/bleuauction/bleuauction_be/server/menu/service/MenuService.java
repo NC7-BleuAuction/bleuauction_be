@@ -1,20 +1,12 @@
 package bleuauction.bleuauction_be.server.menu.service;
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.menu.entity.MenuSize;
-import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
-import bleuauction.bleuauction_be.server.notice.entity.Notice;
-import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
+import bleuauction.bleuauction_be.server.attach.util.NcpObjectStorageUtil;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.CurrentTimestamp;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,7 +15,7 @@ import java.util.List;
 public class MenuService {
 
   private final MenuRepository menuRepository;
-  private final NcpObjectStorageService ncpObjectStorageService;
+  private final NcpObjectStorageUtil ncpObjectStorageUtil;
 
   //등록
   @Transactional

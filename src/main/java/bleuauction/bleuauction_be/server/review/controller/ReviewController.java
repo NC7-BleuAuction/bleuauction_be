@@ -1,14 +1,13 @@
 package bleuauction.bleuauction_be.server.review.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.service.ReviewService;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +28,7 @@ import java.util.List;
 public class ReviewController {
 
   private final CreateJwt createJwt;
-  private final AttachService attachService;
+  private final AttachComponentService attachComponentService;
   private final ReviewService reviewService;
 
   @GetMapping
@@ -86,6 +85,6 @@ public class ReviewController {
     log.info("authorizationHeader: {}", authorizationHeader);
     log.info("fileNo: {}", fileNo);
     createJwt.verifyAccessToken(authorizationHeader);
-    return ResponseEntity.ok(attachService.changeFileStatusToDeleteByFileNo(fileNo));
+    return ResponseEntity.ok(attachComponentService.changeFileStatusDeleteByFileNo(fileNo));
   }
 }

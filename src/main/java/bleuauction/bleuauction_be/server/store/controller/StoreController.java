@@ -2,11 +2,11 @@ package bleuauction.bleuauction_be.server.store.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
+import bleuauction.bleuauction_be.server.attach.service.AttachModuleService;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
-import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
 import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.store.dto.StoreSignUpRequest;
@@ -41,10 +41,10 @@ import java.util.List;
 public class StoreController {
     private final CreateJwt createJwt;
     private final StoreService storeService;
-    private final MemberComponentService memberComponentService;
     private final MemberModuleService memberModuleService;
     private final NcpObjectStorageService ncpObjectStorageService;
-    private final AttachService attachService;
+    private final AttachComponentService attachComponentService;
+    private final AttachModuleService attachModuleService;
 
     /**
      * 가게정보 리스트를 반환하는 기능
@@ -162,7 +162,7 @@ public class StoreController {
                 attach.setStoreNo(store);
 
                 // 첨부 파일 저장 및 결과를 insertAttaches에 할당 및 Attach정보에 대해서는 Store객체에 추가
-                attachService.insertAttach(attach);
+                attachModuleService.save(attach);
                 store.addAttaches(attach);
             }
             // 가게 정보 업데이트
@@ -204,7 +204,7 @@ public class StoreController {
      */
     @DeleteMapping("/profile/{fileNo}")
     public ResponseEntity<String> deleteProfileImage(@PathVariable("fileNo") Long fileNo) {
-        return (FileStatus.N.equals(attachService.changeFileStatusToDeleteByFileNo(fileNo).getFileStatus())) ?
+        return (FileStatus.N.equals(attachComponentService.changeFileStatusDeleteByFileNo(fileNo).getFileStatus())) ?
                 ResponseEntity.ok("Profile Image Delete Success")
                 : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Profile Image Delete Failed");
     }

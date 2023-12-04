@@ -1,7 +1,7 @@
 package bleuauction.bleuauction_be.server.notice.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
@@ -46,7 +46,7 @@ public class NoticeController {
   private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
   private final CreateJwt createJwt;
   private final NcpObjectStorageService ncpObjectStorageService;
-  private final AttachService attachService;
+  private final AttachComponentService attachComponentService;
 
 
   //등록
@@ -121,7 +121,7 @@ public class NoticeController {
       if (notice != null) {
         if (notice.getNoticeAttaches() != null && !notice.getNoticeAttaches().isEmpty()) {
           for (Attach attach : notice.getNoticeAttaches()) {
-            attachService.changeFileStatusToDeleteByFileNo(attach.getFileNo());
+            attachComponentService.changeFileStatusDeleteByFileNo(attach.getFileNo());
           }
         }
         noticeService.deleteNotice(noticeNo);
@@ -143,7 +143,7 @@ public class NoticeController {
     Optional<Member> loginUser = memberComponentService.findByMemberNo(tokenMember.getMemberNo());
 
     if(loginUser.get().getMemberCategory() == A) {
-      attachService.changeFileStatusToDeleteByFileNo(fileNo);
+      attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
       return ResponseEntity.ok("File deleted successfully");
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");

@@ -2,7 +2,7 @@ package bleuauction.bleuauction_be.server.member.service;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
@@ -12,12 +12,10 @@ import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
 import bleuauction.bleuauction_be.server.member.exception.DuplicateMemberEmailException;
 import bleuauction.bleuauction_be.server.member.exception.MemberNotFoundException;
-import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +31,7 @@ import java.util.Optional;
 public class MemberComponentService {
     private final CreateJwt createJwt;
     private final PasswordEncoder passwordEncoder;
-    private final AttachService attachService;
+    private final AttachComponentService attachComponentService;
     private final MemberModuleService memberModuleService;
     private final NcpObjectStorageService ncpObjectStorageService;
 
@@ -165,7 +163,7 @@ public class MemberComponentService {
      * @return
      */
     public ResponseEntity<String> deleteProfileImage(Long fileNo) {
-        if (FileStatus.N.equals(attachService.changeFileStatusToDeleteByFileNo(fileNo).getFileStatus())) {
+        if (FileStatus.N.equals(attachComponentService.changeFileStatusDeleteByFileNo(fileNo).getFileStatus())) {
             return ResponseEntity.ok("Profile Image Delete Success");
         }
         return ResponseEntity

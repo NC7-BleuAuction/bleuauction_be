@@ -1,7 +1,7 @@
 package bleuauction.bleuauction_be.server.menu.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
@@ -37,7 +37,7 @@ public class MenuController {
   private final MenuService menuService;
   private final MenuRepository menuRepository;
   private final NcpObjectStorageService ncpObjectStorageService;
-  private final AttachService attachService;
+  private final AttachComponentService attachComponentService;
   private final EntityManager entityManager;
   private final CreateJwt createJwt;
   private final MemberComponentService memberComponentService;
@@ -152,7 +152,7 @@ public class MenuController {
 
       // 사진 상태를 'N'으로 변경
       for (Attach attach : menu.getMenuAttaches()) {
-        attachService.changeFileStatusToDeleteByFileNo(attach.getFileNo());
+        attachComponentService.changeFileStatusDeleteByFileNo(attach.getFileNo());
       }
       menuService.deleteMenu(menuNo);
       return ResponseEntity.ok("Menu deleted successfully");
@@ -165,7 +165,7 @@ public class MenuController {
   //사진삭제
   @DeleteMapping("/api/menu/deletefile/{fileNo}")
   public ResponseEntity<String> fileMenuDelete(@PathVariable Long fileNo) {
-    attachService.changeFileStatusToDeleteByFileNo(fileNo);
+    attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
     return ResponseEntity.ok("File deleted successfully");
   }
 

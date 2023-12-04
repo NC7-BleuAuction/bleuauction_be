@@ -6,7 +6,7 @@ import bleuauction.bleuauction_be.server.answer.repository.AnswerRepository;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.repository.AttachRepository;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
@@ -36,7 +36,7 @@ public class ReviewService {
   private String bucketPath;
   private static final int PAGE_ROW_COUNT = 4;
   private final NcpObjectStorageService ncpObjectStorageService;
-  private final AttachService attachService;
+  private final AttachComponentService attachComponentService;
   private final ReviewRepository reviewRepository;
   private final AnswerRepository answerRepository;
   private final AttachRepository attachRepository;

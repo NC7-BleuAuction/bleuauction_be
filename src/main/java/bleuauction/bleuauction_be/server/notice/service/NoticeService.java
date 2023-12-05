@@ -35,7 +35,6 @@ public class NoticeService {
       noticeRepository.save(notice);
 
       if (multipartFiles != null && multipartFiles.size() > 0) {
-        ArrayList<Attach> attaches = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
           if (multipartFile.getSize() > 0) {
             Attach attach = ncpObjectStorageService.uploadFile(new Attach(),

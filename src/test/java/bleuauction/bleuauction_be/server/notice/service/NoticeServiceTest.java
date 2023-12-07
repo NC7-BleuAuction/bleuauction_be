@@ -38,17 +38,18 @@ class NoticeServiceTest {
         // Given
         Member mockMember = new Member();
         mockMember.setMemberCategory(MemberCategory.A);
+
         Notice mockNotice = new Notice();
         mockNotice.setNoticeNo(1L);
-        mockNotice.setNoticeTitle("가짜 제목");
-        mockNotice.setNoticeContent("가짜 내용");
+        mockNotice.setMemberNo(mockMember);
+
         List<MultipartFile> multipartFiles = new ArrayList<>();
 
         // When
-        Long result = noticeService.enroll(mockNotice,multipartFiles,mockMember);
+        when(noticeRepository.save(any(Notice.class))).thenReturn(mockNotice);
+        Long result = noticeService.enroll(mockNotice, multipartFiles, mockMember);
 
         // Then
-        // 반환값이 mockNotice의 noticeNo와 일치하는지 확인
         assertEquals(mockNotice.getNoticeNo(), result);
     }
 

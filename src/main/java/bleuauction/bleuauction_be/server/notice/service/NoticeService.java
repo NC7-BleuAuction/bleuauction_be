@@ -94,15 +94,15 @@ public class NoticeService {
       existingnotice.setNoticeTitle(updatedNotice.getNoticeTitle());
       existingnotice.setNoticeContent(updatedNotice.getNoticeContent());
 
-      if (multipartFiles != null && multipartFiles.size() > 0) {
-        for (MultipartFile multipartFile : multipartFiles) {
-          if (multipartFile.getSize() > 0) {
-            Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
-                    "bleuauction-bucket", "notice/", multipartFile);
-            existingnotice.addNoticeAttach(attach);
-          }
-        }
-      }
+    if (multipartFiles != null && !multipartFiles.isEmpty()) {
+      multipartFiles.stream()
+              .filter(file -> file.getSize() > 0)
+              .forEach(multipartFile ->
+                      existingnotice.addNoticeAttach(ncpObjectStorageService.uploadFile(new Attach(),
+                              "bleuauction-bucket", "notice/", multipartFile))
+              );
+    }
+
       return noticeRepository.save(existingnotice);
 
 

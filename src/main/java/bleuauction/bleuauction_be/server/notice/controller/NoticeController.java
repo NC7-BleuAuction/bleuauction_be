@@ -3,6 +3,7 @@ package bleuauction.bleuauction_be.server.notice.controller;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
@@ -81,7 +82,7 @@ public class NoticeController {
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Member loginUser = memberService.findMemberById(tokenMember.getMemberNo());
 
-    if(loginUser.getMemberCategory() == A) {
+    if(MemberCategory.A.equals(loginUser.getMemberCategory())) {
       attachService.changeFileStatusToDeleteByFileNo(fileNo);
       return ResponseEntity.ok("File deleted successfully");
     } else {

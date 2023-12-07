@@ -1,14 +1,23 @@
 package bleuauction.bleuauction_be.server.answer.entity;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -43,4 +52,12 @@ public class Answer {
 
   @Enumerated(EnumType.STRING)
   private AnswerStatus answerStatus;
+
+  @Builder
+  public Answer(Long reviewNo, Member member, String answerContent,  AnswerStatus answerStatus) {
+    this.reviewNo = reviewNo;
+    this.member = member;
+    this.answerContent = answerContent;
+    this.answerStatus = answerStatus;
+  }
 }

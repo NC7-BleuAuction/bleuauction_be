@@ -64,7 +64,7 @@ public class MemberService {
                 .memberNo(member.getMemberNo())
                 .memberEmail(member.getMemberEmail())
                 .memberName(member.getMemberName())
-                .memberCategory(member.getMemberCategory().name())
+                .memberCategory(member.getMemberCategory())
                 .build();
         String accessToken = createJwt.createAccessToken(tokenMember);
         String refreshToken = createJwt.createRefreshToken(tokenMember, accessToken);

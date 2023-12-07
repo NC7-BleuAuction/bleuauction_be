@@ -30,22 +30,20 @@ public class NoticeService {
   @Transactional
   public Long enroll(Notice notice, List<MultipartFile> multipartFiles, Member member) {
 
-    if(member.getMemberCategory() == MemberCategory.A) {
-      notice.setMemberNo(member);
-      noticeRepository.save(notice);
-
-      if (multipartFiles != null && multipartFiles.size() > 0) {
-        for (MultipartFile multipartFile : multipartFiles) {
-          if (multipartFile.getSize() > 0) {
-            Attach attach = ncpObjectStorageService.uploadFile(new Attach(),
-                    "bleuauction-bucket", "notice/", multipartFile);
-            notice.addNoticeAttach(attach);
-          }
-        }
-      }
-
+    if (!MemberCategory.A.equals(member.getMemberCategory())) {
+      throw new IllegalArgumentException("권한이 없습니다.");
     }
-    return notice.getNoticeNo();
+    notice.setMemberNo(member);
+
+    if (multipartFiles != null && !multipartFiles.isEmpty()) {
+      multipartFiles.stream()
+              .filter(file -> file.getSize() > 0)
+              .forEach(multipartFile ->
+                      notice.addNoticeAttach(ncpObjectStorageService.uploadFile(new Attach(),
+                              "bleuauction-bucket", "notice/", multipartFile))
+              );
+    }
+    return noticeRepository.save(notice).getNoticeNo();
 
   }
 
@@ -69,15 +67,18 @@ public class NoticeService {
   //노티스 삭제(N)
   @Transactional
   public void deleteNotice(Long noticeNo, Member member) {
-    if (member.getMemberCategory()==MemberCategory.A) {
-      Notice notice = noticeRepository.findByNoticeNo(noticeNo);
-      notice.delete();
-      if (notice.getNoticeAttaches() != null && !notice.getNoticeAttaches().isEmpty()) {
-        for (Attach attach : notice.getNoticeAttaches()) {
-          attachService.changeFileStatusToDeleteByFileNo(attach.getFileNo());
-        }
+    if(!MemberCategory.A.equals(member.getMemberCategory())) {
+      throw new IllegalArgumentException("권한이 없습니다.");
+    }
+
+    Notice notice = noticeRepository.findByNoticeNo(noticeNo);
+    notice.delete();
+    if (notice.getNoticeAttaches() != null && !notice.getNoticeAttaches().isEmpty()) {
+      for (Attach attach : notice.getNoticeAttaches()) {
+        attachService.changeFileStatusToDeleteByFileNo(attach.getFileNo());
       }
     }
+
   }
 
   //노티스 수정
@@ -86,7 +87,9 @@ public class NoticeService {
 
     Notice existingnotice = noticeRepository.findByNoticeNo(updatedNotice.getNoticeNo());
 
-    if(member.getMemberCategory() == A) {
+    if(!MemberCategory.A.equals(member.getMemberCategory())) {
+      throw new IllegalArgumentException("권한이 없습니다.");
+    }
 
       existingnotice.setNoticeTitle(updatedNotice.getNoticeTitle());
       existingnotice.setNoticeContent(updatedNotice.getNoticeContent());
@@ -101,9 +104,7 @@ public class NoticeService {
         }
       }
       return noticeRepository.save(existingnotice);
-    } else {
-      throw new IllegalArgumentException("수정 권한이 없습니다.");
-    }
+
 
   }
 

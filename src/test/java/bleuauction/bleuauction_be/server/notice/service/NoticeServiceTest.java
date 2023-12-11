@@ -1,5 +1,10 @@
 package bleuauction.bleuauction_be.server.notice.service;
 
+import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
+import bleuauction.bleuauction_be.server.attach.repository.AttachRepository;
+import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
@@ -9,6 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -16,6 +25,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class) // Mockito의 기능을 JUnit 5 테스트에 활성화시켜 Mockito 관련 애노테이션을 사용가능
 class NoticeServiceTest {
 
+    @Mock
+    AttachRepository attachRepository;
     @Mock // 가짜 객체
     private NoticeRepository noticeRepository;
 
@@ -25,31 +36,44 @@ class NoticeServiceTest {
     @Test
     void testEnroll() {
         // Given
+        Member mockMember = new Member();
+        mockMember.setMemberCategory(MemberCategory.A);
+
         Notice mockNotice = new Notice();
         mockNotice.setNoticeNo(1L);
-        mockNotice.setNoticeTitle("가짜 제목");
-        mockNotice.setNoticeContent("가짜 내용");
+        mockNotice.setMemberNo(mockMember);
+
+        List<MultipartFile> multipartFiles = new ArrayList<>();
 
         // When
-        Long result = noticeService.enroll(mockNotice);
+        when(noticeRepository.save(any(Notice.class))).thenReturn(mockNotice);
+        Long result = noticeService.enroll(mockNotice, multipartFiles, mockMember);
 
         // Then
-        // 반환값이 mockNotice의 noticeNo와 일치하는지 확인
         assertEquals(mockNotice.getNoticeNo(), result);
     }
 
     @Test
     @DisplayName("노티스 수정")
-    void testUpdateNotice() {
+    void testUpdateNotice() throws Exception {
 
         //given
+        Member mockMember = new Member();
+        mockMember.setMemberCategory(MemberCategory.A);
         Notice existingNotice = new Notice();
-        existingNotice.setNoticeNo(1L);
+        List<MultipartFile> multipartFiles = new ArrayList<>();
+
+        Attach attach1 = new Attach();
+        attach1.setNoticeNo(existingNotice);
+        attach1.setFilePath("FilePath");
+        attach1.setOriginFilename("originFilename");
+        attach1.setSaveFilename("saveFilename");
+        attach1.setFileStatus(FileStatus.Y);
+        attachRepository.save(attach1);
+
         existingNotice.setNoticeTitle("기존 제목");
         existingNotice.setNoticeContent("기존 내용");
-
-        // findOne  호출될 때 existingNotice를 리턴하도록 설정
-        when(noticeRepository.findOne(existingNotice.getNoticeNo())).thenReturn(existingNotice);
+        noticeRepository.save(existingNotice);
 
         // 업데이트할 내용을 담은 새로운 Notice 객체 생성
         Notice updatedNotice = new Notice();
@@ -57,20 +81,23 @@ class NoticeServiceTest {
         updatedNotice.setNoticeTitle("새로운 제목");
         updatedNotice.setNoticeContent("새로운 내용");
 
+        // findOne  호출될 때 existingNotice를 리턴하도록 설정
+        when(noticeRepository.findByNoticeNo(updatedNotice.getNoticeNo())).thenReturn(existingNotice);
+
         //when
-        // 서비스의 update 메소드 호출
-        Notice result = noticeService.update(updatedNotice);
+        noticeService.update(updatedNotice, mockMember, multipartFiles);
 
         //then
-        // 업데이트된 내용이 반영되었는지 확인
-        assertEquals(updatedNotice.getNoticeTitle(), result.getNoticeTitle());
-        assertEquals(updatedNotice.getNoticeContent(), result.getNoticeContent());
+        assertEquals(updatedNotice.getNoticeTitle(), existingNotice.getNoticeTitle());
+        assertEquals(updatedNotice.getNoticeContent(), existingNotice.getNoticeContent());
     }
 
 
     @Test
     void testDeleteNotice() {
         // Given
+        Member mockMember = new Member();
+        mockMember.setMemberCategory(MemberCategory.A);
         Long noticeNo = 1L;
         Notice mockNotice = new Notice();
         mockNotice.setNoticeNo(noticeNo);
@@ -78,10 +105,10 @@ class NoticeServiceTest {
         mockNotice.setNoticeContent("가짜 내용");
 
         // findOne 메서드가 mockNotice를 반환하도록 설정
-        when(noticeRepository.findOne(anyLong())).thenReturn(mockNotice);
+        when(noticeRepository.findByNoticeNo(anyLong())).thenReturn(mockNotice);
 
         // When
-        noticeService.deleteNotice(noticeNo);
+        noticeService.deleteNotice(noticeNo,mockMember);
 
         // Then
         // mockNotice의 status가 N인지 확인

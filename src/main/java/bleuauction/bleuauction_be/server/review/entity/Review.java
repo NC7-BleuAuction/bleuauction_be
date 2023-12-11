@@ -23,7 +23,7 @@ import java.util.List;
 @DynamicInsert
 @DynamicUpdate
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(name = "ba_review")
 public class Review {
 
@@ -41,7 +41,8 @@ public class Review {
 
   private String reviewContent;
 
-  private String reviewFreshness;
+  @Enumerated(EnumType.STRING)
+  private ReviewFreshness reviewFreshness;
 
   @CreationTimestamp
   private Timestamp regDatetime;
@@ -58,11 +59,12 @@ public class Review {
 
 
   @Builder
-  public Review(Long storeNo, Member member, String reviewContent, String reviewFreshness, List<Attach> reviewAttaches) {
+  public Review(Long storeNo, Member member, String reviewContent, ReviewFreshness reviewFreshness, List<Attach> reviewAttaches, ReviewStatus reviewStatus) {
     this.storeNo = storeNo;
     this.member = member;
     this.reviewContent = reviewContent;
     this.reviewFreshness = reviewFreshness;
     this.reviewAttaches = reviewAttaches;
+    this.reviewStatus = reviewStatus;
   }
 }

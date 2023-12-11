@@ -2,6 +2,7 @@ package bleuauction.bleuauction_be.server.storeItemDailyPrice.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,11 +33,14 @@ public class StoreItemDailyPrice {
 
   private int dailyPrice;
 
-  private String itemCode;
+  @Enumerated(EnumType.STRING)
+  private ItemCode itemCode;
 
-  private String itemName;
+  @Enumerated(EnumType.STRING)
+  private ItemName itemName;
 
-  private String itemSize;
+  @Enumerated(EnumType.STRING)
+  private ItemSize itemSize;
 
   @Enumerated(EnumType.STRING)
   private OriginStatus originStatus;
@@ -58,4 +62,17 @@ public class StoreItemDailyPrice {
   @Enumerated(EnumType.STRING)
   private DailyPriceStatus dailyPriceStatus;
 
+  @Builder
+  public StoreItemDailyPrice(Long storeNo, int dailyPrice, ItemCode itemCode, ItemName itemName, ItemSize itemSize, OriginStatus originStatus, OriginPlaceStatus originPlaceStatus, WildFarmStatus wildFarmStatus, Date daliyPriceDate, DailyPriceStatus dailyPriceStatus) {
+    this.storeNo = storeNo;
+    this.dailyPrice = dailyPrice;
+    this.itemCode = itemCode;
+    this.itemName = itemName;
+    this.itemSize = itemSize;
+    this.originStatus = originStatus;
+    this.originPlaceStatus = originPlaceStatus;
+    this.wildFarmStatus = wildFarmStatus;
+    this.daliyPriceDate = daliyPriceDate;
+    this.dailyPriceStatus = dailyPriceStatus;
+  }
 }

@@ -68,7 +68,7 @@ public class AnswerService {
       throw new Exception("답글 삭제 권한이 없습니다!");
     }
 
-    Answer exitingAnswer = answerRepository.findById(answerNo).orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
+    Answer exitingAnswer = answerRepository.findByAnswerNoAndAnswerStatus(answerNo, AnswerStatus.Y).orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
     exitingAnswer.setAnswerStatus(AnswerStatus.N);
     Answer deleteAnswer = answerRepository.save(exitingAnswer);
     return deleteAnswer;

@@ -63,7 +63,7 @@ CREATE TABLE `ba_attach`
     `file_no`         BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `store_no`        BIGINT       NULL,
     `menu_no`         BIGINT       NULL,
-    `review_no`       BIGINT       NULL,
+    `review`       BIGINT       NULL,
     `member_no`       BIGINT       NULL,
     `notice_no`       BIGINT       NULL,
     `file_path`       VARCHAR(255) NOT NULL,
@@ -107,7 +107,7 @@ CREATE TABLE `ba_notice`
     `notice_no`      BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `member_no`      BIGINT       NOT NULL,
     `notice_title`   VARCHAR(255) NOT NULL,
-    `notice_content` VARCHAR(255) NOT NULL,
+    `notice_content` LONGTEXT     NOT NULL,
     `reg_datetime`   DATETIME     NULL DEFAULT NOW(),
     `mdf_datetime`   DATETIME     NULL DEFAULT NOW(),
     `notice_status`  VARCHAR(1)   NULL DEFAULT 'Y'
@@ -205,7 +205,7 @@ ALTER TABLE `ba_attach`
 
 ALTER TABLE `ba_attach`
     ADD CONSTRAINT `FK_ba_review_TO_ba_attach_1` FOREIGN KEY (
-                                                              `review_no`
+                                                              `review`
         )
         REFERENCES `ba_review` (
                                 `review_no`

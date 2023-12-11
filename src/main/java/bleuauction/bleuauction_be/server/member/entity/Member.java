@@ -103,7 +103,7 @@ public class Member implements Serializable {
     private List<Notice> notices = new ArrayList<>();
 
     @JsonBackReference
-    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "member")
     private List<Review> reviews = new ArrayList<>();
 
     @JsonManagedReference

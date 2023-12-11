@@ -1,15 +1,14 @@
 package bleuauction.bleuauction_be.server.notice.controller;
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
-import bleuauction.bleuauction_be.server.member.service.MemberService;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
+import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import bleuauction.bleuauction_be.server.notice.service.NoticeService;
-import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,25 +16,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import static bleuauction.bleuauction_be.server.member.entity.MemberCategory.A;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/notice")
 public class NoticeController {
 
   private final NoticeService noticeService;
-  private final MemberService memberService;
+  private final MemberModuleService memberModuleService;
   private final CreateJwt createJwt;
   private final AttachService attachService;
 
@@ -48,7 +47,7 @@ public class NoticeController {
 
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Member loginUser = memberService.findMemberById(tokenMember.getMemberNo());
+    Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     noticeService.enroll(notice,multipartFiles,loginUser);
     log.info("notice/postnew");
@@ -69,7 +68,7 @@ public class NoticeController {
   public ResponseEntity<String> deleteNotice(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable("noticeNo") Long noticeNo) {
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Member loginUser = memberService.findMemberById(tokenMember.getMemberNo());
+    Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     noticeService.deleteNotice(noticeNo,loginUser);
     return ResponseEntity.ok("Notice deleted successfully");
@@ -80,7 +79,7 @@ public class NoticeController {
   public ResponseEntity<String> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable Long fileNo) {
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Member loginUser = memberService.findMemberById(tokenMember.getMemberNo());
+    Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     if(MemberCategory.A.equals(loginUser.getMemberCategory())) {
       attachService.changeFileStatusToDeleteByFileNo(fileNo);
@@ -105,7 +104,7 @@ public class NoticeController {
 
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Member loginUser = memberService.findMemberById(tokenMember.getMemberNo());
+    Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     noticeService.update(updatedNotice,loginUser,multipartFiles);
 

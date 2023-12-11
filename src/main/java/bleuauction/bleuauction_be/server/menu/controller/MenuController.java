@@ -3,7 +3,7 @@ package bleuauction.bleuauction_be.server.menu.controller;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.member.service.MemberService;
+import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
@@ -40,7 +40,7 @@ public class MenuController {
   private final AttachService attachService;
   private final EntityManager entityManager;
   private final CreateJwt createJwt;
-  private final MemberService memberService;
+  private final MemberComponentService memberComponentService;
   private final StoreRepository storeRepository;
 
   //등록
@@ -56,7 +56,7 @@ public class MenuController {
   public ResponseEntity<?> menu(@RequestHeader("Authorization") String  authorizationHeader,  HttpSession session, Menu menu, @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+    Optional<Member> loginUser = memberComponentService.findByMemberNo(tokenMember.getMemberNo());
 
     Long memberId = loginUser.get().getMemberNo();
 
@@ -108,7 +108,7 @@ public class MenuController {
 
       TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
       // 로그인 유저의 멤버 번호
-      Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+      Optional<Member> loginUser = memberComponentService.findByMemberNo(tokenMember.getMemberNo());
 
       Optional<Store> store = storeRepository.findByMemberNo(loginUser.get());
 
@@ -139,7 +139,7 @@ public class MenuController {
 
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+    Optional<Member> loginUser = memberComponentService.findByMemberNo(tokenMember.getMemberNo());
 
     Long memberId = loginUser.get().getMemberNo();
 
@@ -192,7 +192,7 @@ public class MenuController {
 
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
+    Optional<Member> loginUser = memberComponentService.findByMemberNo(tokenMember.getMemberNo());
 
     Long memberId = loginUser.get().getMemberNo();
     log.info("memberId ? " + memberId);

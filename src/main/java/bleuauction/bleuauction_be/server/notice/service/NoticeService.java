@@ -1,10 +1,11 @@
 package bleuauction.bleuauction_be.server.notice.service;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
+import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
+import bleuauction.bleuauction_be.server.attach.util.NcpObjectStorageUtil;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
@@ -13,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static bleuauction.bleuauction_be.server.member.entity.MemberCategory.A;
 
 @Service
 @Transactional(readOnly = true)
@@ -24,8 +22,8 @@ import static bleuauction.bleuauction_be.server.member.entity.MemberCategory.A;
 public class NoticeService {
 
   private final NoticeRepository noticeRepository;
-  private final NcpObjectStorageService ncpObjectStorageService;
-  private final AttachService attachService;
+  private final NcpObjectStorageUtil ncpObjectStorageUtil;
+  private final AttachComponentService attachComponentService;
 
   @Transactional
   public Long enroll(Notice notice, List<MultipartFile> multipartFiles, Member member) {
@@ -39,8 +37,7 @@ public class NoticeService {
       multipartFiles.stream()
               .filter(file -> file.getSize() > 0)
               .forEach(multipartFile ->
-                      notice.addNoticeAttach(ncpObjectStorageService.uploadFile(new Attach(),
-                              "bleuauction-bucket", "notice/", multipartFile))
+                      notice.addNoticeAttach(ncpObjectStorageUtil.uploadFile(FileUploadUsage.NOTICE, multipartFile))
               );
     }
     return noticeRepository.save(notice).getNoticeNo();
@@ -75,7 +72,7 @@ public class NoticeService {
     notice.delete();
     if (notice.getNoticeAttaches() != null && !notice.getNoticeAttaches().isEmpty()) {
       for (Attach attach : notice.getNoticeAttaches()) {
-        attachService.changeFileStatusToDeleteByFileNo(attach.getFileNo());
+        attachComponentService.changeFileStatusDeleteByFileNo(attach.getFileNo());
       }
     }
 
@@ -98,8 +95,7 @@ public class NoticeService {
       multipartFiles.stream()
               .filter(file -> file.getSize() > 0)
               .forEach(multipartFile ->
-                      existingnotice.addNoticeAttach(ncpObjectStorageService.uploadFile(new Attach(),
-                              "bleuauction-bucket", "notice/", multipartFile))
+                      existingnotice.addNoticeAttach(ncpObjectStorageUtil.uploadFile(FileUploadUsage.NOTICE, multipartFile))
               );
     }
 

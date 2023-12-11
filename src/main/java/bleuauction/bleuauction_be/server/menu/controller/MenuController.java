@@ -10,7 +10,6 @@ import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.menu.service.MenuService;
 import bleuauction.bleuauction_be.server.menu.web.MenuForm;
-import bleuauction.bleuauction_be.server.attach.util.NcpObjectStorageUtil;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
@@ -37,7 +36,6 @@ public class MenuController {
 
   private final MenuService menuService;
   private final MenuRepository menuRepository;
-  private final NcpObjectStorageUtil ncpObjectStorageUtil;
   private final AttachComponentService attachComponentService;
   private final EntityManager entityManager;
   private final CreateJwt createJwt;
@@ -73,12 +71,10 @@ public class MenuController {
 
     menu.setStoreNo(store);
 
-    if (multipartFiles != null && multipartFiles.size() > 0) {
-      ArrayList<Attach> attaches = new ArrayList<>();
+    if (multipartFiles != null && !multipartFiles.isEmpty()) {
       for (MultipartFile multipartFile : multipartFiles) {
         if (multipartFile.getSize() > 0) {
-          Attach attach = ncpObjectStorageUtil.uploadFile(FileUploadUsage.MENU, multipartFile);
-          menu.addAttach(attach);
+          attachComponentService.saveWithMenu(menu, FileUploadUsage.MENU, multipartFile);
         }
       }
     }
@@ -92,14 +88,9 @@ public class MenuController {
   //가게별 목록 조회
   @GetMapping(value = "/api/menu/{storeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Menu> findMenusByStoreNo(@PathVariable("storeNo") Long storeNo) throws Exception {
-    try {
-      List<Menu> menus = menuRepository.findMenusByStoreNoAndStatus(storeNo,MenuStatus.Y);
-      return menus;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ArrayList<>();
-    }
+    return menuRepository.findMenusByStoreNoAndStatus(storeNo,MenuStatus.Y);
   }
+
   //가게(회원)별 목록 조회
   @GetMapping(value = "/api/menu/store", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> findMenusByStoreNo(@RequestHeader("Authorization") String  authorizationHeader) throws Exception {
@@ -124,13 +115,7 @@ public class MenuController {
   //목록 조회
   @GetMapping(value = "/api/menu", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Menu> findmenus() throws Exception {
-    try {
-      List<Menu> menus = menuService.findmenus();
-      return menus;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ArrayList<>();
-    }
+    return menuService.findmenus();
   }
 
   //삭제
@@ -205,23 +190,17 @@ public class MenuController {
 
     log.info("store ? " + store);
 
-    if (updatedMenu.getStoreNo() == store) {
-
-      if (multipartFiles != null && multipartFiles.size() > 0) {
-        ArrayList<Attach> attaches = new ArrayList<>();
-        for (MultipartFile multipartFile : multipartFiles) {
-          if (multipartFile.getSize() > 0) {
-            Attach attach = ncpObjectStorageUtil.uploadFile(FileUploadUsage.MENU, multipartFile);
-            updatedMenu.addAttach(attach);
-          }
-        }
-      }
-
-      menuService.update(menu);
-      log.info("menu/update");
-      return ResponseEntity.ok("Menu updated successfully");
-    } else {
+    if (!updatedMenu.getStoreNo().equals(store)) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("업데이트 권한이 없습니다.");
     }
+
+    if (multipartFiles != null && !multipartFiles.isEmpty()) {
+      multipartFiles.stream()
+              .filter(multipartFile -> multipartFile.getSize() > 0)
+              .forEach(multipartFile -> attachComponentService.saveWithMenu(menu, FileUploadUsage.MENU, multipartFile));
+    }
+    menuService.update(menu);
+    return ResponseEntity.ok("Menu updated successfully");
+
   }
 }

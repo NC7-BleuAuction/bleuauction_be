@@ -1,6 +1,5 @@
 package bleuauction.bleuauction_be.server.member.service;
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
@@ -13,7 +12,6 @@ import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
 import bleuauction.bleuauction_be.server.member.exception.DuplicateMemberEmailException;
 import bleuauction.bleuauction_be.server.member.exception.MemberNotFoundException;
-import bleuauction.bleuauction_be.server.attach.util.NcpObjectStorageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,7 +32,6 @@ public class MemberComponentService {
     private final PasswordEncoder passwordEncoder;
     private final AttachComponentService attachComponentService;
     private final MemberModuleService memberModuleService;
-    private final NcpObjectStorageUtil ncpObjectStorageUtil;
 
     // no로 회원찾기
     // TODO : 차후 삭제 필요
@@ -126,9 +123,7 @@ public class MemberComponentService {
 
         //Profile Image ObjectStorage에 저장
         if(!request.getProfileImage().isEmpty()){
-            Attach profileImage = ncpObjectStorageUtil.uploadFile(FileUploadUsage.MEMBER, request.getProfileImage());
-            profileImage.setMemberNo(loginUser);
-            loginUser.addAttaches(profileImage);
+            attachComponentService.saveWithMember(loginUser, FileUploadUsage.MEMBER, request.getProfileImage());
         }
 
         loginUser.setMemberPwd(passwordEncoder.encode(request.getMemberPwd()));

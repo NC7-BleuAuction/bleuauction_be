@@ -2,7 +2,6 @@ package bleuauction.bleuauction_be.server.menu.service;
 
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
-import bleuauction.bleuauction_be.server.attach.util.NcpObjectStorageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +14,6 @@ import java.util.List;
 public class MenuService {
 
   private final MenuRepository menuRepository;
-  private final NcpObjectStorageUtil ncpObjectStorageUtil;
 
   //등록
   @Transactional

@@ -8,7 +8,6 @@ import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.repository.AttachRepository;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
-import bleuauction.bleuauction_be.server.attach.util.NcpObjectStorageUtil;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import bleuauction.bleuauction_be.server.review.repository.ReviewRepository;
@@ -31,7 +30,6 @@ import java.util.Optional;
 public class ReviewService {
 
   private static final int PAGE_ROW_COUNT = 4;
-  private final NcpObjectStorageUtil ncpObjectStorageUtil;
   private final AttachComponentService attachComponentService;
   private final ReviewRepository reviewRepository;
   private final AnswerRepository answerRepository;
@@ -56,9 +54,7 @@ public class ReviewService {
       ArrayList<Attach> attaches = new ArrayList<>();
       for (MultipartFile multipartFile : multipartFiles) {
         if (multipartFile.getSize() > 0) {
-          Attach attach = ncpObjectStorageUtil.uploadFile(FileUploadUsage.REVIEW, multipartFile);
-          attach.setReview(insertReview);
-          attaches.add(attach);
+          attachComponentService.saveWithReview(insertReview, FileUploadUsage.REVIEW, multipartFile);
         }
       }
       insertReview.setReviewAttaches(attaches);

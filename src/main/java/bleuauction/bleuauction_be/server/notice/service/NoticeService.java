@@ -3,7 +3,6 @@ package bleuauction.bleuauction_be.server.notice.service;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
-import bleuauction.bleuauction_be.server.attach.util.NcpObjectStorageUtil;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
@@ -22,7 +21,6 @@ import java.util.List;
 public class NoticeService {
 
   private final NoticeRepository noticeRepository;
-  private final NcpObjectStorageUtil ncpObjectStorageUtil;
   private final AttachComponentService attachComponentService;
 
   @Transactional
@@ -37,7 +35,7 @@ public class NoticeService {
       multipartFiles.stream()
               .filter(file -> file.getSize() > 0)
               .forEach(multipartFile ->
-                      notice.addNoticeAttach(ncpObjectStorageUtil.uploadFile(FileUploadUsage.NOTICE, multipartFile))
+                      attachComponentService.saveWithNotice(notice, FileUploadUsage.NOTICE, multipartFile)
               );
     }
     return noticeRepository.save(notice).getNoticeNo();
@@ -95,7 +93,7 @@ public class NoticeService {
       multipartFiles.stream()
               .filter(file -> file.getSize() > 0)
               .forEach(multipartFile ->
-                      existingnotice.addNoticeAttach(ncpObjectStorageUtil.uploadFile(FileUploadUsage.NOTICE, multipartFile))
+                      attachComponentService.saveWithNotice(existingnotice, FileUploadUsage.NOTICE, multipartFile)
               );
     }
 

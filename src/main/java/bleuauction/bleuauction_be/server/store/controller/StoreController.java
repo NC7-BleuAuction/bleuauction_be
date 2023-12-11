@@ -1,15 +1,12 @@
 package bleuauction.bleuauction_be.server.store.controller;
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
-import bleuauction.bleuauction_be.server.attach.service.AttachModuleService;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
-import bleuauction.bleuauction_be.server.attach.util.NcpObjectStorageUtil;
 import bleuauction.bleuauction_be.server.store.dto.StoreSignUpRequest;
 import bleuauction.bleuauction_be.server.store.dto.UpdateStoreRequest;
 import bleuauction.bleuauction_be.server.store.entity.Store;
@@ -43,9 +40,7 @@ public class StoreController {
     private final CreateJwt createJwt;
     private final StoreService storeService;
     private final MemberModuleService memberModuleService;
-    private final NcpObjectStorageUtil ncpObjectStorageUtil;
     private final AttachComponentService attachComponentService;
-    private final AttachModuleService attachModuleService;
 
     /**
      * 가게정보 리스트를 반환하는 기능
@@ -156,15 +151,10 @@ public class StoreController {
             // JWT토큰을 기반으로 한 로그인 사용자의 마켓정보 획득
             Store store = storeService.findStoreByMember(loginUser);
 
-            // TODO : 추후 Service레벨에 Attach Service넣을 수 있도록 구조 개선이 필요함;
             // 첨부 파일 목록 추가
             if (updateStoreRequest.getProfileImage() != null && updateStoreRequest.getProfileImage().getSize() > 0) {
-                Attach attach = ncpObjectStorageUtil.uploadFile(FileUploadUsage.STORE, updateStoreRequest.getProfileImage());
-                attach.setStoreNo(store);
-
                 // 첨부 파일 저장 및 결과를 insertAttaches에 할당 및 Attach정보에 대해서는 Store객체에 추가
-                attachModuleService.save(attach);
-                store.addAttaches(attach);
+                attachComponentService.saveWithStore(store, FileUploadUsage.STORE, updateStoreRequest.getProfileImage());
             }
             // 가게 정보 업데이트
             storeService.updateStore(store, updateStoreRequest);

@@ -18,8 +18,8 @@ import java.util.Optional;
 
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
+  Optional<Answer> findByAnswerNoAndAnswerStatus(Long answerNo, AnswerStatus answerStatus);
   Page<Answer> findByReviewNoAndAnswerStatus(Long reviewNo, AnswerStatus answerStatus, Pageable pageable);
   Optional<Answer> findByReviewNoAndAnswerNoAndAnswerStatus(Long reviewNo, Long answerNo, AnswerStatus answerStatus) throws Exception;
-
   Optional<List<Answer>> findAllByReviewNoAndAnswerStatus(Long reviewNo, AnswerStatus answerStatus) throws Exception;
 }

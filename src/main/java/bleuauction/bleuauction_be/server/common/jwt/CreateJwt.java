@@ -26,7 +26,7 @@ public class CreateJwt {
             .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExprirationTiem()))
             .withClaim("memberEmail", tokenMember.getMemberEmail())
             .withClaim("memberName", tokenMember.getMemberName())
-            .withClaim("memberCategory", tokenMember.getMemberCategory())
+            .withClaim("memberCategory", tokenMember.getMemberCategory().name())
             .sign(Algorithm.HMAC256(jwtConfig.getSecret()));
   }
 
@@ -37,7 +37,7 @@ public class CreateJwt {
             .withClaim("accessToken", accessToken)
             .withClaim("memberEmail", tokenMember.getMemberEmail())
             .withClaim("memberName", tokenMember.getMemberName())
-            .withClaim("memberCategory", tokenMember.getMemberCategory())
+            .withClaim("memberCategory", tokenMember.getMemberCategory().name())
             .sign(Algorithm.HMAC256(jwtConfig.getSecret()));
   }
 

@@ -68,7 +68,8 @@ dependencies {
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'com.h2database:h2'
-	runtimeOnly 'com.h2database:h2'
+	// local, H2사용을 위한것...
+	//runtimeOnly 'com.h2database:h2'
 
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'

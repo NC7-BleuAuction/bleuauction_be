@@ -31,7 +31,11 @@ class NoticeServiceTest {
     private NoticeRepository noticeRepository;
 
     @InjectMocks // 가짜(Mock) 객체(@Mock로 표시된 객체)를 테스트 대상 객체에 자동으로 주입할 수 있고 이를 통해 주입된 가짜 객체를 사용하여 테스트 대상 객체의 메소드를 호출하고 동작을 검증할 수 있습니다.
-    private NoticeService noticeService;
+    private NoticeComponentService noticeComponentService;
+
+    @InjectMocks
+    private NoticeModuleService noticeModuleService;
+
 
     @Test
     void testEnroll() {
@@ -47,7 +51,7 @@ class NoticeServiceTest {
 
         // When
         when(noticeRepository.save(any(Notice.class))).thenReturn(mockNotice);
-        Long result = noticeService.enroll(mockNotice, multipartFiles, mockMember);
+        Long result = noticeComponentService.enroll(mockNotice, multipartFiles, mockMember);
 
         // Then
         assertEquals(mockNotice.getNoticeNo(), result);
@@ -85,7 +89,7 @@ class NoticeServiceTest {
         when(noticeRepository.findByNoticeNo(updatedNotice.getNoticeNo())).thenReturn(existingNotice);
 
         //when
-        noticeService.update(updatedNotice, mockMember, multipartFiles);
+        noticeComponentService.update(updatedNotice, mockMember, multipartFiles);
 
         //then
         assertEquals(updatedNotice.getNoticeTitle(), existingNotice.getNoticeTitle());
@@ -108,7 +112,7 @@ class NoticeServiceTest {
         when(noticeRepository.findByNoticeNo(anyLong())).thenReturn(mockNotice);
 
         // When
-        noticeService.deleteNotice(noticeNo,mockMember);
+        noticeComponentService.deleteNotice(noticeNo,mockMember);
 
         // Then
         // mockNotice의 status가 N인지 확인

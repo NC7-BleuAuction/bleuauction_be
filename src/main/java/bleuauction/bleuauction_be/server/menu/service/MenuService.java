@@ -80,7 +80,7 @@ public class MenuService {
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             multipartFiles.stream()
                     .filter(multipartFile -> multipartFile.getSize() > 0)
-                    .forEach(multipartFile -> existingMenu.addAttach(ncpObjectStorageService.uploadFile("bleuauction-bucket", "menu/", multipartFile)));
+                    .forEach(multipartFile -> attachComponentService.saveWithMenu(existingMenu, FileUploadUsage.MENU, multipartFile));
         }
         return menuRepository.save(existingMenu);
 

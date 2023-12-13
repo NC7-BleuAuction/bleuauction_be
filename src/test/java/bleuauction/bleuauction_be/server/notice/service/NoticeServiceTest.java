@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -27,6 +28,8 @@ class NoticeServiceTest {
 
     @Mock
     AttachRepository attachRepository;
+    @Mock
+    NoticeModuleService noticeModuleServiceM;
     @Mock // 가짜 객체
     private NoticeRepository noticeRepository;
 
@@ -44,17 +47,33 @@ class NoticeServiceTest {
         mockMember.setMemberCategory(MemberCategory.A);
 
         Notice mockNotice = new Notice();
-        mockNotice.setNoticeNo(1L);
+        mockNotice.setNoticeNo(100L);
         mockNotice.setMemberNo(mockMember);
 
         List<MultipartFile> multipartFiles = new ArrayList<>();
 
         // When
-        when(noticeRepository.save(any(Notice.class))).thenReturn(mockNotice);
+        when(noticeModuleServiceM.save(any(Notice.class))).thenReturn(mockNotice);
         Long result = noticeComponentService.enroll(mockNotice, multipartFiles, mockMember);
 
         // Then
         assertEquals(mockNotice.getNoticeNo(), result);
+    }
+
+    @Test
+    void testFindOne() {
+        // Given
+        Long noticeNo = 1L;
+        Notice mockNotice = new Notice();
+        mockNotice.setNoticeNo(noticeNo);
+
+        // When
+        when(noticeRepository.findByNoticeNo(noticeNo)).thenReturn(mockNotice);
+        Notice result = noticeModuleService.findOne(noticeNo);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(noticeNo, result.getNoticeNo());
     }
 
     @Test
@@ -65,6 +84,7 @@ class NoticeServiceTest {
         Member mockMember = new Member();
         mockMember.setMemberCategory(MemberCategory.A);
         Notice existingNotice = new Notice();
+        existingNotice.setNoticeNo(100L);
         List<MultipartFile> multipartFiles = new ArrayList<>();
 
         Attach attach1 = new Attach();
@@ -86,10 +106,12 @@ class NoticeServiceTest {
         updatedNotice.setNoticeContent("새로운 내용");
 
         // findOne  호출될 때 existingNotice를 리턴하도록 설정
+        when(noticeModuleServiceM.findOne(updatedNotice.getNoticeNo())).thenReturn(updatedNotice);
         when(noticeRepository.findByNoticeNo(updatedNotice.getNoticeNo())).thenReturn(existingNotice);
 
+
         //when
-        noticeComponentService.update(updatedNotice, mockMember, multipartFiles);
+        noticeComponentService.update(100L, mockMember, multipartFiles);
 
         //then
         assertEquals(updatedNotice.getNoticeTitle(), existingNotice.getNoticeTitle());

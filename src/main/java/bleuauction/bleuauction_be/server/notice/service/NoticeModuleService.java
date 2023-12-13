@@ -25,4 +25,8 @@ public class NoticeModuleService {
     public List<Notice> findNoticesByStatus(NoticeStatus status) {
         return noticeRepository.findByNoticeStatus(status);
     }
+
+    public Notice save(Notice notice) {
+        return noticeRepository.save(notice);
+    }
 }

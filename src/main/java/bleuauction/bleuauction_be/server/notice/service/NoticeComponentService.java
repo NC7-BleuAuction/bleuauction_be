@@ -21,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NoticeComponentService {
 
+    private final NoticeModuleService noticeModuleService;
     private final NoticeRepository noticeRepository;
     private final AttachService attachService;
     private final NcpObjectStorageService ncpObjectStorageService;
@@ -29,9 +30,7 @@ public class NoticeComponentService {
     @Transactional
     public Long enroll(Notice notice, List<MultipartFile> multipartFiles, Member member) {
 
-        if (!MemberCategory.A.equals(member.getMemberCategory())) {
-            throw new IllegalArgumentException("권한이 없습니다.");
-        }
+        isMemberAdmin(member.getMemberCategory());
         notice.setMemberNo(member);
 
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
@@ -42,16 +41,14 @@ public class NoticeComponentService {
                                     "bleuauction-bucket", "notice/", multipartFile))
                     );
         }
-        return noticeRepository.save(notice).getNoticeNo();
+        return noticeModuleService.save(notice).getNoticeNo();
 
     }
 
     //노티스 삭제(N)
     @Transactional
     public void deleteNotice(Long noticeNo, Member member) {
-        if(!MemberCategory.A.equals(member.getMemberCategory())) {
-            throw new IllegalArgumentException("권한이 없습니다.");
-        }
+        isMemberAdmin(member.getMemberCategory());
 
         Notice notice = noticeRepository.findByNoticeNo(noticeNo);
         notice.delete();
@@ -65,13 +62,12 @@ public class NoticeComponentService {
 
     //노티스 수정
     @Transactional
-    public Notice update(Notice updatedNotice, Member member, List<MultipartFile> multipartFiles) throws Exception{
+    public Notice update(long noticeNo, Member member, List<MultipartFile> multipartFiles) throws Exception{
 
-        Notice existingnotice = noticeRepository.findByNoticeNo(updatedNotice.getNoticeNo());
+        Notice updatedNotice = noticeModuleService.findOne(noticeNo);
+        Notice existingnotice = noticeRepository.findByNoticeNo(noticeNo);
 
-        if(!MemberCategory.A.equals(member.getMemberCategory())) {
-            throw new IllegalArgumentException("권한이 없습니다.");
-        }
+        isMemberAdmin(member.getMemberCategory());
 
         existingnotice.setNoticeTitle(updatedNotice.getNoticeTitle());
         existingnotice.setNoticeContent(updatedNotice.getNoticeContent());
@@ -85,12 +81,16 @@ public class NoticeComponentService {
                     );
         }
 
-        return noticeRepository.save(existingnotice);
+        return noticeModuleService.save(existingnotice);
 
 
     }
 
-
+    private void isMemberAdmin(MemberCategory memberCategory) {
+        if (!MemberCategory.A.equals(memberCategory)) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+    }
 
 }
 

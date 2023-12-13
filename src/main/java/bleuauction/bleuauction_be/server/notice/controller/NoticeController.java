@@ -78,7 +78,7 @@ public class NoticeController {
 
   //사진삭제
   @DeleteMapping("/file/{fileNo}")
-  public ResponseEntity<String> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable Long fileNo) {
+  public ResponseEntity<String> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable Long fileNo) {
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
@@ -102,15 +102,17 @@ public class NoticeController {
   public ResponseEntity<String> updateNotice(@RequestHeader("Authorization") String  authorizationHeader,
           @PathVariable("noticeNo") Long noticeNo,
           @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) throws Exception {
-    Notice updatedNotice = noticeModuleService.findOne(noticeNo);
+   // Notice updatedNotice = noticeModuleService.findOne(noticeNo);
 
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
-    noticeComponentService.update(updatedNotice,loginUser,multipartFiles);
+    noticeComponentService.update(noticeNo,loginUser,multipartFiles);
 
     return ResponseEntity.ok("Notice updated successfully");
 
   }
+
+
 }

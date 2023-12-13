@@ -1,14 +1,13 @@
 package bleuauction.bleuauction_be.server.member.dto;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
-import java.sql.Timestamp;
+import java.util.Collection;
 
 @Getter
 @Setter

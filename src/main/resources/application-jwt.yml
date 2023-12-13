@@ -1,6 +1,7 @@
 jwt:
   issuer: "itkw87@naver.com"
   secret: "oui/AhgjSCW9/KgdgDYXjKZ7gkWsxOy66Rqlu4qaK1U="
-  expriration-tiem: 1800000 # 30분
+  expriration-tiem: 1800000 # 30분(단위: 밀리초)
   token-prefix: "Bearer "
-#  header-string: "Authorization"
+  header-string: "Authorization"
+  refreshToken-reissueCriteriaSeconds: 600 # 10분(단위: 초)

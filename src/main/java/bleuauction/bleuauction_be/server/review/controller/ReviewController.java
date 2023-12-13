@@ -5,10 +5,9 @@ import bleuauction.bleuauction_be.server.attach.service.AttachService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.service.ReviewService;
-import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +27,7 @@ import java.util.List;
 @RequestMapping("/api/reviews")
 public class ReviewController {
 
-  private final CreateJwt createJwt;
+  private final JwtUtils jwtUtils;
   private final AttachService attachService;
   private final ReviewService reviewService;
 
@@ -39,7 +38,7 @@ public class ReviewController {
     log.info("@GetMapping ===========> /api/reviews");
     log.info("storeNo: {}", storeNo);
     log.info("startPage: {}", startPage);
-    createJwt.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
     List<Review> reviewList = reviewService.selectReviewList(storeNo, startPage);
     log.info("reviewList: {}", reviewList);
 
@@ -55,7 +54,7 @@ public class ReviewController {
     log.info("MultipartFile: {}", multipartFiles);
 
 
-    createJwt.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
 
     review.setMember(member);
     Review insertReview = reviewService.addReview(review, multipartFiles);
@@ -67,7 +66,7 @@ public class ReviewController {
   public ResponseEntity<Review> reviewUpdate(@RequestHeader("Authorization") String authorizationHeader, Review review) throws Exception {
     log.info("@PutMapping ===========> /api/review");
 
-    createJwt.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
     Review updateReview = reviewService.updateReview(review);
     return ResponseEntity.ok(updateReview);
   }
@@ -76,7 +75,7 @@ public class ReviewController {
   public ResponseEntity<Review> reviewDelete(@RequestHeader("Authorization") String authorizationHeader, Long reviewNo) throws Exception {
     log.info("@DeleteMapping ===========> /api/review");
     log.info("reviewNo: {}", reviewNo);
-    createJwt.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
     return ResponseEntity.ok(reviewService.deleteReview(reviewNo));
   }
 
@@ -85,7 +84,7 @@ public class ReviewController {
     log.info("@DeleteMapping ===========> api/review/attach");
     log.info("authorizationHeader: {}", authorizationHeader);
     log.info("fileNo: {}", fileNo);
-    createJwt.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
     return ResponseEntity.ok(attachService.changeFileStatusToDeleteByFileNo(fileNo));
   }
 }

@@ -4,7 +4,7 @@ package bleuauction.bleuauction_be.server.member.controller;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.service.AttachService;
-import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.common.jwt.RefreshTokenRequest;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.member.dto.LoginRequest;
@@ -37,7 +37,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final CreateJwt createJwt;
+    private final JwtUtils jwtUtils;
     private final MemberService memberService;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final AttachService attachService;
@@ -125,7 +125,7 @@ public class MemberController {
             @RequestBody RefreshTokenRequest refreshTokenRequest) {
         String refreshToken = refreshTokenRequest.getRefreshToken();
         log.info("[MemberController] RefreshAccessToken, RefreshTokenValue >>> {}", refreshToken);
-        return ResponseEntity.ok(Map.of("accessToken", createJwt.getRenewAccessToken(refreshToken)));
+        return ResponseEntity.ok(Map.of("accessToken", jwtUtils.getRenewAccessToken(refreshToken)));
     }
 
     /**
@@ -139,10 +139,10 @@ public class MemberController {
     public ResponseEntity<String> updateMember(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody UpdateMemberRequest updateMemberRequest) throws Exception {
-        createJwt.verifyAccessToken(authorizationHeader);
+        jwtUtils.verifyToken(authorizationHeader);
 
         // JWT토큰의 정보 추출
-        TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+        TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
 
         //Profile Image ObjectStorage에 저장
         Attach attach = null;
@@ -164,10 +164,10 @@ public class MemberController {
      */
     @DeleteMapping("/withdraw")
     public ResponseEntity<?> withdrawMember(@RequestHeader("Authorization") String authorizationHeader) {
-        createJwt.verifyAccessToken(authorizationHeader);
+        jwtUtils.verifyToken(authorizationHeader);
         //회원 탈퇴 처리 로직
         try {
-            memberService.withDrawMember(createJwt.getTokenMember(authorizationHeader));
+            memberService.withDrawMember(jwtUtils.getTokenMember(authorizationHeader));
             return ResponseEntity.ok("회원이 성공적으로 탈퇴되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

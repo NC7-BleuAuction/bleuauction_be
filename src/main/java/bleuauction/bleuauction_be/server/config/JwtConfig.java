@@ -1,8 +1,7 @@
-package bleuauction.bleuauction_be.server.common.jwt;
+package bleuauction.bleuauction_be.server.config;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
@@ -13,10 +12,13 @@ public class JwtConfig {
   private String secret;
 
   @Value("${jwt.expriration-tiem}")
-  private int exprirationTiem;
+  private Long exprirationTiem;
 
   @Value("${jwt.token-prefix}")
   private String toekenPrefix;
+
+  @Value("${jwt.refreshToken-reissueCriteriaSeconds}")
+  private Long reissueCriteriaSeconds;
 
 //  @Value("${jwt.header-string}")
 //  private String headerString;

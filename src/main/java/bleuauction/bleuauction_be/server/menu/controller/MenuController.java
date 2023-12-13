@@ -23,7 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class MenuController {
   private final NcpObjectStorageService ncpObjectStorageService;
   private final AttachService attachService;
   private final EntityManager entityManager;
-  private final CreateJwt createJwt;
+  private final JwtUtils jwtUtils;
   private final MemberService memberService;
   private final StoreRepository storeRepository;
 
@@ -54,8 +54,8 @@ public class MenuController {
   @PostMapping("/api/menu/new")
   @Transactional
   public ResponseEntity<?> menu(@RequestHeader("Authorization") String  authorizationHeader,  HttpSession session, Menu menu, @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     Long memberId = loginUser.get().getMemberNo();
@@ -104,9 +104,9 @@ public class MenuController {
   public ResponseEntity<?> findMenusByStoreNo(@RequestHeader("Authorization") String  authorizationHeader) throws Exception {
     try {
 
-      createJwt.verifyAccessToken(authorizationHeader);
+      jwtUtils.verifyToken(authorizationHeader);
 
-      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+      TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
       // 로그인 유저의 멤버 번호
       Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
@@ -137,8 +137,8 @@ public class MenuController {
   public ResponseEntity<?> deleteMenu(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable("menuNo") Long menuNo) {
     Menu menu = menuService.findOne(menuNo);
 
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     Long memberId = loginUser.get().getMemberNo();
@@ -190,8 +190,8 @@ public class MenuController {
     Menu updatedMenu = menuService.findOne(menuNo);
 
 
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberService.findByMemberNo(tokenMember.getMemberNo());
 
     Long memberId = loginUser.get().getMemberNo();

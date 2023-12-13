@@ -1,6 +1,6 @@
 package bleuauction.bleuauction_be.server.order.controller;
 
-import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.member.service.MemberService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
@@ -29,7 +29,7 @@ public class OrderController {
   private final MemberService memberService;
   private final OrderService orderService;
   private final OrderRepository orderRepository;
-  private final CreateJwt createJwt;
+  private final JwtUtils jwtUtils;
 
   //등록
   @GetMapping("/new")
@@ -50,9 +50,9 @@ public class OrderController {
   //회원별 주문 조회
   @GetMapping
   public ResponseEntity<?> findOrders(@RequestHeader("Authorization") String authorizationHeader) {
-    createJwt.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
 
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     log.info("token: " + tokenMember);
 
     return orderService.findOrdersByMemberNo(tokenMember.getMemberNo());
@@ -61,9 +61,9 @@ public class OrderController {
   // 가게(가게주인)별 주문 조회
   @GetMapping("/store")
   public ResponseEntity<?> findOrdersbyStore(@RequestHeader("Authorization") String  authorizationHeader) {
-    createJwt.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
 
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     log.info("token: " + tokenMember);
 
     return orderService.findOrdersByMemberAndStore(tokenMember.getMemberNo());

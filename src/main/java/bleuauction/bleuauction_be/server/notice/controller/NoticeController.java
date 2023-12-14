@@ -8,7 +8,8 @@ import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
-import bleuauction.bleuauction_be.server.notice.service.NoticeService;
+import bleuauction.bleuauction_be.server.notice.service.NoticeModuleService;
+import bleuauction.bleuauction_be.server.notice.service.NoticeComponentService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +34,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NoticeController {
 
-  private final NoticeService noticeService;
   private final MemberModuleService memberModuleService;
   private final CreateJwt createJwt;
   private final AttachService attachService;
+  private final NoticeModuleService noticeModuleService;
+  private final NoticeComponentService noticeComponentService;
 
 
 
@@ -49,7 +51,7 @@ public class NoticeController {
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
-    noticeService.enroll(notice,multipartFiles,loginUser);
+    noticeComponentService.enroll(notice,multipartFiles,loginUser);
     log.info("notice/postnew");
 
     return ResponseEntity.status(HttpStatus.CREATED).body("Notice created successfully");
@@ -59,7 +61,7 @@ public class NoticeController {
   //목록조회
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Notice> findNotices(){
-      return noticeService.findNoticesByStatus(NoticeStatus.Y);
+      return noticeModuleService.findNoticesByStatus(NoticeStatus.Y);
   }
 
 
@@ -70,13 +72,13 @@ public class NoticeController {
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
-    noticeService.deleteNotice(noticeNo,loginUser);
+    noticeComponentService.deleteNotice(noticeNo,loginUser);
     return ResponseEntity.ok("Notice deleted successfully");
   }
 
   //사진삭제
   @DeleteMapping("/file/{fileNo}")
-  public ResponseEntity<String> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, HttpSession session, @PathVariable Long fileNo) {
+  public ResponseEntity<String> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable Long fileNo) {
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
@@ -92,7 +94,7 @@ public class NoticeController {
   //디테일
   @GetMapping("/{noticeNo}")
   public Notice detailNotice(@PathVariable("noticeNo") Long noticeNo) {
-    return noticeService.findOne(noticeNo);
+    return noticeModuleService.findOne(noticeNo);
   }
 
   // 수정 처리
@@ -100,15 +102,17 @@ public class NoticeController {
   public ResponseEntity<String> updateNotice(@RequestHeader("Authorization") String  authorizationHeader,
           @PathVariable("noticeNo") Long noticeNo,
           @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) throws Exception {
-    Notice updatedNotice = noticeService.findOne(noticeNo);
+   // Notice updatedNotice = noticeModuleService.findOne(noticeNo);
 
     createJwt.verifyAccessToken(authorizationHeader);
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
-    noticeService.update(updatedNotice,loginUser,multipartFiles);
+    noticeComponentService.update(noticeNo,loginUser,multipartFiles);
 
     return ResponseEntity.ok("Notice updated successfully");
 
   }
+
+
 }

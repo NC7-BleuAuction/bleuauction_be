@@ -3,22 +3,24 @@ package bleuauction.bleuauction_be.server.menu.service;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
+import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
+
+
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Service
-@Transactional(readOnly = true)
+@Slf4j
+@ComponentService
+@Transactional
 @RequiredArgsConstructor
-public class MenuService {
-
+public class MenuComponentService {
     private final MenuRepository menuRepository;
     private final AttachComponentService attachComponentService;
 
@@ -36,19 +38,9 @@ public class MenuService {
         return menu.getMenuNo();
     }
 
-    public List<Menu> findMenusByStoreNo(Long storeNo) {
-        return menuRepository.findMenusByStoreNoAndMenuStatus(storeNo, MenuStatus.Y);
-    }
 
-    public List<Menu> findMenusByStoreNoAndStatus(Long storeNo, MenuStatus menuStatus) {
-        return menuRepository.findMenusByStoreNoAndMenuStatus(storeNo, menuStatus);
-    }
 
-    //메뉴 1건 조회
-    @Transactional
-    public Menu findOne(Long menuNo) {
-        return menuRepository.findMenusByMenuNo(menuNo);
-    }
+
 
     //메뉴 삭제(N)
     @Transactional
@@ -85,6 +77,5 @@ public class MenuService {
         return menuRepository.save(existingMenu);
 
     }
-
 
 }

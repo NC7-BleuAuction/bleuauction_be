@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.member.service;
 
 
+import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
@@ -33,7 +34,7 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 class MemberComponentServiceTest {
     @Mock
-    private CreateJwt createJwt;
+    private JwtUtils jwtUtils;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
@@ -149,8 +150,8 @@ class MemberComponentServiceTest {
 
         given(memberModuleService.findByEmail(TEST_MAIL)).willReturn(member);
         given(passwordEncoder.matches(TEST_PWD, member.getMemberPwd())).willReturn(true);
-        given(createJwt.createAccessToken(any(TokenMember.class))).willReturn(accessToken);
-        given(createJwt.createRefreshToken(any(TokenMember.class), any(String.class))).willReturn(refreshToken);
+        given(jwtUtils.createAccessToken(any(TokenMember.class))).willReturn(accessToken);
+        given(jwtUtils.createRefreshToken(any(TokenMember.class), any(String.class))).willReturn(refreshToken);
 
         // when
         LoginResponseDto result = memberComponentService.login(TEST_MAIL, TEST_PWD);

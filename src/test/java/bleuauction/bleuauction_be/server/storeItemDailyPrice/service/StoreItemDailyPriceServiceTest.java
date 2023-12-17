@@ -1,6 +1,8 @@
 package bleuauction.bleuauction_be.server.storeItemDailyPrice.service;
 
 
+import bleuauction.bleuauction_be.server.store.entity.Store;
+import bleuauction.bleuauction_be.server.storeItemDailyPrice.dto.StoreItemDailyPriceInsertRequest;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.DailyPriceStatus;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.ItemCode;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.ItemName;
@@ -19,11 +21,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -58,14 +65,33 @@ class StoreItemDailyPriceServiceTest {
   @DisplayName("testAddStoreItemDailyPrice(): 가게별 품목 당일 싯가 등록에 성공한다.")
   void testAddStoreItemDailyPrice() {
     // given
-    StoreItemDailyPrice mockStoreItemDailyPrice = StoreItemDailyPriceEntityFactory.mockStoreItemDailyPrice;
-    given(storeItemDailyPriceRepository.save(mockStoreItemDailyPrice)).willReturn(mockStoreItemDailyPrice);
+    Store store = new Store();
+    store.setStoreNo(1L);
+
+    StoreItemDailyPriceInsertRequest sidpInsertRequest = new StoreItemDailyPriceInsertRequest();
+    sidpInsertRequest.setStoreNo(store.getStoreNo());
+    sidpInsertRequest.setDailyPrice(1000);
+    sidpInsertRequest.setItemCode(ItemCode.S);
+    sidpInsertRequest.setItemName(ItemName.FI);
+    sidpInsertRequest.setItemSize(ItemSize.M);
+    sidpInsertRequest.setOriginStatus(OriginStatus.D);
+    sidpInsertRequest.setOriginPlaceStatus(OriginPlaceStatus.WS);
+    sidpInsertRequest.setWildFarmStatus(WildFarmStatus.F);
+    sidpInsertRequest.setDailyPriceStatus(DailyPriceStatus.Y);
+    sidpInsertRequest.setRegDatetime(Timestamp.valueOf(LocalDateTime.now()));
+    sidpInsertRequest.setMdfDatetime(Timestamp.valueOf(LocalDateTime.now()));
+
+    StoreItemDailyPrice sidp = sidpInsertRequest.toEntity(sidpInsertRequest.getStoreNo());
+    sidp.setDailyPriceNo(1L);
+
+    given(storeItemDailyPriceRepository.save(any(StoreItemDailyPrice.class))).willReturn(sidp);
 
     // when
-    StoreItemDailyPrice addStoreItemDailyPrice = storeItemDailyPriceService.addStoreItemDailyPrice(mockStoreItemDailyPrice);
+    StoreItemDailyPrice addStoreItemDailyPrice = storeItemDailyPriceService.addStoreItemDailyPrice(sidpInsertRequest, store);
 
     //then
-    assertEquals(mockStoreItemDailyPrice, addStoreItemDailyPrice);
+    verify(storeItemDailyPriceRepository, times(1)).save(any(StoreItemDailyPrice.class));
+    assertEquals(sidp, addStoreItemDailyPrice);
   }
 }
 

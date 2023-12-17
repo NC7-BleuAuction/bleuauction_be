@@ -1,56 +1,49 @@
 package bleuauction.bleuauction_be.server.storeItemDailyPrice.controller;
 
-import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.common.utils.SecurityUtils;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
+import bleuauction.bleuauction_be.server.storeItemDailyPrice.dto.StoreItemDailyPriceInsertRequest;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDailyPrice;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.service.StoreItemDailyPriceService;
-import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
-import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/sidp")
 public class StoreItemDailyPriceController {
-  private final CreateJwt createJwt;
   private final StoreService storeService;
   private final StoreItemDailyPriceService storeItemDailyPriceService;
 
   @GetMapping
-  public ResponseEntity<List<StoreItemDailyPrice>> sidpList(@RequestHeader("Authorization") String authorizationHeader) throws Exception {
-    log.info("@GetMapping ===========> /api/sidp");
-
-      createJwt.verifyAccessToken(authorizationHeader);
-      List<StoreItemDailyPrice> sidpList = storeItemDailyPriceService.selectSidpList();
-      log.info("storeItemDailyPriceList: {}", sidpList);
-      return ResponseEntity.ok(sidpList);
+  public ResponseEntity<List<StoreItemDailyPrice>> sidpList() throws Exception {
+    List<StoreItemDailyPrice> sidpList = storeItemDailyPriceService.selectSidpList();
+    log.info("storeItemDailyPriceList: {}", sidpList);
+    return ResponseEntity.ok(sidpList);
   }
 
   @PostMapping
-  public ResponseEntity<StoreItemDailyPrice> sidpAdd(@RequestHeader("Authorization") String authorizationHeader,
-                                   @RequestBody StoreItemDailyPrice storeItemDailyPrice) throws Exception {
+  @PreAuthorize("hasAnyAuthority('S')")
+  public ResponseEntity<StoreItemDailyPrice> sidpAdd(@RequestBody StoreItemDailyPriceInsertRequest request) {
     log.info("@PostMapping ===========> /api/sidp");
-    log.info("StoreItemDailyPrice: {}", storeItemDailyPrice);
+    log.info("StoreItemDailyPriceInsertRequest: {}", request);
 
-      createJwt.verifyAccessToken(authorizationHeader);
-      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    Store store = storeService.findStoreByMember(SecurityUtils.getAuthenticatedUserToMember());
+    StoreItemDailyPrice insertStoreItemDailyPrice = storeItemDailyPriceService.addStoreItemDailyPrice(request, store);
 
-      Member m = new Member();
-      m.setMemberNo(tokenMember.getMemberNo());
-      Store store = storeService.findStoreByMember(m);
+    log.info("insertStoreItemDailyPrice: {} ", insertStoreItemDailyPrice);
 
-      storeItemDailyPrice.setStoreNo(store.getStoreNo());
-      StoreItemDailyPrice insertStoreItemDailyPrice = storeItemDailyPriceService.addStoreItemDailyPrice(storeItemDailyPrice);
-      log.info("insertStoreItemDailyPrice: {} ", insertStoreItemDailyPrice);
-
-      return ResponseEntity.ok(insertStoreItemDailyPrice);
+    return ResponseEntity.ok(insertStoreItemDailyPrice);
   }
 }

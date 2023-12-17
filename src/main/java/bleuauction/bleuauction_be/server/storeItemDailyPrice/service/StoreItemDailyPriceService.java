@@ -1,5 +1,7 @@
 package bleuauction.bleuauction_be.server.storeItemDailyPrice.service;
 
+import bleuauction.bleuauction_be.server.store.entity.Store;
+import bleuauction.bleuauction_be.server.storeItemDailyPrice.dto.StoreItemDailyPriceInsertRequest;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.DailyPriceStatus;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDailyPrice;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.repository.StoreItemDailyPriceRepository;
@@ -23,7 +25,7 @@ public class StoreItemDailyPriceService {
     return exitingSidpList;
   }
 
-  public StoreItemDailyPrice addStoreItemDailyPrice(StoreItemDailyPrice storeItemDailyPrice)  {
-    return storeItemDailyPriceRepository.save(storeItemDailyPrice);
+  public StoreItemDailyPrice addStoreItemDailyPrice(StoreItemDailyPriceInsertRequest request, Store store)  {
+    return storeItemDailyPriceRepository.save(request.toEntity(store.getStoreNo()));
   }
 }

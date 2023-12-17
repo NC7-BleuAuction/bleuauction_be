@@ -3,12 +3,10 @@ package bleuauction.bleuauction_be.server.answer.controller;
 import bleuauction.bleuauction_be.server.answer.entity.Answer;
 import bleuauction.bleuauction_be.server.answer.service.AnswerService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
-import bleuauction.bleuauction_be.server.review.entity.Review;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +18,7 @@ import java.util.*;
 @RequestMapping("/api/answer")
 public class AnswerController {
 
-  private final CreateJwt createJwt;
+  private final JwtUtils jwtUtils;
   private final AnswerService answerService;
 
   @GetMapping
@@ -29,7 +27,7 @@ public class AnswerController {
     log.info("reivewNo: {}", reviewNo);
     log.info("startPage: {}", startPage);
 
-    createJwt.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
     return ResponseEntity.ok(answerService.selectAnswerList(reviewNo, startPage));
   }
 
@@ -39,8 +37,8 @@ public class AnswerController {
     log.info("authorizationHeader: {}", authorizationHeader);
     log.info("Answer: {}", answer);
 
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Answer insertAnswer = answerService.addAnswer(tokenMember, answer);
 
     return ResponseEntity.ok(insertAnswer);
@@ -53,8 +51,8 @@ public class AnswerController {
     log.info("answer: {}", answer);
     log.info("member: {}", member);
 
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     return ResponseEntity.ok(answerService.updateAnswer(tokenMember, answer, member));
   }
 
@@ -66,8 +64,8 @@ public class AnswerController {
     log.info("answerNo: {}", answerNo);
     log.info("memberNo: {}", memberNo);
 
-      createJwt.verifyAccessToken(authorizationHeader);
-      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+      jwtUtils.verifyToken(authorizationHeader);
+      TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
 
       return ResponseEntity.ok(answerService.deleteAnswer(tokenMember, answerNo, memberNo));
   }

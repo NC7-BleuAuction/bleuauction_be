@@ -1,16 +1,15 @@
 package bleuauction.bleuauction_be.server.notice.controller;
 
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
-import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
+import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
-import bleuauction.bleuauction_be.server.notice.service.NoticeModuleService;
 import bleuauction.bleuauction_be.server.notice.service.NoticeComponentService;
-import jakarta.servlet.http.HttpSession;
+import bleuauction.bleuauction_be.server.notice.service.NoticeModuleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -35,7 +34,7 @@ import java.util.List;
 public class NoticeController {
 
   private final MemberModuleService memberModuleService;
-  private final CreateJwt createJwt;
+  private final JwtUtils jwtUtils;
   private final NoticeModuleService noticeModuleService;
   private final NoticeComponentService noticeComponentService;
   private final AttachComponentService attachComponentService;
@@ -47,8 +46,8 @@ public class NoticeController {
   @Transactional
   public ResponseEntity<?>  notice(@RequestHeader("Authorization") String authorizationHeader, Notice notice, @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) throws Exception{
 
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     noticeComponentService.enroll(notice,multipartFiles,loginUser);
@@ -68,8 +67,8 @@ public class NoticeController {
 // 삭제
   @DeleteMapping("/{noticeNo}")
   public ResponseEntity<String> deleteNotice(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable("noticeNo") Long noticeNo) {
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     noticeComponentService.deleteNotice(noticeNo,loginUser);
@@ -77,19 +76,19 @@ public class NoticeController {
   }
 
   //사진삭제
-  @DeleteMapping("/file/{fileNo}")
-  public ResponseEntity<String> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable Long fileNo) {
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
-    Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
-
-    if(MemberCategory.A.equals(loginUser.getMemberCategory())) {
-      attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
-      return ResponseEntity.ok("File deleted successfully");
-    } else {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
-    }
-  }
+//  @DeleteMapping("/file/{fileNo}")
+//  public ResponseEntity<String> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable Long fileNo) {
+//    jwtUtils.verifyToken(authorizationHeader);
+//    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
+//    Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
+//
+//    if(MemberCategory.A.equals(loginUser.getMemberCategory())) {
+//      attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
+//      return ResponseEntity.ok("File deleted successfully");
+//    } else {
+//      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
+//    }
+//  }
 
   //디테일
   @GetMapping("/{noticeNo}")
@@ -104,8 +103,8 @@ public class NoticeController {
           @RequestParam(name = "multipartFiles",required = false) List<MultipartFile> multipartFiles) throws Exception {
    // Notice updatedNotice = noticeModuleService.findOne(noticeNo);
 
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     noticeComponentService.update(noticeNo,loginUser,multipartFiles);

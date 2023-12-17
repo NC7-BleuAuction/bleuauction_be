@@ -35,6 +35,8 @@ public class NoticeComponentService {
             multipartFiles.stream()
                     .filter(file -> file.getSize() > 0)
                     .forEach(multipartFile ->
+                            notice.addNoticeAttach(ncpObjectStorageService.uploadFile(new Attach(),
+                                    "bleuauction-bucket", "notice/", multipartFile))
                             attachComponentService.saveWithNotice(notice, FileUploadUsage.NOTICE, multipartFile)
                     );
         }
@@ -56,7 +58,7 @@ public class NoticeComponentService {
 
     //노티스 수정
     @Transactional
-    public Notice update(long noticeNo, Member member, List<MultipartFile> multipartFiles) throws Exception {
+    public Notice update(long noticeNo, Member member, List<MultipartFile> multipartFiles) throws Exception{
 
         Notice updatedNotice = noticeModuleService.findOne(noticeNo);
         Notice existingnotice = noticeRepository.findByNoticeNo(noticeNo);

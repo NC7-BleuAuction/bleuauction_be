@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   protected ResponseEntity<ErrorResponse> internalServerExceptionHandler(Exception e) {
-    log.error("ExceptionHandler : {}", String.valueOf(e));
+    log.error("ExceptionHandler - Exception : {}", String.valueOf(e));
     e.printStackTrace();
     GlobalException internalServerError = GlobalException.INTERNAL_SERVER_ERRORS;
     ErrorResponse errorResponse = new ErrorResponse(internalServerError.getErrorDetail());
@@ -23,6 +23,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(BaseException.class)
   protected ResponseEntity<ErrorResponse> authExceptionHandler(BaseException e) {
+    log.error("ExceptionHandler - BaseException: {}", String.valueOf(e));
     BaseErrorCode code = e.getErrorCode();
     ErrorDetail errorDetail = code.getErrorDetail();
     ErrorResponse errorResponse = new ErrorResponse(errorDetail);

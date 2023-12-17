@@ -1,5 +1,7 @@
-package bleuauction.bleuauction_be.server.common.jwt;
+package bleuauction.bleuauction_be.server.common.utils;
 
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
+import bleuauction.bleuauction_be.server.config.JwtConfig;
 import bleuauction.bleuauction_be.server.exception.ExpiredTokenException;
 import bleuauction.bleuauction_be.server.exception.InvalidTokenException;
 import bleuauction.bleuauction_be.server.exception.RenewAccessTokenException;
@@ -15,7 +17,7 @@ import java.util.Date;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CreateJwt {
+public class JwtUtils {
 
   private final JwtConfig jwtConfig;
   public static final String UNAUTHORIZED_ACCESS = "UA";
@@ -41,14 +43,12 @@ public class CreateJwt {
             .sign(Algorithm.HMAC256(jwtConfig.getSecret()));
   }
 
-  public void verifyAccessToken(String authorizationHeader) throws InvalidTokenException {
+  public void verifyToken(String authorizationHeader) throws InvalidTokenException {
     if (authorizationHeader == null || !authorizationHeader.startsWith(jwtConfig.getToekenPrefix())) {
       log.error("jwtConfig.getToekenPrefix()와 불일치! : {}", authorizationHeader);
       throw InvalidTokenException.EXCEPTION;
     }
-
-    String pureTokenStr = authorizationHeader.replace(jwtConfig.getToekenPrefix(), "");
-    isTokenExpired(pureTokenStr);
+    isTokenExpired(removedPrefixAuthHeader(authorizationHeader));
   }
 
   public void isTokenExpired(String pureTokenStr) throws ExpiredTokenException {
@@ -65,17 +65,31 @@ public class CreateJwt {
   public String getRenewAccessToken(String refreshTokenHeader) throws RenewAccessTokenException {
     log.info("refreshToken: {} ", refreshTokenHeader);
     try {
-      verifyAccessToken(refreshTokenHeader);
+      verifyToken(refreshTokenHeader);
     } catch (Exception e) {
       throw RenewAccessTokenException.EXCEPTION;
     }
-    return createAccessToken(TokenMember.of(refreshTokenHeader));
+    return createAccessToken(TokenMember.of(removedPrefixAuthHeader(refreshTokenHeader)));
   }
 
   public TokenMember getTokenMember(String authorizationHeader) {
     log.info("authorizationHeader: {}", authorizationHeader);
-    verifyAccessToken(authorizationHeader);
-    String pureTokenStr = authorizationHeader.replace(jwtConfig.getToekenPrefix(), "");
-    return TokenMember.of(pureTokenStr);
+    verifyToken(authorizationHeader);
+    return TokenMember.of(removedPrefixAuthHeader(authorizationHeader));
+  }
+
+  public String removedPrefixAuthHeader(String authorizationHeader) {
+    return authorizationHeader.replace(jwtConfig.getToekenPrefix(), "");
+  }
+
+  public boolean isReissuanceRefreshToken(String pureTokenStr) {
+    DecodedJWT decodedJWT = JWT.decode(pureTokenStr);
+
+    // 1초로 통일
+    long currentTime = System.currentTimeMillis() / 1000;
+    long exp = decodedJWT.getClaim("exp").asLong();
+    long gapTime = currentTime - exp;
+
+    return gapTime < jwtConfig.getReissueCriteriaSeconds() ? true : false;
   }
 }

@@ -6,7 +6,7 @@ import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
 
-import bleuauction.bleuauction_be.server.common.util.CustomTimeDeserializer;
+import bleuauction.bleuauction_be.server.common.utils.CustomTimeDeserializer;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotEmpty;

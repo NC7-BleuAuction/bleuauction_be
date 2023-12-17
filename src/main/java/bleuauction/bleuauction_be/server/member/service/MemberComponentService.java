@@ -3,8 +3,8 @@ package bleuauction.bleuauction_be.server.member.service;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
-import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
+import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
 import bleuauction.bleuauction_be.server.member.dto.LoginResponseDto;
 import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;
@@ -28,7 +28,7 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class MemberComponentService {
-    private final CreateJwt createJwt;
+    private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
     private final AttachComponentService attachComponentService;
     private final MemberModuleService memberModuleService;
@@ -59,8 +59,8 @@ public class MemberComponentService {
                 .memberName(member.getMemberName())
                 .memberCategory(member.getMemberCategory())
                 .build();
-        String accessToken = createJwt.createAccessToken(tokenMember);
-        String refreshToken = createJwt.createRefreshToken(tokenMember, accessToken);
+        String accessToken = jwtUtils.createAccessToken(tokenMember);
+        String refreshToken = jwtUtils.createRefreshToken(tokenMember, accessToken);
 
         return LoginResponseDto.builder()
                 .accessToken(accessToken)

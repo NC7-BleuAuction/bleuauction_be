@@ -1,4 +1,4 @@
-package bleuauction.bleuauction_be.server.common.util;
+package bleuauction.bleuauction_be.server.common.utils;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

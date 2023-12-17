@@ -106,4 +106,10 @@ public class Store {
     storeAttaches.add(attach);
     attach.setStoreNo(this);
   }
+  public void changeStoreStatusN() {
+    this.setStoreStatus(StoreStatus.N);
+  }
+  public void changeStoreStatusY() {
+    this.setStoreStatus(StoreStatus.Y);
+  }
 }

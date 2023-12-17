@@ -10,7 +10,7 @@ import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.service.MenuService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
-import bleuauction.bleuauction_be.server.store.service.StoreService;
+import bleuauction.bleuauction_be.server.store.service.StoreModuleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -37,7 +37,7 @@ import java.util.Optional;
 public class MenuController {
 
   private final MenuService menuService;
-  private final StoreService storeService;
+  private final StoreModuleService storeModuleService;
   private final AttachComponentService attachComponentService;
   private final CreateJwt createJwt;
   private final MemberModuleService memberModuleService;
@@ -55,7 +55,7 @@ public class MenuController {
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     // Member ID를 사용하여 관련된 Store를 찾습니다.
-    Store store = storeService.findStoreByMember(loginUser);
+    Store store = storeModuleService.findByMember(loginUser);
 
     if (store == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("메뉴 등록 권한이 없습니다.");
@@ -94,7 +94,7 @@ public class MenuController {
 
 
     // Member ID를 사용하여 관련된 Store를 찾습니다.
-    Store store = storeService.findStoreByMember(loginUser);
+    Store store = storeModuleService.findByMember(loginUser);
     menuService.deleteMenuByMenuNoAndStore(menuNo, store);
     return ResponseEntity.ok("Menu deleted successfully");
   }
@@ -119,7 +119,7 @@ public class MenuController {
     TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
-    Store store = storeService.findStoreByMember(loginUser);
+    Store store = storeModuleService.findByMember(loginUser);
 
     menuService.update(updatedMenu, multipartFiles, store);
     return ResponseEntity.ok("Menu updated successfully");

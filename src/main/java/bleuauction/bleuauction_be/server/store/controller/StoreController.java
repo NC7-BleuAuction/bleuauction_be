@@ -2,7 +2,6 @@ package bleuauction.bleuauction_be.server.store.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
-import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
@@ -11,9 +10,10 @@ import bleuauction.bleuauction_be.server.store.dto.StoreSignUpRequest;
 import bleuauction.bleuauction_be.server.store.dto.UpdateStoreRequest;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
-import bleuauction.bleuauction_be.server.store.exception.StoreNotFoundException;
+import bleuauction.bleuauction_be.server.store.exception.StoreRequestUnAuthorizationException;
 import bleuauction.bleuauction_be.server.store.exception.StoreUpdateUnAuthorizedException;
-import bleuauction.bleuauction_be.server.store.service.StoreService;
+import bleuauction.bleuauction_be.server.store.service.StoreComponentService;
+import bleuauction.bleuauction_be.server.store.service.StoreModuleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,9 +38,10 @@ import java.util.List;
 @RequestMapping("/api/store")
 public class StoreController {
     private final CreateJwt createJwt;
-    private final StoreService storeService;
     private final MemberModuleService memberModuleService;
     private final AttachComponentService attachComponentService;
+    private final StoreComponentService storeComponentService;
+    private final StoreModuleService storeModuleService;
 
     /**
      * 가게정보 리스트를 반환하는 기능
@@ -63,7 +64,7 @@ public class StoreController {
         if (!authorizationHeader.isEmpty() && !CreateJwt.UNAUTHORIZED_ACCESS.equals(authorizationHeader)) {
             createJwt.verifyAccessToken(authorizationHeader);
         }
-        return ResponseEntity.ok(storeService.selectStoreList(StoreStatus.Y, page, limit));
+        return ResponseEntity.ok(storeComponentService.selectStoreList(StoreStatus.Y, page, limit));
     }
 
     /**
@@ -82,7 +83,7 @@ public class StoreController {
         if (!authorizationHeader.isEmpty() && !CreateJwt.UNAUTHORIZED_ACCESS.equals(authorizationHeader)) {
             createJwt.verifyAccessToken(authorizationHeader);
         }
-        return ResponseEntity.ok().body(storeService.findStoreById(storeNo));
+        return ResponseEntity.ok().body(storeModuleService.findById(storeNo));
     }
 
 
@@ -107,7 +108,7 @@ public class StoreController {
         }
         // E : 인증 인가, 검증로직
 
-        return ResponseEntity.ok(storeService.findStoreByMember(targetUser));
+        return ResponseEntity.ok(storeModuleService.findByMember(targetUser));
     }
 
     // 가게등록
@@ -115,23 +116,15 @@ public class StoreController {
     public ResponseEntity<String> storeSignUp(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody StoreSignUpRequest request
-    ) throws Exception {
+    ) {
         createJwt.verifyAccessToken(authorizationHeader);
 
         Member loginUser = memberModuleService.findById(createJwt.getTokenMember(authorizationHeader).getMemberNo());
-        if (!MemberCategory.S.equals(loginUser.getMemberCategory())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("판매자 권한이 필요합니다");
-        }
+        verifyIsMemberCategorySeller(loginUser);
 
-        try {
-            // StoreService를 사용하여 가게 등록 및 중복 검사
-            storeService.signup(request, loginUser);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Store created successfully");
-        } catch (IllegalAccessException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("판매자 권한이 필요합니다");
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 존재하는 가게입니다.");
-        }
+        // StoreService를 사용하여 가게 등록 및 중복 검사
+        storeComponentService.signup(request, loginUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Store created successfully");
     }
 
     // 가게정보수정
@@ -139,29 +132,14 @@ public class StoreController {
     public ResponseEntity<String> updateStore(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestPart("updateStoreRequest") UpdateStoreRequest updateStoreRequest
-    ) throws Exception {
+    ) {
         createJwt.verifyAccessToken(authorizationHeader);
 
         Member loginUser = memberModuleService.findById(createJwt.getTokenMember(authorizationHeader).getMemberNo());
-        if (!MemberCategory.S.equals(loginUser.getMemberCategory())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("판매자 권한이 필요합니다");
-        }
+        verifyIsMemberCategorySeller(loginUser);
 
-        try {
-            // JWT토큰을 기반으로 한 로그인 사용자의 마켓정보 획득
-            Store store = storeService.findStoreByMember(loginUser);
-
-            // 첨부 파일 목록 추가
-            if (updateStoreRequest.getProfileImage() != null && updateStoreRequest.getProfileImage().getSize() > 0) {
-                // 첨부 파일 저장 및 결과를 insertAttaches에 할당 및 Attach정보에 대해서는 Store객체에 추가
-                attachComponentService.saveWithStore(store, FileUploadUsage.STORE, updateStoreRequest.getProfileImage());
-            }
-            // 가게 정보 업데이트
-            storeService.updateStore(store, updateStoreRequest);
-            return ResponseEntity.ok("가게 정보가 업데이트되었습니다.");
-        } catch (StoreNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("가게를 찾을 수 없습니다.");
-        }
+        storeComponentService.updateStore(loginUser, updateStoreRequest);
+        return ResponseEntity.ok("가게 정보가 업데이트되었습니다.");
     }
 
     /**
@@ -176,8 +154,8 @@ public class StoreController {
         createJwt.getTokenMember(authorizationHeader);
 
         // 가게 정보 확인
-        storeService.withDrawStore(
-                storeService.findStoreById(storeNo),
+        storeComponentService.withDrawStore(
+                storeNo,
                 memberModuleService.findById(createJwt.getTokenMember(authorizationHeader).getMemberNo())
         );
 
@@ -198,5 +176,11 @@ public class StoreController {
         return (FileStatus.N.equals(attachComponentService.changeFileStatusDeleteByFileNo(fileNo).getFileStatus())) ?
                 ResponseEntity.ok("Profile Image Delete Success")
                 : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Profile Image Delete Failed");
+    }
+
+    private void verifyIsMemberCategorySeller(Member member) {
+        if (!MemberCategory.isMemberSeller(member.getMemberCategory())) {
+            throw new StoreRequestUnAuthorizationException(member);
+        }
     }
 }

@@ -77,20 +77,20 @@ public class NoticeController {
     return ResponseEntity.ok("Notice deleted successfully");
   }
 
-  //사진삭제
-//  @DeleteMapping("/file/{fileNo}")
-//  public ResponseEntity<String> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable Long fileNo) {
-//    jwtUtils.verifyToken(authorizationHeader);
-//    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
-//    Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
-//
-//    if(MemberCategory.A.equals(loginUser.getMemberCategory())) {
-//      attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
-//      return ResponseEntity.ok("File deleted successfully");
-//    } else {
-//      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
-//    }
-//  }
+//  사진삭제
+  @DeleteMapping("/file/{fileNo}")
+  public ResponseEntity<String> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable Long fileNo) {
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
+    Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
+
+    if(MemberCategory.A.equals(loginUser.getMemberCategory())) {
+      attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
+      return ResponseEntity.ok("File deleted successfully");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
+    }
+  }
 
   //디테일
   @GetMapping("/{noticeNo}")

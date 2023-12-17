@@ -14,3 +14,10 @@ spring:
     resources:
       static-locations: file:src/main/resources/static/
       cache-period: 0
+
+ncp:
+  endPoint: https://kr.object.ncloudstorage.com
+  regionName: kr-standard
+  accessKey: A3YFyEA5Ulxf3Lw71ZQs
+  secretKey: d7dSoeeIhZP3P0mTx6syycp0rZ8IVIzTkUz523aTncp
+  bucketName: bleuauction-bucket

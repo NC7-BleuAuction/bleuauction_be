@@ -1,6 +1,6 @@
 package bleuauction.bleuauction_be.server.notice.controller;
 
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.member.entity.Member;
@@ -36,9 +36,9 @@ public class NoticeController {
 
   private final MemberModuleService memberModuleService;
   private final CreateJwt createJwt;
-  private final AttachService attachService;
   private final NoticeModuleService noticeModuleService;
   private final NoticeComponentService noticeComponentService;
+  private final AttachComponentService attachComponentService;
 
 
 
@@ -84,7 +84,7 @@ public class NoticeController {
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     if(MemberCategory.A.equals(loginUser.getMemberCategory())) {
-      attachService.changeFileStatusToDeleteByFileNo(fileNo);
+      attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
       return ResponseEntity.ok("File deleted successfully");
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");

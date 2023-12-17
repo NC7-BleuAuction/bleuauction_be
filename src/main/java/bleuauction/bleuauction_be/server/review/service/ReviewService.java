@@ -6,14 +6,13 @@ import bleuauction.bleuauction_be.server.answer.repository.AnswerRepository;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.repository.AttachRepository;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
+import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import bleuauction.bleuauction_be.server.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,13 +29,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReviewService {
 
-  @Value("${ncp.bucket.name}")
-  private String bucketName;
-  @Value("${ncp.bucket.paths.review}")
-  private String bucketPath;
   private static final int PAGE_ROW_COUNT = 4;
-  private final NcpObjectStorageService ncpObjectStorageService;
-  private final AttachService attachService;
+  private final AttachComponentService attachComponentService;
   private final ReviewRepository reviewRepository;
   private final AnswerRepository answerRepository;
   private final AttachRepository attachRepository;
@@ -60,9 +54,7 @@ public class ReviewService {
       ArrayList<Attach> attaches = new ArrayList<>();
       for (MultipartFile multipartFile : multipartFiles) {
         if (multipartFile.getSize() > 0) {
-          Attach attach = ncpObjectStorageService.uploadFile(new Attach(), bucketName, bucketPath, multipartFile);
-          attach.setReview(insertReview);
-          attaches.add(attach);
+          attachComponentService.saveWithReview(insertReview, FileUploadUsage.REVIEW, multipartFile);
         }
       }
       insertReview.setReviewAttaches(attaches);

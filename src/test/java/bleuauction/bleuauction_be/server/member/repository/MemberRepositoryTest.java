@@ -50,12 +50,13 @@ class MemberRepositoryTest {
                 .memberStatus(MemberStatus.Y)
                 .build();
 
+        int beforeSaveMemberCount = memberRepository.findAll().size();
         // when
         Member afterSaveMember = memberRepository.save(beforeSaveMember);
 
         // then
         assertNotNull(afterSaveMember.getMemberNo());
-        assertEquals(memberRepository.findAll().size(), 1);
+        assertEquals(memberRepository.findAll().size(), beforeSaveMemberCount +1);
         assertEquals(memberRepository.findById(afterSaveMember.getMemberNo()).get(), afterSaveMember);
     }
 

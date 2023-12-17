@@ -1,7 +1,7 @@
 package bleuauction.bleuauction_be.server.member.service;
 
 
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.member.dto.LoginResponseDto;
@@ -10,7 +10,6 @@ import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.exception.DuplicateMemberEmailException;
 import bleuauction.bleuauction_be.server.member.exception.MemberNotFoundException;
 import bleuauction.bleuauction_be.server.member.util.MemberEntityFactory;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,10 +39,7 @@ class MemberComponentServiceTest {
     @Mock
     private MemberModuleService memberModuleService;
     @Mock
-    private AttachService attachService;
-    @Mock
-    private NcpObjectStorageService ncpObjectStorageService;
-
+    private AttachComponentService attachComponentService;
     @InjectMocks
     private MemberComponentService memberComponentService;
 
@@ -217,7 +213,6 @@ class MemberComponentServiceTest {
         // then
         assertEquals(signUpMember.getMemberNo(), 1L);
         assertEquals(signUpMember.getMemberPwd(), encodePassword);
-
     }
 
 }

@@ -1,11 +1,10 @@
 package bleuauction.bleuauction_be.server.notice.service;
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
+import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +22,7 @@ public class NoticeComponentService {
 
     private final NoticeModuleService noticeModuleService;
     private final NoticeRepository noticeRepository;
-    private final AttachService attachService;
-    private final NcpObjectStorageService ncpObjectStorageService;
+    private final AttachComponentService attachComponentService;
 
 
     @Transactional
@@ -39,6 +37,7 @@ public class NoticeComponentService {
                     .forEach(multipartFile ->
                             notice.addNoticeAttach(ncpObjectStorageService.uploadFile(new Attach(),
                                     "bleuauction-bucket", "notice/", multipartFile))
+                            attachComponentService.saveWithNotice(notice, FileUploadUsage.NOTICE, multipartFile)
                     );
         }
         return noticeModuleService.save(notice).getNoticeNo();
@@ -53,11 +52,8 @@ public class NoticeComponentService {
         Notice notice = noticeRepository.findByNoticeNo(noticeNo);
         notice.delete();
         if (notice.getNoticeAttaches() != null && !notice.getNoticeAttaches().isEmpty()) {
-            for (Attach attach : notice.getNoticeAttaches()) {
-                attachService.changeFileStatusToDeleteByFileNo(attach.getFileNo());
-            }
+            notice.getNoticeAttaches().forEach(attach -> attachComponentService.changeFileStatusDeleteByFileNo(attach.getFileNo()));
         }
-
     }
 
     //노티스 수정
@@ -76,8 +72,7 @@ public class NoticeComponentService {
             multipartFiles.stream()
                     .filter(file -> file.getSize() > 0)
                     .forEach(multipartFile ->
-                            existingnotice.addNoticeAttach(ncpObjectStorageService.uploadFile(new Attach(),
-                                    "bleuauction-bucket", "notice/", multipartFile))
+                            attachComponentService.saveWithNotice(existingnotice, FileUploadUsage.NOTICE, multipartFile)
                     );
         }
 

@@ -29,6 +29,7 @@ public class Notice {
 
   private String noticeTitle;
 
+  @Column(columnDefinition = "LONGTEXT")
   private String noticeContent;
 
   @JsonBackReference

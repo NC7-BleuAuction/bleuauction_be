@@ -87,12 +87,13 @@ class NoticeServiceTest {
         existingNotice.setNoticeNo(100L);
         List<MultipartFile> multipartFiles = new ArrayList<>();
 
-        Attach attach1 = new Attach();
+        Attach attach1 = Attach.builder()
+                .filePath("FilePath")
+                .originFilename("originFilename")
+                .saveFilename("saveFilename")
+                .fileStatus(FileStatus.Y)
+                .build();
         attach1.setNoticeNo(existingNotice);
-        attach1.setFilePath("FilePath");
-        attach1.setOriginFilename("originFilename");
-        attach1.setSaveFilename("saveFilename");
-        attach1.setFileStatus(FileStatus.Y);
         attachRepository.save(attach1);
 
         existingNotice.setNoticeTitle("기존 제목");

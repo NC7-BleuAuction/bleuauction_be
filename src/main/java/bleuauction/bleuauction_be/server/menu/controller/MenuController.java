@@ -1,6 +1,6 @@
 package bleuauction.bleuauction_be.server.menu.controller;
 
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.member.entity.Member;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,12 +34,11 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/menu")
 public class MenuController {
 
   private final MenuService menuService;
   private final StoreService storeService;
-  private final AttachService attachService;
+  private final AttachComponentService attachComponentService;
   private final CreateJwt createJwt;
   private final MemberModuleService memberModuleService;
   private final StoreRepository storeRepository;
@@ -105,7 +103,7 @@ public class MenuController {
   //사진삭제
   @DeleteMapping("/file/{fileNo}")
   public ResponseEntity<String> fileMenuDelete(@PathVariable Long fileNo) {
-    attachService.changeFileStatusToDeleteByFileNo(fileNo);
+    attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
     return ResponseEntity.ok("File deleted successfully");
   }
 

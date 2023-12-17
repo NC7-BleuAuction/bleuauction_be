@@ -57,6 +57,10 @@ public class Review {
   @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private List<Attach> reviewAttaches;
 
+  public void addAttach(Attach attach) {
+    this.reviewAttaches.add(attach);
+    attach.setReview(this);
+  }
 
   @Builder
   public Review(Long storeNo, Member member, String reviewContent, ReviewFreshness reviewFreshness, List<Attach> reviewAttaches, ReviewStatus reviewStatus) {

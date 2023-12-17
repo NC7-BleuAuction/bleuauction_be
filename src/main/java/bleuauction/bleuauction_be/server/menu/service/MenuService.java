@@ -1,23 +1,17 @@
 package bleuauction.bleuauction_be.server.menu.service;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
+import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.menu.entity.MenuSize;
 import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
-import bleuauction.bleuauction_be.server.notice.entity.Notice;
-import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.CurrentTimestamp;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,8 +20,7 @@ import java.util.List;
 public class MenuService {
 
     private final MenuRepository menuRepository;
-    private final AttachService attachService;
-    private final NcpObjectStorageService ncpObjectStorageService;
+    private final AttachComponentService attachComponentService;
 
     //등록
     @Transactional
@@ -38,9 +31,7 @@ public class MenuService {
 
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             multipartFiles.stream().filter(multipartFile -> multipartFile.getSize() > 0)
-                    .forEach(multipartFile -> {
-                        menu.addAttach(ncpObjectStorageService.uploadFile("bleuauction-bucket", "menu/", multipartFile));
-                    });
+                    .forEach(multipartFile -> attachComponentService.saveWithMenu(menu, FileUploadUsage.MENU, multipartFile));
         }
         return menu.getMenuNo();
     }
@@ -68,7 +59,7 @@ public class MenuService {
         }
 
         for (Attach attach : menu.getMenuAttaches()) {
-            attachService.changeFileStatusToDeleteByFileNo(attach.getFileNo());
+            attachComponentService.changeFileStatusDeleteByFileNo(attach.getFileNo());
         }
         menu.delete();
     }
@@ -89,7 +80,7 @@ public class MenuService {
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             multipartFiles.stream()
                     .filter(multipartFile -> multipartFile.getSize() > 0)
-                    .forEach(multipartFile -> existingMenu.addAttach(ncpObjectStorageService.uploadFile("bleuauction-bucket", "menu/", multipartFile)));
+                    .forEach(multipartFile -> attachComponentService.saveWithMenu(existingMenu, FileUploadUsage.MENU, multipartFile));
         }
         return menuRepository.save(existingMenu);
 

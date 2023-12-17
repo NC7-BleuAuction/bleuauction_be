@@ -1,6 +1,6 @@
 package bleuauction.bleuauction_be.server.attach.Controller;
 
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AttachController {
 
-    private final AttachService attachService;
+    private final AttachComponentService attachComponentService;
 
     /**
      * fileNo를 제공할 경우 해당 fileNo를 가진 파일의 상태를 삭제상태로 변경한다.
@@ -24,7 +24,7 @@ public class AttachController {
      */
     @DeleteMapping("/{fileNo}")
     public ResponseEntity<String> fileDelete(@PathVariable Long fileNo) {
-        attachService.changeFileStatusToDeleteByFileNo(fileNo);
+        attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
         return ResponseEntity.ok("File deleted successfully");
     }
 

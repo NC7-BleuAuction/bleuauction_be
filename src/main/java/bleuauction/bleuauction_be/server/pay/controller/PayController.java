@@ -1,6 +1,6 @@
 package bleuauction.bleuauction_be.server.pay.controller;
 
-import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
 import bleuauction.bleuauction_be.server.pay.dto.PayInsertRequest;
 import bleuauction.bleuauction_be.server.pay.entity.Pay;
@@ -29,7 +29,7 @@ import java.io.IOException;
 public class PayController {
     private final IamportClient iamportClient;
     private final OrderService orderService;
-    private final CreateJwt createJwt;
+    private final JwtUtils jwtUtils;
     private final PayService payService;
 
     /**
@@ -56,7 +56,7 @@ public class PayController {
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody PayInsertRequest request
     ) {
-        createJwt.verifyAccessToken(authorizationHeader);
+        jwtUtils.verifyToken(authorizationHeader);
         return ResponseEntity.ok(
                 payService.createPayment(
                         request, orderService.findOrderById(request.getOrderNo())

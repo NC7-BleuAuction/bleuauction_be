@@ -1,7 +1,6 @@
 package bleuauction.bleuauction_be.server.menu.controller;
 
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
-import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
@@ -28,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +41,7 @@ public class MenuController {
   private final MenuService menuService;
   private final StoreService storeService;
   private final AttachComponentService attachComponentService;
-  private final CreateJwt createJwt;
+  private final JwtUtils jwtUtils;
   private final MemberModuleService memberModuleService;
   private final StoreRepository storeRepository;
 
@@ -52,8 +52,8 @@ public class MenuController {
   public ResponseEntity<?> menu(@RequestHeader("Authorization") String  authorizationHeader,
                                 @RequestBody Menu menu,
                                 @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     // Member ID를 사용하여 관련된 Store를 찾습니다.
@@ -75,9 +75,9 @@ public class MenuController {
   //가게(회원)별 목록 조회
   @GetMapping(value = "/store", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<?> findMenusByStoreNo(@RequestHeader("Authorization") String authorizationHeader)  {
-      createJwt.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
 
-      TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+      TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
       // 로그인 유저의 멤버 번호
       Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
@@ -90,8 +90,8 @@ public class MenuController {
   public ResponseEntity<?> deleteMenu(@RequestHeader("Authorization") String  authorizationHeader,
                                       @PathVariable("menuNo") Long menuNo) {
 
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
 
@@ -117,8 +117,8 @@ public class MenuController {
                                       @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
     Menu updatedMenu = menuService.findOne(menuNo);
 
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     Store store = storeService.findStoreByMember(loginUser);

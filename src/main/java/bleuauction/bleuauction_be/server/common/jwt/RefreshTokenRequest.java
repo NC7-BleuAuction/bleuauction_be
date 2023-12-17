@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class RefreshTokenRequest {
-  @NotNull(message = "Refresh Token이 Null이면 요청이 불가합니다.₩")
+  @NotNull(message = "Refresh Token이 Null이면 요청이 불가합니다.")
   private String refreshToken;
 }

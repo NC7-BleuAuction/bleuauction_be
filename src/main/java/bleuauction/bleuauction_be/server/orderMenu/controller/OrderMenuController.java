@@ -7,7 +7,7 @@ import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
 import bleuauction.bleuauction_be.server.orderMenu.service.OrderMenuService;
-import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
+import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class OrderMenuController {
 
   private final OrderMenuService orderMenuService;
   private final OrderMenuRepository orderMenuRepository;
-  private final CreateJwt createJwt;
+  private final JwtUtils jwtUtils;
   private final MemberComponentService memberComponentService;
 
   //등록
@@ -39,8 +39,8 @@ public class OrderMenuController {
 
   @PostMapping("/new")
   public ResponseEntity<?> orderMenu(@RequestHeader("Authorization") String authorizationHeader, HttpSession session, OrderMenuDTO orderMenuDTO)  throws Exception {
-    createJwt.verifyAccessToken(authorizationHeader);
-    TokenMember tokenMember = createJwt.getTokenMember(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Optional<Member> loginUser = memberComponentService.findByMemberNo(tokenMember.getMemberNo());
 
     Order order = (Order) session.getAttribute("order");

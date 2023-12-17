@@ -50,7 +50,7 @@ public class MenuController {
   public ResponseEntity<?> menu(@RequestHeader("Authorization") String  authorizationHeader,
                                 @RequestBody Menu menu,
                                 @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
-    jwtUtils.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
     TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
@@ -73,7 +73,7 @@ public class MenuController {
   //가게(회원)별 목록 조회
   @GetMapping(value = "/store", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<?> findMenusByStoreNo(@RequestHeader("Authorization") String authorizationHeader)  {
-    jwtUtils.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
 
       TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
       // 로그인 유저의 멤버 번호
@@ -88,7 +88,7 @@ public class MenuController {
   public ResponseEntity<?> deleteMenu(@RequestHeader("Authorization") String  authorizationHeader,
                                       @PathVariable("menuNo") Long menuNo) {
 
-    jwtUtils.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
     TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
@@ -115,7 +115,7 @@ public class MenuController {
                                       @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
     Menu updatedMenu = menuService.findOne(menuNo);
 
-    jwtUtils.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
     TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 

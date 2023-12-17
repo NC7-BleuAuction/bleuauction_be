@@ -99,7 +99,7 @@ public class StoreController {
             @PathVariable Long memberNo
     ) {
         // S : 인증 인가, 검증로직
-      jwtUtils.verifyAccessToken(authorizationHeader);
+      jwtUtils.verifyToken(authorizationHeader);
         Member requestUser = memberModuleService.findById(jwtUtils.getTokenMember(authorizationHeader).getMemberNo());
         Member targetUser = memberModuleService.findById(memberNo);
         if (!requestUser.getMemberNo().equals(targetUser.getMemberNo())) {

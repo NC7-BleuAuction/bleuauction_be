@@ -1,12 +1,9 @@
 package bleuauction.bleuauction_be.server.member.controller;
 
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
-import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
-import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.common.jwt.RefreshTokenRequest;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
+import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.member.dto.LoginRequest;
 import bleuauction.bleuauction_be.server.member.dto.LoginResponseDto;
 import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;

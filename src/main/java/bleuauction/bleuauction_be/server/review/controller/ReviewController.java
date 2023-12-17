@@ -84,7 +84,7 @@ public class ReviewController {
     log.info("@DeleteMapping ===========> api/review/attach");
     log.info("authorizationHeader: {}", authorizationHeader);
     log.info("fileNo: {}", fileNo);
-    jwtUtils.verifyAccessToken(authorizationHeader);
+    jwtUtils.verifyToken(authorizationHeader);
     return ResponseEntity.ok(attachComponentService.changeFileStatusDeleteByFileNo(fileNo));
   }
 }

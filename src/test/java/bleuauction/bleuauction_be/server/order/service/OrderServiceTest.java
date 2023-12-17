@@ -2,7 +2,7 @@ package bleuauction.bleuauction_be.server.order.service;
 
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.member.service.MemberService;
+import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.entity.OrderStatus;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
@@ -33,7 +33,7 @@ class OrderServiceTest {
     private OrderService orderService;
 
     @Mock
-    private MemberService memberService;
+    private MemberComponentService memberComponentService;
 
     @Test
     void testEnroll() throws Exception{
@@ -132,7 +132,7 @@ class OrderServiceTest {
             Long memberNo = 123L;
 
             // 로그인한 사용자를 찾지 못하도록 설정
-            when(memberService.findByMemberNo(memberNo)).thenReturn(Optional.empty());
+            when(memberComponentService.findByMemberNo(memberNo)).thenReturn(Optional.empty());
 
             // when
             ResponseEntity<?> responseEntity = orderService.findOrdersByMemberAndStore(memberNo);
@@ -150,7 +150,7 @@ class OrderServiceTest {
         Member fakeLoginUser = new Member();
         fakeLoginUser.setMemberNo(memberNo);
 
-        when(memberService.findByMemberNo(memberNo)).thenReturn(Optional.of(fakeLoginUser));
+        when(memberComponentService.findByMemberNo(memberNo)).thenReturn(Optional.of(fakeLoginUser));
 
         List<Order> fakeOrders = Arrays.asList(new Order(), new Order());
 
@@ -171,7 +171,7 @@ class OrderServiceTest {
         Long memberNo = 123L;
 
         // 로그인한 사용자를 찾지 못하도록 설정
-        when(memberService.findByMemberNo(memberNo)).thenReturn(Optional.empty());
+        when(memberComponentService.findByMemberNo(memberNo)).thenReturn(Optional.empty());
 
         // when
         ResponseEntity<?> responseEntity = orderService.findOrdersByMemberNo(memberNo);
@@ -190,7 +190,7 @@ class OrderServiceTest {
         fakeLoginUser.setMemberNo(memberNo);
 
         // 로그인한 사용자를 찾았다고 설정
-        when(memberService.findByMemberNo(memberNo)).thenReturn(Optional.of(fakeLoginUser));
+        when(memberComponentService.findByMemberNo(memberNo)).thenReturn(Optional.of(fakeLoginUser));
 
         // 가짜 주문 리스트를 생성
         List<Order> fakeOrders = Arrays.asList(new Order(), new Order());

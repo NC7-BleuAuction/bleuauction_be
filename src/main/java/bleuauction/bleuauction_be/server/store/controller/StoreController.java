@@ -1,13 +1,12 @@
 package bleuauction.bleuauction_be.server.store.controller;
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
+import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
-import bleuauction.bleuauction_be.server.member.service.MemberService;
-import bleuauction.bleuauction_be.server.ncp.NcpObjectStorageService;
+import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
 import bleuauction.bleuauction_be.server.store.dto.StoreSignUpRequest;
 import bleuauction.bleuauction_be.server.store.dto.UpdateStoreRequest;
 import bleuauction.bleuauction_be.server.store.entity.Store;
@@ -40,9 +39,8 @@ import java.util.List;
 public class StoreController {
     private final JwtUtils jwtUtils;
     private final StoreService storeService;
-    private final MemberService memberService;
-    private final NcpObjectStorageService ncpObjectStorageService;
-    private final AttachService attachService;
+    private final MemberModuleService memberModuleService;
+    private final AttachComponentService attachComponentService;
 
     /**
      * 가게정보 리스트를 반환하는 기능
@@ -101,9 +99,9 @@ public class StoreController {
             @PathVariable Long memberNo
     ) {
         // S : 인증 인가, 검증로직
-        jwtUtils.verifyToken(authorizationHeader);
-        Member requestUser = memberService.findMemberById(jwtUtils.getTokenMember(authorizationHeader).getMemberNo());
-        Member targetUser = memberService.findMemberById(memberNo);
+      jwtUtils.verifyAccessToken(authorizationHeader);
+        Member requestUser = memberModuleService.findById(jwtUtils.getTokenMember(authorizationHeader).getMemberNo());
+        Member targetUser = memberModuleService.findById(memberNo);
         if (!requestUser.getMemberNo().equals(targetUser.getMemberNo())) {
             throw new StoreUpdateUnAuthorizedException(requestUser, targetUser);
         }
@@ -120,7 +118,7 @@ public class StoreController {
     ) throws Exception {
         jwtUtils.verifyToken(authorizationHeader);
 
-        Member loginUser = memberService.findMemberById(jwtUtils.getTokenMember(authorizationHeader).getMemberNo());
+        Member loginUser = memberModuleService.findById(jwtUtils.getTokenMember(authorizationHeader).getMemberNo());
         if (!MemberCategory.S.equals(loginUser.getMemberCategory())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("판매자 권한이 필요합니다");
         }
@@ -144,7 +142,7 @@ public class StoreController {
     ) throws Exception {
         jwtUtils.verifyToken(authorizationHeader);
 
-        Member loginUser = memberService.findMemberById(jwtUtils.getTokenMember(authorizationHeader).getMemberNo());
+        Member loginUser = memberModuleService.findById(jwtUtils.getTokenMember(authorizationHeader).getMemberNo());
         if (!MemberCategory.S.equals(loginUser.getMemberCategory())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("판매자 권한이 필요합니다");
         }
@@ -153,15 +151,10 @@ public class StoreController {
             // JWT토큰을 기반으로 한 로그인 사용자의 마켓정보 획득
             Store store = storeService.findStoreByMember(loginUser);
 
-            // TODO : 추후 Service레벨에 Attach Service넣을 수 있도록 구조 개선이 필요함;
             // 첨부 파일 목록 추가
             if (updateStoreRequest.getProfileImage() != null && updateStoreRequest.getProfileImage().getSize() > 0) {
-                Attach attach = ncpObjectStorageService.uploadFile("bleuauction-bucket", "store/", updateStoreRequest.getProfileImage());
-                attach.setStoreNo(store);
-
                 // 첨부 파일 저장 및 결과를 insertAttaches에 할당 및 Attach정보에 대해서는 Store객체에 추가
-                attachService.insertAttach(attach);
-                store.addAttaches(attach);
+                attachComponentService.saveWithStore(store, FileUploadUsage.STORE, updateStoreRequest.getProfileImage());
             }
             // 가게 정보 업데이트
             storeService.updateStore(store, updateStoreRequest);
@@ -185,7 +178,7 @@ public class StoreController {
         // 가게 정보 확인
         storeService.withDrawStore(
                 storeService.findStoreById(storeNo),
-                memberService.findMemberById(jwtUtils.getTokenMember(authorizationHeader).getMemberNo())
+                memberModuleService.findById(jwtUtils.getTokenMember(authorizationHeader).getMemberNo())
         );
 
         // TODO: 토큰 무효화 (예: Token을 Blacklist에 추가하고, 클라이언트 측에서 로컬 스토리지 또는 쿠키에서 토큰 제거)
@@ -202,7 +195,7 @@ public class StoreController {
      */
     @DeleteMapping("/profile/{fileNo}")
     public ResponseEntity<String> deleteProfileImage(@PathVariable("fileNo") Long fileNo) {
-        return (FileStatus.N.equals(attachService.changeFileStatusToDeleteByFileNo(fileNo).getFileStatus())) ?
+        return (FileStatus.N.equals(attachComponentService.changeFileStatusDeleteByFileNo(fileNo).getFileStatus())) ?
                 ResponseEntity.ok("Profile Image Delete Success")
                 : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Profile Image Delete Failed");
     }

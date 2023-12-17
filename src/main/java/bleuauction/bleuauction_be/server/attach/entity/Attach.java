@@ -17,6 +17,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +40,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Table(name = "ba_attach")
-@NoArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 @DynamicUpdate
 public class Attach {
@@ -91,6 +92,13 @@ public class Attach {
     @Enumerated(EnumType.STRING)
     private FileStatus fileStatus;
 
+    @Builder
+    public Attach(@NotNull String filePath, @NotNull String originFilename, @NotNull String saveFilename, FileStatus fileStatus) {
+        this.filePath = filePath;
+        this.originFilename = originFilename;
+        this.saveFilename = saveFilename;
+        this.fileStatus = fileStatus;
+    }
 
     public void changeFileStatusToDelete() {
         this.fileStatus = FileStatus.N;

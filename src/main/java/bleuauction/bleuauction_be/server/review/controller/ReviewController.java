@@ -1,7 +1,7 @@
 package bleuauction.bleuauction_be.server.review.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
-import bleuauction.bleuauction_be.server.attach.service.AttachService;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.service.ReviewService;
@@ -28,7 +28,7 @@ import java.util.List;
 public class ReviewController {
 
   private final JwtUtils jwtUtils;
-  private final AttachService attachService;
+  private final AttachComponentService attachComponentService;
   private final ReviewService reviewService;
 
   @GetMapping
@@ -84,7 +84,7 @@ public class ReviewController {
     log.info("@DeleteMapping ===========> api/review/attach");
     log.info("authorizationHeader: {}", authorizationHeader);
     log.info("fileNo: {}", fileNo);
-    jwtUtils.verifyToken(authorizationHeader);
-    return ResponseEntity.ok(attachService.changeFileStatusToDeleteByFileNo(fileNo));
+    jwtUtils.verifyAccessToken(authorizationHeader);
+    return ResponseEntity.ok(attachComponentService.changeFileStatusDeleteByFileNo(fileNo));
   }
 }

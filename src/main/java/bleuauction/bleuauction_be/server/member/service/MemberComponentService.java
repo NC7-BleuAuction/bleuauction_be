@@ -2,47 +2,43 @@ package bleuauction.bleuauction_be.server.member.service;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
+import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
+import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
+import bleuauction.bleuauction_be.server.common.jwt.CreateJwt;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
+import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
 import bleuauction.bleuauction_be.server.member.dto.LoginResponseDto;
 import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
 import bleuauction.bleuauction_be.server.member.exception.DuplicateMemberEmailException;
 import bleuauction.bleuauction_be.server.member.exception.MemberNotFoundException;
-import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
-@Service
+@ComponentService
 @Transactional
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberComponentService {
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
-    private final MemberRepository memberRepository;
+    private final AttachComponentService attachComponentService;
+    private final MemberModuleService memberModuleService;
 
     // no로 회원찾기
+    // TODO : 차후 삭제 필요
     public Optional<Member> findByMemberNo(Long memberNo) {
-        return memberRepository.findById(memberNo);
-    }
-
-    /**
-     * Id기준 사용자 정보 조회 및 존재하지 않는 경우, Exception
-     *
-     * @param memberNo 사용자 Entity의 Id
-     * @return
-     */
-    public Member findMemberById(Long memberNo) {
-        return memberFindById(memberNo);
+        return memberModuleService.findByMemberNo(memberNo);
     }
 
     /**
@@ -52,8 +48,8 @@ public class MemberService {
      * @return
      */
     public LoginResponseDto login(String email, String requestPassword) {
-        Member member = memberRepository.findByMemberEmail(email)
-                .orElseThrow(() -> new MemberNotFoundException("Bad Request Email"));
+        Member member = memberModuleService.findByEmail(email);
+
         if(!passwordEncoder.matches(requestPassword, member.getMemberPwd())){
             throw new MemberNotFoundException("Bad Request Password");
         }
@@ -84,7 +80,7 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public Map<String, Object> findAllMemberByPageableOrderByRegDateDesc(int page, int limit) {
-        Page<Member> result = memberRepository.findAllByOrderByRegDatetimeDesc(PageRequest.of(page, limit));
+        Page<Member> result = memberModuleService.findAllMemberByPageableOrderByRegDateDesc(page, limit);
         return Map.of(
                 "totalPage", result.getTotalPages(),
                 "totalElements", result.getTotalElements(),
@@ -100,12 +96,13 @@ public class MemberService {
     public Member signUp(Member member) {
         validateDuplicateMember(member.getMemberEmail());
 
-        log.info("[MemberService] Member SignUp : RequestEmail >>> {}, RequestName >>> {} , RequestPhone >>> {}",
-                member.getMemberEmail(), member.getMemberName(), member.getMemberPhone());
+        log.info("[MembeComponentrService] Member SignUp : RequestEmail >>> {}, RequestName >>> {} , RequestPhone >>> {}",
+                member.getMemberEmail(), member.getMemberEmail(), member.getMemberPhone());
 
         // Password Encoded(암호화)
         member.setMemberPwd(passwordEncoder.encode(member.getMemberPwd()));
-        return memberRepository.save(member);
+
+        return memberModuleService.save(member);
     }
 
     /**
@@ -114,7 +111,7 @@ public class MemberService {
      */
     @Transactional
     public void withDrawMember(TokenMember tokenMember) {
-        Member member = memberFindById(tokenMember.getMemberNo());
+        Member member = memberModuleService.findById(tokenMember.getMemberNo());
         member.setMemberStatus(MemberStatus.N);
         log.info("회원이 성공적으로 탈퇴되었습니다. 회원번호: {}", member.getMemberNo());
 
@@ -122,41 +119,13 @@ public class MemberService {
         // 토큰을 무효화하고 클라이언트 측에서도 토큰을 삭제하는 방법을 사용하십시오.
     }
 
-    /**
-     * 사용자 정보 삭제 처리, 해당 사용자가 존재하지 않는 사용자인 경우 MemberNotFoundException 발생
-     * @param memberNo 사용자 Entity의 Id
-     */
-    public void deleteMemberById(Long memberNo) {
-        if(memberRepository.existsById(memberNo)) {
-            memberRepository.deleteById(memberNo);
-            return;
-        }
-        throw new MemberNotFoundException(memberNo);
-    }
-
-    /**
-     * 사용자 Email 존재유무 확인
-     * @param email 사용자 Email
-     * @return
-     */
-    public boolean duplicateMemberEmail(String email){
-        return memberRepository.existsByMemberEmail(email);
-    }
-
-    /**
-     * 사용자의 MemberNo가 존재하는지 유뭏 확인
-     * @param memberNo 사용자 Entity의 Id
-     * @return
-     */
-    public boolean isExistsByMemberNo(Long memberNo) {
-        return memberRepository.existsById(memberNo);
-    }
-
     @Transactional
-    public Member updateMember(TokenMember tokenMember, UpdateMemberRequest request, Attach profileImage) {
-        Member loginUser = memberFindById(tokenMember.getMemberNo());
-        if(profileImage != null) {
-            profileImage.setMemberNo(loginUser);
+    public Member updateMember(TokenMember tokenMember, UpdateMemberRequest request) {
+        Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
+
+        //Profile Image ObjectStorage에 저장
+        if(!request.getProfileImage().isEmpty()){
+            attachComponentService.saveWithMember(loginUser, FileUploadUsage.MEMBER, request.getProfileImage());
         }
 
         loginUser.setMemberPwd(passwordEncoder.encode(request.getMemberPwd()));
@@ -167,11 +136,8 @@ public class MemberService {
         loginUser.setMemberPhone(request.getMemberPhone());
         loginUser.setMemberBank(request.getMemberBank());
         loginUser.setMemberAccount(request.getMemberAccount());
-        loginUser.addAttaches(profileImage);
 
-
-        memberRepository.save(loginUser);
-        return loginUser;
+        return memberModuleService.save(loginUser);
     }
 
 
@@ -180,20 +146,27 @@ public class MemberService {
      *
      * @param email 가입이 되어있는지 확인을 진행할 Email 문자열
      */
-    private void validateDuplicateMember(String email) {
-        if (this.duplicateMemberEmail(email)) {
+    public void validateDuplicateMember(String email) {
+        if (memberModuleService.isExistsByEmail(email)) {
             throw new DuplicateMemberEmailException(email);
         }
     }
 
     /**
-     * MemberNo로 사용자 정보 조회후 반환하며, 존재하지 않는 경우 MemberNotFoundException 발생
+     * 회원의 프로필 이미지를 삭제하는 기능으로 <br />
+     * 해당 기능은 Controller가 적합함. <br />
+     * [TODO] : 현재 해당 기능의 문제점은 인증 인가없이 그냥 fileNo를 입력할때 삭제가 된다는 점, 그러므로 타인이 삭제시킬수도 있음. 추후 보완이 필요하다.
      *
-     * @param memberNo 사용자 Entity의 Id
+     * @param fileNo
      * @return
      */
-    private Member memberFindById(Long memberNo) {
-        return memberRepository.findById(memberNo)
-                .orElseThrow(() -> new MemberNotFoundException(memberNo));
+    public ResponseEntity<String> deleteProfileImage(Long fileNo) {
+        if (FileStatus.N.equals(attachComponentService.changeFileStatusDeleteByFileNo(fileNo).getFileStatus())) {
+            return ResponseEntity.ok("Profile Image Delete Success");
+        }
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Profile Image Delete Failed");
     }
+
 }

@@ -1,7 +1,8 @@
 package bleuauction.bleuauction_be.server.oauth.service;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.member.service.MemberService;
+import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
+import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,8 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class KakaoLoginService {
 
-    private final MemberService memberService;
+    private final MemberComponentService memberComponentService;
+    private final MemberModuleService memberModuleService;
 
     public String getKaKaoAccessToken(String code) {
         String access_Token = "";
@@ -123,14 +125,14 @@ public class KakaoLoginService {
                         .get("email").getAsString();
             }
 
-            if (!memberService.duplicateMemberEmail(email)) {
+            if (!memberModuleService.isExistsByEmail(email)) {
                 Member newMember = new Member();
                 newMember.setMemberEmail(email);
                 newMember.setMemberPwd(createRandomPassword(12));
                 // 다른 속성 설정
 
                 try {
-                    memberService.signUp(newMember);
+                    memberComponentService.signUp(newMember);
                 } catch (Exception e) {
                     log.error("Failed to sign up new member: " + e.getMessage());
                 }

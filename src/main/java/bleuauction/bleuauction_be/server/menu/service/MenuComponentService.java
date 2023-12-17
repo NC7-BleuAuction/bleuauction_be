@@ -39,9 +39,6 @@ public class MenuComponentService {
     }
 
 
-
-
-
     //메뉴 삭제(N)
     public void deleteMenuByMenuNoAndStore(Long menuNo, Store store) {
         Menu menu = menuRepository.findMenusByMenuNo(menuNo);
@@ -59,7 +56,6 @@ public class MenuComponentService {
     public Menu update(long menuNo, List<MultipartFile> multipartFiles, Store store) {
         Menu updatedMenu = menuModuleService.findOne(menuNo);
         Menu existingMenu = menuModuleService.findOne(updatedMenu.getMenuNo());
-        //Menu existingMenu = menuRepository.findMenusByMenuNo(updatedMenu.getMenuNo());
 
         if (!existingMenu.getStoreNo().equals(store)) {
             throw new IllegalArgumentException("수정 권한이 없습니다.");

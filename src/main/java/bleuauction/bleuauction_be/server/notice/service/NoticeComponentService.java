@@ -35,8 +35,6 @@ public class NoticeComponentService {
             multipartFiles.stream()
                     .filter(file -> file.getSize() > 0)
                     .forEach(multipartFile ->
-                            notice.addNoticeAttach(ncpObjectStorageService.uploadFile(new Attach(),
-                                    "bleuauction-bucket", "notice/", multipartFile))
                             attachComponentService.saveWithNotice(notice, FileUploadUsage.NOTICE, multipartFile)
                     );
         }

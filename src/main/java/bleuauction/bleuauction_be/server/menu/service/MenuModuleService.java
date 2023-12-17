@@ -22,14 +22,13 @@ public class MenuModuleService {
         return menuRepository.findMenusByStoreNoAndMenuStatus(storeNo, MenuStatus.Y);
     }
 
-    public List<Menu> findMenusByStoreNoAndStatus(Long storeNo, MenuStatus menuStatus) {
-        return menuRepository.findMenusByStoreNoAndMenuStatus(storeNo, menuStatus);
-    }
-
     //메뉴 1건 조회
     @Transactional
     public Menu findOne(Long menuNo) {
         return menuRepository.findMenusByMenuNo(menuNo);
     }
 
+    public Menu save(Menu menu) {
+        return menuRepository.save(menu);
+    }
 }

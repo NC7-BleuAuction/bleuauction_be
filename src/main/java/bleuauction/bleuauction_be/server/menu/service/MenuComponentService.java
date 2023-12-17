@@ -22,14 +22,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MenuComponentService {
     private final MenuRepository menuRepository;
+    private final MenuModuleService menuModuleService;
     private final AttachComponentService attachComponentService;
 
     //등록
-    @Transactional
     public Long enroll(Menu menu, Store store, List<MultipartFile> multipartFiles) {
 
         menu.setStoreNo(store);
-        menuRepository.save(menu);
+        menuModuleService.save(menu);
 
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             multipartFiles.stream().filter(multipartFile -> multipartFile.getSize() > 0)
@@ -43,7 +43,6 @@ public class MenuComponentService {
 
 
     //메뉴 삭제(N)
-    @Transactional
     public void deleteMenuByMenuNoAndStore(Long menuNo, Store store) {
         Menu menu = menuRepository.findMenusByMenuNo(menuNo);
         if (menu == null || !menu.getStoreNo().equals(store)) {
@@ -57,9 +56,10 @@ public class MenuComponentService {
     }
 
     //메뉴 수정
-    @Transactional
-    public Menu update(Menu updatedMenu, List<MultipartFile> multipartFiles, Store store) {
-        Menu existingMenu = menuRepository.findMenusByMenuNo(updatedMenu.getMenuNo());
+    public Menu update(long menuNo, List<MultipartFile> multipartFiles, Store store) {
+        Menu updatedMenu = menuModuleService.findOne(menuNo);
+        Menu existingMenu = menuModuleService.findOne(updatedMenu.getMenuNo());
+        //Menu existingMenu = menuRepository.findMenusByMenuNo(updatedMenu.getMenuNo());
 
         if (!existingMenu.getStoreNo().equals(store)) {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
@@ -74,7 +74,7 @@ public class MenuComponentService {
                     .filter(multipartFile -> multipartFile.getSize() > 0)
                     .forEach(multipartFile -> attachComponentService.saveWithMenu(existingMenu, FileUploadUsage.MENU, multipartFile));
         }
-        return menuRepository.save(existingMenu);
+        return menuModuleService.save(existingMenu);
 
     }
 

@@ -98,7 +98,7 @@ public class StoreComponentService {
         Store store = storeModuleService.findById(storeNo);
 
         // 가게 소유자가 아닌 경우
-        if (!store.getMemberNo().getMemberNo().equals(member.getMemberNo())) {
+        if (store.getMemberNo() == null || !store.getMemberNo().getMemberNo().equals(member.getMemberNo())) {
             log.error("올바른 가게 정보가 아닙니다.");
             throw new StoreUpdateUnAuthorizedException(store, member);
         }

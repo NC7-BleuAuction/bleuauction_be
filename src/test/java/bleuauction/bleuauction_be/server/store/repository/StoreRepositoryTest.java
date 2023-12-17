@@ -117,7 +117,7 @@ class StoreRepositoryTest {
         Store mockStore = storeRepository.save(StoreUtilFactory.of(seller, "노량진수산시장", "가게이름1", "111-11-11111"));
 
         // when && then
-        assertTrue(storeRepository.existsStoreByStoreName(mockStore.getStoreName()));
+        assertTrue(storeRepository.existsByStoreName(mockStore.getStoreName()));
     }
 
     @Test
@@ -127,6 +127,6 @@ class StoreRepositoryTest {
         Member seller = memberRepository.save(MemberEntityFactory.of("test@test.com", "1111111", "테스트아무개", MemberCategory.S));
 
         // when && then
-        assertFalse(storeRepository.existsStoreByStoreName("가게이름111"));
+        assertFalse(storeRepository.existsByStoreName("가게이름111"));
     }
 }

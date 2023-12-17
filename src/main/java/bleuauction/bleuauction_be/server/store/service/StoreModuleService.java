@@ -54,8 +54,8 @@ public class StoreModuleService {
      * 가게 정보 수정 및 저장
      * @param store 수정또는 저장하고자 하는 가게의 정보
      */
-    public void save(Store store) {
-        storeRepository.save(store);
+    public Store save(Store store) {
+        return storeRepository.save(store);
     }
 
     /**

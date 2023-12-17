@@ -4,7 +4,8 @@ import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
 import bleuauction.bleuauction_be.server.pay.dto.PayInsertRequest;
 import bleuauction.bleuauction_be.server.pay.entity.Pay;
-import bleuauction.bleuauction_be.server.pay.service.PayService;
+import bleuauction.bleuauction_be.server.pay.service.PayComponentService;
+import bleuauction.bleuauction_be.server.pay.service.PayModuleService;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
@@ -30,7 +31,8 @@ public class PayController {
     private final IamportClient iamportClient;
     private final OrderService orderService;
     private final JwtUtils jwtUtils;
-    private final PayService payService;
+    private final PayComponentService payComponentService;
+    private final PayModuleService payModuleService;
 
     /**
      * 요청한 PayNo의 결제 정보 조회 <br />
@@ -41,7 +43,7 @@ public class PayController {
      */
     @GetMapping("/{payNo}")
     public ResponseEntity<Object> detail(@PathVariable Long payNo) throws Exception {
-        return ResponseEntity.ok(payService.getPay(payNo));
+        return ResponseEntity.ok(payModuleService.findById(payNo));
     }
 
     /**
@@ -58,7 +60,7 @@ public class PayController {
     ) {
         jwtUtils.verifyToken(authorizationHeader);
         return ResponseEntity.ok(
-                payService.createPayment(
+                payComponentService.createPayment(
                         request, orderService.findOrderById(request.getOrderNo())
                 )
         );

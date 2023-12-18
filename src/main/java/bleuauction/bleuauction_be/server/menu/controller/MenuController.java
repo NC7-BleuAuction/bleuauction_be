@@ -6,7 +6,8 @@ import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
-import bleuauction.bleuauction_be.server.menu.service.MenuService;
+import bleuauction.bleuauction_be.server.menu.service.MenuComponentService;
+import bleuauction.bleuauction_be.server.menu.service.MenuModuleService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.store.service.StoreService;
@@ -38,7 +39,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MenuController {
 
-  private final MenuService menuService;
+  private final MenuComponentService menuComponentService;
+  private final MenuModuleService menuModuleService;
   private final StoreService storeService;
   private final AttachComponentService attachComponentService;
   private final JwtUtils jwtUtils;
@@ -49,7 +51,7 @@ public class MenuController {
   //등록
   @PostMapping("/new")
   @Transactional
-  public ResponseEntity<?> menu(@RequestHeader("Authorization") String  authorizationHeader,
+  public ResponseEntity<String> menu(@RequestHeader("Authorization") String  authorizationHeader,
                                 @RequestBody Menu menu,
                                 @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
     jwtUtils.verifyToken(authorizationHeader);
@@ -62,32 +64,30 @@ public class MenuController {
     if (store == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("메뉴 등록 권한이 없습니다.");
     }
-    menuService.enroll(menu, store, multipartFiles);
+    menuComponentService.enroll(menu, store, multipartFiles);
     return ResponseEntity.status(HttpStatus.CREATED).body("Menu created successfully");
   }
 
   //가게별 목록 조회
   @GetMapping(value = "/{storeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Menu> findMenusByStoreNo(@PathVariable("storeNo") Long storeNo) throws Exception {
-    return menuService.findMenusByStoreNo(storeNo);
+    return menuModuleService.findMenusByStoreNo(storeNo);
   }
 
   //가게(회원)별 목록 조회
   @GetMapping(value = "/store", produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<?> findMenusByStoreNo(@RequestHeader("Authorization") String authorizationHeader)  {
+  public List<Menu> findMenusByStoreNo(@RequestHeader("Authorization") String authorizationHeader)  {
     jwtUtils.verifyToken(authorizationHeader);
 
       TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
       // 로그인 유저의 멤버 번호
       Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
-
-      Optional<Store> store = storeRepository.findByMemberNo(loginUser);
-
-      return menuService.findMenusByStoreNoAndStatus(store.get().getStoreNo(), MenuStatus.Y);
+      Store store = storeService.findStoreByMember(loginUser);
+      return menuModuleService.findMenusByStoreNo(store.getStoreNo());
   }
 
   @DeleteMapping("/{menuNo}")
-  public ResponseEntity<?> deleteMenu(@RequestHeader("Authorization") String  authorizationHeader,
+  public ResponseEntity<String> deleteMenu(@RequestHeader("Authorization") String  authorizationHeader,
                                       @PathVariable("menuNo") Long menuNo) {
 
     jwtUtils.verifyToken(authorizationHeader);
@@ -97,7 +97,7 @@ public class MenuController {
 
     // Member ID를 사용하여 관련된 Store를 찾습니다.
     Store store = storeService.findStoreByMember(loginUser);
-    menuService.deleteMenuByMenuNoAndStore(menuNo, store);
+    menuComponentService.deleteMenuByMenuNoAndStore(menuNo, store);
     return ResponseEntity.ok("Menu deleted successfully");
   }
 
@@ -112,18 +112,16 @@ public class MenuController {
 
   //수정
   @PutMapping("/{menuNo}")
-  public ResponseEntity<?> updateMenu(@RequestHeader("Authorization") String  authorizationHeader,
+  public ResponseEntity<String> updateMenu(@RequestHeader("Authorization") String  authorizationHeader,
                                       @PathVariable("menuNo") Long menuNo,
                                       @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
-    Menu updatedMenu = menuService.findOne(menuNo);
-
     jwtUtils.verifyToken(authorizationHeader);
     TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     Store store = storeService.findStoreByMember(loginUser);
 
-    menuService.update(updatedMenu, multipartFiles, store);
+    menuComponentService.update(menuNo, multipartFiles, store);
     return ResponseEntity.ok("Menu updated successfully");
   }
 }

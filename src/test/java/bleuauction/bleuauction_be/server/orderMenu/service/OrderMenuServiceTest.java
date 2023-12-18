@@ -46,7 +46,10 @@ class OrderMenuServiceTest {
     private MenuRepository menuRepository;
 
     @InjectMocks
-    private OrderMenuService orderMenuService;
+    private OrderMenuComponentService orderMenuComponentService;
+
+    @InjectMocks
+    private OrderMenuModuleService orderMenuModuleService;
 
 
 
@@ -72,7 +75,7 @@ class OrderMenuServiceTest {
                 .thenReturn(mockSavedOrderMenu);
 
         // When
-        OrderMenuDTO savedOrderMenuDTO = orderMenuService.save(mockDTO);
+        OrderMenuDTO savedOrderMenuDTO = orderMenuModuleService.save(mockDTO);
 
         // Then
         verify(orderMenuRepository, times(1)).save(any(OrderMenuDTO.class));
@@ -91,7 +94,7 @@ class OrderMenuServiceTest {
         when(orderMenuRepository.findByOrderMenuNo(orderMenuNo)).thenReturn(mockOrderMenu);
 
         // When
-        orderMenuService.deleteOrderMenu(orderMenuNo);
+        orderMenuModuleService.deleteOrderMenu(orderMenuNo);
 
         // Then
         verify(orderMenuRepository, times(1)).findByOrderMenuNo(orderMenuNo);
@@ -120,7 +123,7 @@ class OrderMenuServiceTest {
                 .thenReturn(mockExistingOrderMenu);
 
         // When
-        OrderMenu updatedOrderMenu = orderMenuService.update(mockOrderMenuToUpdate);
+        OrderMenu updatedOrderMenu = orderMenuComponentService.update(mockOrderMenuToUpdate);
 
         // Then
         verify(orderMenuRepository, times(1)).findByOrderMenuNo(mockOrderMenuToUpdate.getOrderMenuNo());
@@ -181,7 +184,7 @@ class OrderMenuServiceTest {
                 .thenReturn(mockSelectedMenu);
 
         // When
-        ResponseEntity<?> responseEntity = orderMenuService.addOrderMenuDTO(mockMember, mockOrder, mockOrderMenuDTO);
+        ResponseEntity<?> responseEntity = orderMenuComponentService.addOrderMenuDTO(mockMember, mockOrder, mockOrderMenuDTO);
 
         // Then
         // findMenusByMenuNo 메서드가 주어진 메뉴 번호로 호출되었는지 확인
@@ -210,7 +213,7 @@ class OrderMenuServiceTest {
         mockOrder.setOrderMenus(List.of(mockOrderMenu1, mockOrderMenu2));
 
         // When
-        List<OrderMenu> result = orderMenuService.findOrderMenuDTOsByOrderNo(orderNo);
+        List<OrderMenu> result = orderMenuComponentService.findOrderMenuDTOsByOrderNo(orderNo);
 
         // Then
         verify(orderRepository, times(1)).findByOrderNo(orderNo);
@@ -238,7 +241,7 @@ class OrderMenuServiceTest {
         mockOrder.setOrderMenus(List.of(mockOrderMenu1, mockOrderMenu2));
 
         // When
-        List<OrderMenu> result = orderMenuService.findOrderMenusByOrderNoAndStatusY(orderNo);
+        List<OrderMenu> result = orderMenuComponentService.findOrderMenusByOrderNoAndStatusY(orderNo);
 
         // Then
         verify(orderRepository, times(1)).findByOrderNo(orderNo);

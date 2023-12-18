@@ -1,4 +1,4 @@
-package bleuauction.bleuauction_be.server.menu;
+package bleuauction.bleuauction_be.server.menu.service;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
@@ -275,12 +275,12 @@ class MenuServiceTest {
         updatemenu.setMenuPrice(20000);
 
 
-       // findOne 호출될 때 existedmenu를 리턴하도록 설정
+        // findOne 호출될 때 existedmenu를 리턴하도록 설정
         when(menuModuleServiceM.findOne(menuNo)).thenReturn(updatemenu);
         when(menuModuleServiceM.findOne(updatemenu.getMenuNo())).thenReturn(existedmenu);
 
         //when
-       menuComponentService.update(1L, multipartFiles, store);
+        menuComponentService.update(1L, multipartFiles, store);
 
         //then
         assertEquals(existedmenu.getMenuNo(), updatemenu.getMenuNo());

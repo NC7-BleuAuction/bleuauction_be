@@ -33,13 +33,6 @@ public class OrderMenuController {
   private final MemberComponentService memberComponentService;
 
   //등록
-  @GetMapping("/new")
-  public OrderMenu orderMenu() {
-    OrderMenu orderMenu = new OrderMenu();
-    return orderMenu;
-  }
-
-
   @PostMapping("/new")
   public ResponseEntity<?> orderMenu(@RequestHeader("Authorization") String authorizationHeader, HttpSession session, OrderMenuDTO orderMenuDTO)  throws Exception {
     jwtUtils.verifyToken(authorizationHeader);

@@ -30,7 +30,7 @@ public class OrderMenuComponentService {
     private final OrderRepository orderRepository;
     private final MenuRepository menuRepository;
 
-    public ResponseEntity<?> addOrderMenuDTO(Member member, Order order, OrderMenuDTO orderMenuDTO) throws Exception {
+    public ResponseEntity<String> addOrderMenuDTO(Member member, Order order, OrderMenuDTO orderMenuDTO) {
         Menu selectedMenu = menuRepository.findMenusByMenuNo(orderMenuDTO.getMenuNo());
 
         if (selectedMenu != null) {
@@ -86,6 +86,7 @@ public class OrderMenuComponentService {
     @Transactional(readOnly = true)
     public List<OrderMenu> findOrderMenuDTOsByOrderNo(Long orderNo) {
         Optional<Order> order = orderRepository.findByOrderNo(orderNo);
+
         if (order != null) {
             List<OrderMenu> orderMenus = order.get().getOrderMenus();
             List<OrderMenu> result = new ArrayList<>();

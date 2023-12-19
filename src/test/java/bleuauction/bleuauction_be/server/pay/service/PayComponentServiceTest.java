@@ -7,8 +7,6 @@ import bleuauction.bleuauction_be.server.pay.dto.PayInsertRequest;
 import bleuauction.bleuauction_be.server.pay.entity.Pay;
 import bleuauction.bleuauction_be.server.pay.entity.PayStatus;
 import bleuauction.bleuauction_be.server.pay.entity.PayType;
-import bleuauction.bleuauction_be.server.pay.exception.PayHistoryNotFoundException;
-import bleuauction.bleuauction_be.server.pay.repository.PayRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,56 +16,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
-class PayServiceTest {
+class PayComponentServiceTest {
     @Mock
-    private PayRepository payRepository;
+    private PayModuleService payModuleService;
 
     @InjectMocks
-    private PayService payService;
+    private PayComponentService payComponentService;
 
-    @Test
-    @DisplayName("Pay정보를 조회할 때, 파라미터로 제공받은 payNo가 존재하지 않는 경우 PayHistoryNotFoundException이 발생한다.")
-    void getPay_WhenPayNoIsNotExist_ThrowPayHistoryNotFoundException() {
-        // given
-        Long payNo = 1L;
-        PayHistoryNotFoundException mockException = new PayHistoryNotFoundException(payNo);
-
-        given(payRepository.findById(payNo)).willReturn(Optional.empty());
-
-        // when && then
-        PayHistoryNotFoundException e = assertThrows(PayHistoryNotFoundException.class, () -> payService.getPay(payNo));
-        assertEquals(mockException.getMessage(), e.getMessage());
-    }
-
-    @Test
-    @DisplayName("Pay정보를 조회 할 떄, 파라미터로 제공받은 payNo가 존재하는 경우 Pay정보를 반환한다.")
-    void getPay_WhenPayNoIsExist_ThenReturnPay() {
-        //given
-        Long payNo = 1L;
-        Pay mockPay = Pay.builder()
-                .payNo(payNo)
-                .payType(PayType.C)
-                .payPrice(80000)
-                .payStatus(PayStatus.Y)
-                .build();
-
-        given(payRepository.findById(payNo)).willReturn(Optional.of(mockPay));
-
-        // when
-        Pay foundPay = payService.getPay(payNo);
-
-        // then
-        assertEquals(mockPay, foundPay);
-    }
 
     @Test
     @DisplayName("결제정보를 생성 할 때, 파라미터로 받은 PayInsertRequest의 orderStatus가 N인 경우 RuntimeException이 발생한다.")
@@ -82,7 +46,7 @@ class PayServiceTest {
         payInsertRequest.setOrderStatus(OrderStatus.N);
 
         // when && then
-        RuntimeException e = assertThrows(RuntimeException.class, () -> payService.createPayment(payInsertRequest, null));
+        RuntimeException e = assertThrows(RuntimeException.class, () -> payComponentService.createPayment(payInsertRequest, null));
         assertEquals("주문을 완료해야 결제가 가능합니다.", e.getMessage());
     }
 
@@ -115,14 +79,14 @@ class PayServiceTest {
         Pay pay = payInsertRequest.getPayEntity(mockOrder);
         pay.setPayNo(1L);
 
-        given(payRepository.save(any(Pay.class))).willReturn(pay);
+        given(payModuleService.save(any(Pay.class))).willReturn(pay);
 
         // when
-        Pay createdPay = payService.createPayment(payInsertRequest, null);
+        Pay createdPay = payComponentService.createPayment(payInsertRequest, null);
 
         // then
         assertEquals(pay, createdPay);
-        inOrder(payRepository).verify(payRepository, times(1)).save(any(Pay.class));
+        inOrder(payModuleService).verify(payModuleService, times(1)).save(any(Pay.class));
     }
 
 }

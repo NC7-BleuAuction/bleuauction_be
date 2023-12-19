@@ -3,31 +3,33 @@ package bleuauction.bleuauction_be.server.menu.service;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
+import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
+
+
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Service
-@Transactional(readOnly = true)
+@Slf4j
+@ComponentService
+@Transactional
 @RequiredArgsConstructor
-public class MenuService {
-
+public class MenuComponentService {
     private final MenuRepository menuRepository;
+    private final MenuModuleService menuModuleService;
     private final AttachComponentService attachComponentService;
 
     //등록
-    @Transactional
     public Long enroll(Menu menu, Store store, List<MultipartFile> multipartFiles) {
 
         menu.setStoreNo(store);
-        menuRepository.save(menu);
+        menuModuleService.save(menu);
 
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             multipartFiles.stream().filter(multipartFile -> multipartFile.getSize() > 0)
@@ -36,22 +38,8 @@ public class MenuService {
         return menu.getMenuNo();
     }
 
-    public List<Menu> findMenusByStoreNo(Long storeNo) {
-        return menuRepository.findMenusByStoreNoAndMenuStatus(storeNo, MenuStatus.Y);
-    }
-
-    public List<Menu> findMenusByStoreNoAndStatus(Long storeNo, MenuStatus menuStatus) {
-        return menuRepository.findMenusByStoreNoAndMenuStatus(storeNo, menuStatus);
-    }
-
-    //메뉴 1건 조회
-    @Transactional
-    public Menu findOne(Long menuNo) {
-        return menuRepository.findMenusByMenuNo(menuNo);
-    }
 
     //메뉴 삭제(N)
-    @Transactional
     public void deleteMenuByMenuNoAndStore(Long menuNo, Store store) {
         Menu menu = menuRepository.findMenusByMenuNo(menuNo);
         if (menu == null || !menu.getStoreNo().equals(store)) {
@@ -65,9 +53,9 @@ public class MenuService {
     }
 
     //메뉴 수정
-    @Transactional
-    public Menu update(Menu updatedMenu, List<MultipartFile> multipartFiles, Store store) {
-        Menu existingMenu = menuRepository.findMenusByMenuNo(updatedMenu.getMenuNo());
+    public Menu update(long menuNo, List<MultipartFile> multipartFiles, Store store) {
+        Menu updatedMenu = menuModuleService.findOne(menuNo);
+        Menu existingMenu = menuModuleService.findOne(updatedMenu.getMenuNo());
 
         if (!existingMenu.getStoreNo().equals(store)) {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
@@ -82,9 +70,8 @@ public class MenuService {
                     .filter(multipartFile -> multipartFile.getSize() > 0)
                     .forEach(multipartFile -> attachComponentService.saveWithMenu(existingMenu, FileUploadUsage.MENU, multipartFile));
         }
-        return menuRepository.save(existingMenu);
+        return menuModuleService.save(existingMenu);
 
     }
-
 
 }

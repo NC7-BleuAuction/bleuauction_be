@@ -68,13 +68,13 @@ public class OrderMenuController {
   //디테일(수정)
   @GetMapping("/detail/{orderMenuNo}")
   public ResponseEntity<OrderMenu> detailOM(@PathVariable("orderMenuNo") Long orderMenuNo) {
-    OrderMenu OM = orderMenuModuleService.findByOrderMenuNo(orderMenuNo);
+    OrderMenu OM = orderMenuModuleService.findOne(orderMenuNo);
     return ResponseEntity.ok(OM);
   }
 
   @PutMapping("/update/{orderMenuNo}")
-  public ResponseEntity<String> updateOM (OrderMenu orderMenu, @PathVariable("orderMenuNo") Long orderMenuNo) {
-    orderMenuComponentService.update(orderMenu);
+  public ResponseEntity<String> updateOM (@RequestBody OrderMenuDTO request, @PathVariable("orderMenuNo") Long orderMenuNo) {
+    orderMenuComponentService.update(orderMenuNo,request);
     log.info("ordermenu/update");
     return ResponseEntity.ok("OrderMenu updated successfully");
   }

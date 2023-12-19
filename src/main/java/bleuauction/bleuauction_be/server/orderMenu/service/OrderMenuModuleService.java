@@ -17,7 +17,7 @@ public class OrderMenuModuleService {
     private final OrderMenuRepository orderMenuRepository;
 
     // DTO 등록
-    public OrderMenuDTO save(OrderMenuDTO orderMenuDTO) {
+    public OrderMenuDTO saveDTO(OrderMenuDTO orderMenuDTO) {
         return orderMenuRepository.save(orderMenuDTO);
     }
     public OrderMenu save(OrderMenu orderMenu) { return orderMenuRepository.save(orderMenu);}
@@ -31,8 +31,9 @@ public class OrderMenuModuleService {
         }
     }
 
-    //전체 주문 메뉴 조회
-    public OrderMenu findByOrderMenuNo(Long orderMenuNo) {
+    //주문 메뉴 1건 조회
+    public OrderMenuDTO findDTO(Long orderenuNo) { return orderMenuRepository.findByOrderMenuDTONo(orderenuNo);}
+    public OrderMenu findOne(Long orderMenuNo) {
         return orderMenuRepository.findByOrderMenuNo(orderMenuNo);
     }
 }

@@ -6,6 +6,7 @@ import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.service.MenuModuleService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
+import bleuauction.bleuauction_be.server.order.service.OrderService;
 import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
@@ -28,11 +29,12 @@ public class OrderMenuComponentService {
 
     private final OrderMenuRepository orderMenuRepository;
     private final OrderRepository orderRepository;
+    private final OrderService orderService;
     private final MenuModuleService menuModuleService;
     private final OrderMenuModuleService orderMenuModuleService;
 
     public ResponseEntity<String> addOrderMenuDTO(Member member, Order order, OrderMenuDTO orderMenuDTO) {
-        Optional<Menu> selectedMenu = Optional.ofNullable(menuModuleService.findOne(orderMenuDTO.getMenuNo()));
+        Optional<Menu> selectedMenu = Optional.ofNullable(menuModuleService.findOne(orderMenuDTO.getMenuNo().getMenuNo()));
 
         if(selectedMenu.isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Selected menu not found");
@@ -51,12 +53,13 @@ public class OrderMenuComponentService {
     //주문 번호 별 주문메뉴 조회
     @Transactional(readOnly = true)
     public List<OrderMenu> findOrderMenusByOrderNoAndStatusY(Long orderNo) {
-        Optional<Order> order = orderRepository.findById(orderNo);
+        Order order = orderService.findByOrderNo(orderNo);
 
-        if(order == null) {
+        if(order==null) {
             return new ArrayList<>();
         }
-            List<OrderMenu> orderMenus = order.get().getOrderMenus();
+
+            List<OrderMenu> orderMenus = order.getOrderMenus();
             List<OrderMenu> result = new ArrayList<>();
 
             for (OrderMenu orderMenu : orderMenus) {
@@ -68,14 +71,18 @@ public class OrderMenuComponentService {
     }
 
     //주문 메뉴 수정
-    public OrderMenu update(OrderMenu orderMenu) {
-        OrderMenu updateom = orderMenuRepository.findByOrderMenuNo(orderMenu.getOrderMenuNo());
+    public OrderMenu update(Long orderMenuNo, OrderMenuDTO request) {
+        OrderMenu existingOrderMenu = orderMenuModuleService.findOne(orderMenuNo);
 
-        updateom.setMemberNo(orderMenu.getMemberNo());
-        updateom.setMenuNo(orderMenu.getMenuNo());
-        updateom.setOrderMenuCount(orderMenu.getOrderMenuCount());
+        if (existingOrderMenu == null) {
+            throw new IllegalArgumentException("주문 메뉴가 존재하지 않습니다.");
+        }
 
-        return orderMenuModuleService.save(updateom);
+        existingOrderMenu.setMemberNo(request.getMemberNo());
+        existingOrderMenu.setMenuNo(request.getMenuNo());
+        existingOrderMenu.setOrderMenuCount(request.getOrderMenuCount());
+
+        return orderMenuModuleService.save(existingOrderMenu);
     }
 
 

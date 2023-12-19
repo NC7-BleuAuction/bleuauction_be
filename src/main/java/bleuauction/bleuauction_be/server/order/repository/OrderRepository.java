@@ -16,6 +16,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 
   Optional<Order> findByOrderNo(Long orderNo);
+  public Order findByOrder (Long orderNo);
 
 
 
@@ -36,4 +37,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
           "JOIN store.memberNo member " +
           "WHERE o.orderStatus = 'Y' AND member.memberNo = :memberNo")
   List<Order> findOrdersByMemberAndStore(@Param("memberNo") Member memberNo);
+
 }

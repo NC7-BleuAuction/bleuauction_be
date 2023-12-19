@@ -33,7 +33,7 @@ public class OrderMenuController {
   private final MemberComponentService memberComponentService;
 
   //등록
-  @PostMapping("/new")
+  @PostMapping
   public ResponseEntity<?> orderMenu(@RequestHeader("Authorization") String authorizationHeader, HttpSession session, OrderMenuDTO orderMenuDTO)  throws Exception {
     jwtUtils.verifyToken(authorizationHeader);
     TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
@@ -68,7 +68,7 @@ public class OrderMenuController {
   //디테일(수정)
   @GetMapping("/detail/{orderMenuNo}")
   public ResponseEntity<OrderMenu> detailOM(@PathVariable("orderMenuNo") Long orderMenuNo) {
-    OrderMenu OM = orderMenuRepository.findByOrderMenuNo(orderMenuNo);
+    OrderMenu OM = orderMenuModuleService.findByOrderMenuNo(orderMenuNo);
     return ResponseEntity.ok(OM);
   }
 

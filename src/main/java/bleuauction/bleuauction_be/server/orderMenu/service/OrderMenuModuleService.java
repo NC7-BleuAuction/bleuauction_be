@@ -20,6 +20,7 @@ public class OrderMenuModuleService {
     public OrderMenuDTO save(OrderMenuDTO orderMenuDTO) {
         return orderMenuRepository.save(orderMenuDTO);
     }
+    public OrderMenu save(OrderMenu orderMenu) { return orderMenuRepository.save(orderMenu);}
 
     //주문 메뉴 삭제
     public void deleteOrderMenu(Long orderMenuNo) {
@@ -28,5 +29,10 @@ public class OrderMenuModuleService {
             orderMenu.delete();
             orderMenuRepository.save(orderMenu);
         }
+    }
+
+    //전체 주문 메뉴 조회
+    public OrderMenu findByOrderMenuNo(Long orderMenuNo) {
+        return orderMenuRepository.findByOrderMenuNo(orderMenuNo);
     }
 }

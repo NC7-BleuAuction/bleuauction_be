@@ -119,14 +119,14 @@ class OrderMenuServiceTest {
         mockExistingOrderMenu.setMenuNo(mockMenu2);
         mockExistingOrderMenu.setOrderMenuCount(3);
 
-        when(orderMenuRepository.findByOrderMenuNo(mockOrderMenuToUpdate.getOrderMenuNo()))
+        when(orderMenuModuleService.findByOrderMenuNo(mockOrderMenuToUpdate.getOrderMenuNo()))
                 .thenReturn(mockExistingOrderMenu);
 
         // When
         OrderMenu updatedOrderMenu = orderMenuComponentService.update(mockOrderMenuToUpdate);
 
         // Then
-        verify(orderMenuRepository, times(1)).findByOrderMenuNo(mockOrderMenuToUpdate.getOrderMenuNo());
+        verify(orderMenuModuleService, times(1)).findByOrderMenuNo(mockOrderMenuToUpdate.getOrderMenuNo());
 
         assertEquals(mockOrderMenuToUpdate.getMemberNo(), mockExistingOrderMenu.getMemberNo());
         assertEquals(mockOrderMenuToUpdate.getMenuNo(), mockExistingOrderMenu.getMenuNo());

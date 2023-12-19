@@ -53,12 +53,14 @@ public class OrderMenuComponentService {
     //주문 번호 별 주문메뉴 조회
     @Transactional(readOnly = true)
     public List<OrderMenu> findOrderMenusByOrderNoAndStatusY(Long orderNo) {
-        Order order = orderService.findByOrderNo(orderNo);
 
-        if(order==null) {
+        Optional<Order>  orderOptional = orderService.findOne(orderNo);
+
+        if(orderOptional.isEmpty()) {
             return new ArrayList<>();
         }
 
+            Order order = orderOptional.get();
             List<OrderMenu> orderMenus = order.getOrderMenus();
             List<OrderMenu> result = new ArrayList<>();
 
@@ -90,7 +92,7 @@ public class OrderMenuComponentService {
     public List<OrderMenu> findOrderMenuDTOsByOrderNo(Long orderNo) {
         Optional<Order> order = orderRepository.findByOrderNo(orderNo);
 
-        if(order == null) {
+        if(order.isEmpty()) {
             return new ArrayList<>();
         }
             List<OrderMenu> orderMenus = order.get().getOrderMenus();

@@ -11,7 +11,6 @@ public interface OrderMenuRepository extends JpaRepository<OrderMenu, Long> {
 
   public OrderMenu findByOrderMenuNo(Long orderMenuNo);
 
-  public OrderMenuDTO findByOrderMenuDTONo(Long OrderMenuNo);
 
 
 

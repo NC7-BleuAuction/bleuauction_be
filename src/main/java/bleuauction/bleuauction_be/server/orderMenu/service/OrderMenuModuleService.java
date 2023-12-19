@@ -32,7 +32,6 @@ public class OrderMenuModuleService {
     }
 
     //주문 메뉴 1건 조회
-    public OrderMenuDTO findDTO(Long orderenuNo) { return orderMenuRepository.findByOrderMenuDTONo(orderenuNo);}
     public OrderMenu findOne(Long orderMenuNo) {
         return orderMenuRepository.findByOrderMenuNo(orderMenuNo);
     }

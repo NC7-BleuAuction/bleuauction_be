@@ -147,7 +147,7 @@ class OrderMenuServiceTest {
         orderMenu3.setOrderNo(mockOrder);
 
         mockOrder.setOrderMenus(List.of(orderMenu1, orderMenu2, orderMenu3));
-        when(orderService.findByOrderNo(orderNo)).thenReturn(mockOrder);
+        when(orderService.findOne(orderNo)).thenReturn(Optional.of(mockOrder));
 
         //when
         List<OrderMenu> result = orderMenuComponentService.findOrderMenusByOrderNoAndStatusY(orderNo);

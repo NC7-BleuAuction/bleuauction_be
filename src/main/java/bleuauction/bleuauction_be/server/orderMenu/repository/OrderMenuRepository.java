@@ -15,5 +15,4 @@ public interface OrderMenuRepository extends JpaRepository<OrderMenu, Long> {
 
 
 
-
 }

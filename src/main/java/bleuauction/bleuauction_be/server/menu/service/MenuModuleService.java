@@ -22,8 +22,8 @@ public class MenuModuleService {
         return menuRepository.findMenusByStoreNoAndMenuStatus(storeNo, MenuStatus.Y);
     }
 
+
     //메뉴 1건 조회
-    @Transactional
     public Menu findOne(Long menuNo) {
         return menuRepository.findMenusByMenuNo(menuNo);
     }

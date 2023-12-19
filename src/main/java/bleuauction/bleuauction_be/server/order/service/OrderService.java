@@ -40,6 +40,8 @@ public class OrderService {
     return orderRepository.findByOrderNo(orderNo);
   }
 
+  //public Order findByOrderNo(Long orderNo) { return orderRepository.findByOrder(orderNo);}
+
   //가게 별 주문 조회
   public ResponseEntity<?> findOrdersByMemberAndStore(Long memberNo) {
     Optional<Member> loginUser = memberComponentService.findByMemberNo(memberNo);

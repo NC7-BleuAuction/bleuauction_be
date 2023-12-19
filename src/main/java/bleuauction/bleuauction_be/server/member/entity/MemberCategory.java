@@ -11,4 +11,12 @@ public enum MemberCategory {
   A("관리자");
 
   private final String value;
+
+  public static boolean isMemberSeller(MemberCategory memberCategory) {
+    return memberCategory == S;
+  }
+
+  public static boolean isMemberAdmin(MemberCategory memberCategory) {
+    return memberCategory == A;
+  }
 }

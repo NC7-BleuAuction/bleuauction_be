@@ -23,5 +23,5 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
   Optional<Store> findByStoreName(String storeName);
 
-  boolean existsStoreByStoreName(String storeName);
+  boolean existsByStoreName(String storeName);
 }

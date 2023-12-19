@@ -1,14 +1,13 @@
 package bleuauction.bleuauction_be.server.store.service;
 
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.util.MemberEntityFactory;
 import bleuauction.bleuauction_be.server.store.dto.StoreSignUpRequest;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
-import bleuauction.bleuauction_be.server.store.exception.StoreNotFoundException;
 import bleuauction.bleuauction_be.server.store.exception.StoreUpdateUnAuthorizedException;
-import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.store.util.StoreUtilFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,6 @@ import org.springframework.data.domain.Pageable;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,80 +36,20 @@ import static org.mockito.Mockito.times;
 
 
 @ExtendWith(MockitoExtension.class)
-class StoreServiceTest {
+class StoreComponentServiceTest {
 
     @Mock
-    private StoreRepository storeRepository;
+    private StoreModuleService storeModuleService;
+
+    @Mock
+    private AttachComponentService attachComponentService;
 
     @InjectMocks
-    private StoreService storeService;
+    private StoreComponentService storeComponentService;
 
     private final String TEST_MARKETNAME = "노량진 쑤산시장";
     private final String TEST_STORENAME = "블루오크션";
     private final String TEST_LICENSE = "111-111-111111";
-
-    @Test
-    @DisplayName("Id를 기준으로 가게정보를 조회할 때, 존재하지 않으면 StoreNotFoundException이 발생한다.")
-    void findStoreById_givenStoreNoAndNotExists_thenThrowStoreNotFoundException() {
-        // given
-        StoreNotFoundException expectException = new StoreNotFoundException(1L);
-        given(storeRepository.findById(any(Long.class))).willReturn(Optional.empty());
-
-        // when && then
-        StoreNotFoundException e = assertThrows(
-                StoreNotFoundException.class,
-                () -> storeService.findStoreById(1L)
-        );
-        assertEquals(expectException.getMessage(), e.getMessage());
-    }
-
-    @Test
-    @DisplayName("Id를 기준으로 가게정보를 조회할 때, 존재하는 경우에는 Store객체를 반환한다.")
-    void findStoreById_givenStoreNoAndExists_thenReturnStore() {
-        // given
-        Store store = StoreUtilFactory.of(TEST_MARKETNAME, TEST_STORENAME, TEST_LICENSE);
-        store.setStoreNo(1L);
-
-        given(storeRepository.findById(1L)).willReturn(Optional.of(store));
-
-        // when
-        Store foundStore = storeService.findStoreById(1L);
-
-        // then
-        assertEquals(store, foundStore);
-    }
-
-    @Test
-    @DisplayName("Member를 기준으로 가게정보를 조회할 때, 존재하지 않으면 StoreNotFoundException이 발생한다.")
-    void findStoreByMember_givenStoreNoAndNotExists_thenThrowStoreNotFoundException() {
-        // given
-        Member mockMember = MemberEntityFactory.mockSellerMember;
-        StoreNotFoundException expectException = new StoreNotFoundException(mockMember.getMemberNo());
-        given(storeRepository.findByMemberNo(mockMember)).willReturn(Optional.empty());
-
-        // when && then
-        StoreNotFoundException e = assertThrows(
-                StoreNotFoundException.class,
-                () -> storeService.findStoreByMember(mockMember)
-        );
-        assertEquals(expectException.getMessage(), e.getMessage());
-    }
-
-    @Test
-    @DisplayName("Member를 기준으로 가게정보를 조회할 때, 존재하는 경우에는 Store객체를 반환한다.")
-    void findStoreByMember_givenStoreNoAndExists_thenReturnStore() {
-        // given
-        Member mockMember = MemberEntityFactory.mockSellerMember;
-        Store store = StoreUtilFactory.of(TEST_MARKETNAME, TEST_STORENAME, TEST_LICENSE);
-        store.setStoreNo(1L);
-        given(storeRepository.findByMemberNo(mockMember)).willReturn(Optional.of(store));
-
-        // when
-        Store foundStore = storeService.findStoreByMember(mockMember);
-
-        // then
-        assertEquals(store, foundStore);
-    }
 
     @Test
     @DisplayName("가게 리스트를 페이지조회시 Limit그리고 Status를 파라미터로 제공 할 때, 해당 Limit, Page에 맞춰 결과물을 반환한다.")
@@ -124,10 +62,10 @@ class StoreServiceTest {
         );
         Page<Store> mockPage = new PageImpl<>(mockReturnList, PageRequest.of(0, 3), 5L);
 
-        given(storeRepository.findAllByStoreStatus(any(StoreStatus.class), any(Pageable.class))).willReturn(mockPage);
+        given(storeModuleService.findPageByStoreStatus(any(StoreStatus.class), any(Pageable.class))).willReturn(mockPage);
 
         // when
-        List<Store> foundList = storeService.selectStoreList(StoreStatus.Y, 0, 3);
+        List<Store> foundList = storeComponentService.selectStoreList(StoreStatus.Y, 0, 3);
 
         //then
         assertEquals(mockReturnList, foundList);
@@ -140,9 +78,9 @@ class StoreServiceTest {
         Member mockMember = MemberEntityFactory.of("test@test", "testPassword123!@#", "테스트입니다", MemberCategory.M);
 
         // when && then
-        IllegalAccessException e = assertThrows(
-                IllegalAccessException.class,
-                () -> storeService.signup(new StoreSignUpRequest(), mockMember)
+        IllegalArgumentException e = assertThrows(
+                IllegalArgumentException.class,
+                () -> storeComponentService.signup(new StoreSignUpRequest(), mockMember)
         );
         assertEquals("판매자 회원만 등록 가능합니다.", e.getMessage());
     }
@@ -154,9 +92,9 @@ class StoreServiceTest {
         Member mockMember = MemberEntityFactory.of("test@test", "testPassword123!@#", "테스트입니다", MemberCategory.A);
 
         // when && then
-        IllegalAccessException e = assertThrows(
-                IllegalAccessException.class,
-                () -> storeService.signup(new StoreSignUpRequest(), mockMember)
+        IllegalArgumentException e = assertThrows(
+                IllegalArgumentException.class,
+                () -> storeComponentService.signup(new StoreSignUpRequest(), mockMember)
         );
         assertEquals("판매자 회원만 등록 가능합니다.", e.getMessage());
     }
@@ -178,12 +116,12 @@ class StoreServiceTest {
         mockRequest.setWeekendStartTime(Time.valueOf(LocalTime.of(11, 0, 0)));
         mockRequest.setWeekendEndTime(Time.valueOf(LocalTime.of(23, 59, 59)));
 
-        given(storeRepository.existsStoreByStoreName(mockRequest.getStoreName())).willReturn(true);
+        given(storeModuleService.isExistByStoreName(mockRequest.getStoreName())).willReturn(true);
 
         // when && then
         IllegalStateException e = assertThrows(
                 IllegalStateException.class,
-                () -> storeService.signup(mockRequest, mockMember)
+                () -> storeComponentService.signup(mockRequest, mockMember)
         );
         assertEquals("이미 존재하는 가게 입니다.", e.getMessage());
     }
@@ -205,18 +143,18 @@ class StoreServiceTest {
         mockRequest.setWeekendStartTime(Time.valueOf(LocalTime.of(11, 0, 0)));
         mockRequest.setWeekendEndTime(Time.valueOf(LocalTime.of(23, 59, 59)));
 
-        given(storeRepository.existsStoreByStoreName(mockRequest.getStoreName())).willReturn(false);
-        given(storeRepository.save(any(Store.class))).willAnswer(invocation -> invocation.getArgument(0));
+        given(storeModuleService.isExistByStoreName(mockRequest.getStoreName())).willReturn(false);
+        given(storeModuleService.save(any(Store.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        storeService.signup(mockRequest, mockMember);
+        storeComponentService.signup(mockRequest, mockMember);
 
         // then
-        InOrder inOrder = inOrder(storeRepository);
+        InOrder inOrder = inOrder(storeModuleService);
         // 몇번 호출하였는지 검증
-        inOrder.verify(storeRepository, times(1)).existsStoreByStoreName(mockRequest.getStoreName());
+        inOrder.verify(storeModuleService, times(1)).isExistByStoreName(mockRequest.getStoreName());
         //최소 1번 이상 호출되었는지 검증
-        inOrder.verify(storeRepository, atLeast(1)).save(any(Store.class));
+        inOrder.verify(storeModuleService, atLeast(1)).save(any(Store.class));
     }
 
     @Test
@@ -227,10 +165,12 @@ class StoreServiceTest {
         Store mockStore = StoreUtilFactory.of("노량진수산시장", "블루크오션", "111-11-11111");
         mockStore.setStoreNo(1L);
 
+        given(storeModuleService.findById(mockStore.getStoreNo())).willReturn(mockStore);
+
         // when && then
         StoreUpdateUnAuthorizedException e = assertThrows(
                 StoreUpdateUnAuthorizedException.class,
-                () -> storeService.withDrawStore(mockStore, mockMember)
+                () -> storeComponentService.withDrawStore(mockStore.getStoreNo(), mockMember)
         );
         assertTrue(e.getMessage().startsWith("[StoreUpdateUnAuthorizedException] UnAuthorized"));
     }
@@ -243,14 +183,15 @@ class StoreServiceTest {
         Store mockStore = StoreUtilFactory.of("노량진수산시장", "블루크오션", "111-11-11111");
         mockStore.setStoreNo(1L);
 
-        given(storeRepository.save(mockStore)).willReturn(mockStore);
+        given(storeModuleService.findById(mockStore.getStoreNo())).willReturn(mockStore);
+        given(storeModuleService.save(mockStore)).willReturn(mockStore);
 
         // when
-        storeService.withDrawStore(mockStore, mockMember);
+        storeComponentService.withDrawStore(mockStore.getStoreNo(), mockMember);
 
         // then
         assertEquals(StoreStatus.N, mockStore.getStoreStatus());
-        InOrder inOrder = inOrder(storeRepository);
-        inOrder.verify(storeRepository, times(1)).save(mockStore);
+        InOrder inOrder = inOrder(storeModuleService);
+        inOrder.verify(storeModuleService, times(1)).save(mockStore);
     }
 }

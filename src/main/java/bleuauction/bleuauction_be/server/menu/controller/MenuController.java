@@ -10,7 +10,7 @@ import bleuauction.bleuauction_be.server.menu.service.MenuComponentService;
 import bleuauction.bleuauction_be.server.menu.service.MenuModuleService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
-import bleuauction.bleuauction_be.server.store.service.StoreService;
+import bleuauction.bleuauction_be.server.store.service.StoreModuleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -41,7 +41,7 @@ public class MenuController {
 
   private final MenuComponentService menuComponentService;
   private final MenuModuleService menuModuleService;
-  private final StoreService storeService;
+    private final StoreModuleService storeModuleService;
   private final AttachComponentService attachComponentService;
   private final JwtUtils jwtUtils;
   private final MemberModuleService memberModuleService;
@@ -59,7 +59,7 @@ public class MenuController {
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
     // Member ID를 사용하여 관련된 Store를 찾습니다.
-    Store store = storeService.findStoreByMember(loginUser);
+    Store store = storeModuleService.findByMember(loginUser);
 
     if (store == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("메뉴 등록 권한이 없습니다.");
@@ -82,7 +82,7 @@ public class MenuController {
       TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
       // 로그인 유저의 멤버 번호
       Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
-      Store store = storeService.findStoreByMember(loginUser);
+      Store store = storeModuleService.findByMember(loginUser);
       return menuModuleService.findMenusByStoreNo(store.getStoreNo());
   }
 
@@ -96,7 +96,7 @@ public class MenuController {
 
 
     // Member ID를 사용하여 관련된 Store를 찾습니다.
-    Store store = storeService.findStoreByMember(loginUser);
+    Store store = storeModuleService.findByMember(loginUser);
     menuComponentService.deleteMenuByMenuNoAndStore(menuNo, store);
     return ResponseEntity.ok("Menu deleted successfully");
   }
@@ -119,7 +119,7 @@ public class MenuController {
     TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
     Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
-    Store store = storeService.findStoreByMember(loginUser);
+    Store store = storeModuleService.findByMember(loginUser);
 
     menuComponentService.update(menuNo, multipartFiles, store);
     return ResponseEntity.ok("Menu updated successfully");

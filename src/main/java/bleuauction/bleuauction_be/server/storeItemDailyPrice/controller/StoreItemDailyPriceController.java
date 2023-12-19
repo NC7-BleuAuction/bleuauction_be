@@ -2,8 +2,8 @@ package bleuauction.bleuauction_be.server.storeItemDailyPrice.controller;
 
 import bleuauction.bleuauction_be.server.common.utils.SecurityUtils;
 import bleuauction.bleuauction_be.server.store.entity.Store;
-import bleuauction.bleuauction_be.server.store.service.StoreService;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.dto.StoreItemDailyPriceInsertRequest;
+import bleuauction.bleuauction_be.server.store.service.StoreModuleService;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDailyPrice;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.service.StoreItemDailyPriceService;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/sidp")
 public class StoreItemDailyPriceController {
-  private final StoreService storeService;
+    private final StoreModuleService storeModuleService;
   private final StoreItemDailyPriceService storeItemDailyPriceService;
 
   @GetMapping
@@ -39,7 +39,7 @@ public class StoreItemDailyPriceController {
     log.info("@PostMapping ===========> /api/sidp");
     log.info("StoreItemDailyPriceInsertRequest: {}", request);
 
-    Store store = storeService.findStoreByMember(SecurityUtils.getAuthenticatedUserToMember());
+    Store store = storeModuleService.findByMember(SecurityUtils.getAuthenticatedUserToMember());
     StoreItemDailyPrice insertStoreItemDailyPrice = storeItemDailyPriceService.addStoreItemDailyPrice(request, store);
 
     log.info("insertStoreItemDailyPrice: {} ", insertStoreItemDailyPrice);

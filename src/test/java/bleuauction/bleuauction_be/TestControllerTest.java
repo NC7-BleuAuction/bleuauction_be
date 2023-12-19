@@ -1,6 +1,6 @@
 package bleuauction.bleuauction_be;
 
-import bleuauction.bleuauction_be.server.store.service.StoreService;
+import bleuauction.bleuauction_be.server.store.service.StoreComponentService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -34,7 +33,7 @@ class TestControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private StoreService storeService;
+    private StoreComponentService storeComponentService;
 
     @Test
     @DisplayName("응애")

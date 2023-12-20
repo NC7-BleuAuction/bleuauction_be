@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +32,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/notice")
 public class NoticeController {
 
   private final MemberModuleService memberModuleService;
@@ -75,20 +77,20 @@ public class NoticeController {
     return ResponseEntity.ok("Notice deleted successfully");
   }
 
-  //사진삭제
-//  @DeleteMapping("/file/{fileNo}")
-//  public ResponseEntity<String> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable Long fileNo) {
-//    jwtUtils.verifyToken(authorizationHeader);
-//    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
-//    Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
-//
-//    if(MemberCategory.A.equals(loginUser.getMemberCategory())) {
-//      attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
-//      return ResponseEntity.ok("File deleted successfully");
-//    } else {
-//      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
-//    }
-//  }
+//  사진삭제
+  @DeleteMapping("/file/{fileNo}")
+  public ResponseEntity<String> fileNoticeDelete(@RequestHeader("Authorization") String  authorizationHeader, @PathVariable Long fileNo) {
+    jwtUtils.verifyToken(authorizationHeader);
+    TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
+    Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
+
+    if(MemberCategory.A.equals(loginUser.getMemberCategory())) {
+      attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
+      return ResponseEntity.ok("File deleted successfully");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 권한이 필요합니다");
+    }
+  }
 
   //디테일
   @GetMapping("/{noticeNo}")

@@ -36,35 +36,6 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-    AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-    authenticationManagerBuilder
-            .userDetailsService(apiUserDetailsService)
-            .passwordEncoder(passwordEncoder());
-
-    AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
-    http.authenticationManager(authenticationManager);
-
-    // 로그인 필터
-    APILoginFilter apiLoginFilter = new APILoginFilter("/generateToken");
-    apiLoginFilter.setAuthenticationManager(authenticationManager);
-
-    // 로그인 성공시 호출 핸들러 설정
-    APILoginSuccessHandler successHandler = new APILoginSuccessHandler(jwtUtils);
-    apiLoginFilter.setAuthenticationSuccessHandler(successHandler);
-
-    // UsernamePasswordAuthenticationFilter 앞쪽으로 APILoginFilter지정
-    http.addFilterBefore(apiLoginFilter, UsernamePasswordAuthenticationFilter.class);
-
-    // Token검증 필터 추가
-    http.addFilterBefore(
-            new TokenCheckFilter(apiUserDetailsService, jwtUtils),
-            UsernamePasswordAuthenticationFilter.class
-    );
-
-    // refreshToken 필터 등록 - JWT관련 다른 필터들 이전에 동작하도록 TokenCheckFilter 앞에 배치
-    http.addFilterBefore(new RefreshTokenFilter("/refreshToken", jwtUtils), TokenCheckFilter.class);
-
     http.authorizeHttpRequests(
                     authorizationManagerRequestMatcherRegistry ->
                             authorizationManagerRequestMatcherRegistry
@@ -72,10 +43,13 @@ public class SecurityConfig {
                                     .permitAll()
             ).logout(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
+            .userDetailsService(apiUserDetailsService)
+            .addFilterBefore(new APILoginFilter("/generateToken",  new APILoginSuccessHandler(jwtUtils)), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new TokenCheckFilter(apiUserDetailsService, jwtUtils), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new RefreshTokenFilter("refreshToken", jwtUtils), TokenCheckFilter.class)
             //H2 사용을 하기 위한 옵션
             //.headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
             .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource)); //CORS Spring Boot 설정
-
     return http.build();
   }
 

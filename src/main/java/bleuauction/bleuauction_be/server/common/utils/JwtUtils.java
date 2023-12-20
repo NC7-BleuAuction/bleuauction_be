@@ -2,9 +2,9 @@ package bleuauction.bleuauction_be.server.common.utils;
 
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.config.JwtConfig;
-import bleuauction.bleuauction_be.server.exception.ExpiredTokenException;
-import bleuauction.bleuauction_be.server.exception.InvalidTokenException;
-import bleuauction.bleuauction_be.server.exception.RenewAccessTokenException;
+import bleuauction.bleuauction_be.server.common.exception.ExpiredTokenException;
+import bleuauction.bleuauction_be.server.common.exception.InvalidTokenException;
+import bleuauction.bleuauction_be.server.common.exception.RenewAccessTokenException;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;

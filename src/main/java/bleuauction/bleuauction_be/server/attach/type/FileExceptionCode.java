@@ -1,7 +1,7 @@
 package bleuauction.bleuauction_be.server.attach.type;
 
 import bleuauction.bleuauction_be.server.common.dto.ErrorDetail;
-import bleuauction.bleuauction_be.server.exception.BaseErrorCode;
+import bleuauction.bleuauction_be.server.common.exception.BaseErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

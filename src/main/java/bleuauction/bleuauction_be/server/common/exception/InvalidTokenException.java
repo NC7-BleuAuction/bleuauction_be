@@ -1,6 +1,4 @@
-package bleuauction.bleuauction_be.server.exception;
-
-import static bleuauction.bleuauction_be.server.exception.GlobalException.INVALID_TOKEN_EXCEPTION;
+package bleuauction.bleuauction_be.server.common.exception;
 
 
 public class InvalidTokenException extends BaseException {
@@ -8,6 +6,6 @@ public class InvalidTokenException extends BaseException {
   public static final InvalidTokenException EXCEPTION = new InvalidTokenException();
 
   public InvalidTokenException() {
-    super(INVALID_TOKEN_EXCEPTION);
+    super(GlobalException.INVALID_TOKEN_EXCEPTION);
   }
 }

@@ -2,10 +2,10 @@ package bleuauction.bleuauction_be.server.review.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
-import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.review.entity.Review;
-import bleuauction.bleuauction_be.server.review.service.ReviewService;
 import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
+import bleuauction.bleuauction_be.server.common.utils.SecurityUtils;
+import bleuauction.bleuauction_be.server.review.entity.Review;
+import bleuauction.bleuauction_be.server.review.service.ReviewModuleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,65 +25,53 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/reviews")
 public class ReviewController {
-
-  private final JwtUtils jwtUtils;
+  private final ReviewModuleService reviewModuleService;
   private final AttachComponentService attachComponentService;
-  private final ReviewService reviewService;
 
   @GetMapping
-  public ResponseEntity<List<Review>> reviewList(@RequestHeader("Authorization") String authorizationHeader,
-                                                 @RequestParam(value = "storeNo") Long storeNo,
+  public ResponseEntity<List<Review>> reviewList(@RequestParam(value = "storeNo") Long storeNo,
                                                  @RequestParam(value = "startPage", defaultValue = "0") int startPage) {
     log.info("@GetMapping ===========> /api/reviews");
     log.info("storeNo: {}", storeNo);
     log.info("startPage: {}", startPage);
-    jwtUtils.verifyToken(authorizationHeader);
-    List<Review> reviewList = reviewService.selectReviewList(storeNo, startPage);
+    List<Review> reviewList = reviewModuleService.selectReviewList(storeNo, startPage);
     log.info("reviewList: {}", reviewList);
 
     return ResponseEntity.ok(reviewList);
   }
 
   @PostMapping
-  public ResponseEntity<Review> reviewAdd(@RequestHeader("Authorization") String authorizationHeader, Review review, Member member,
-                                          @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) throws Exception {
+  public ResponseEntity<Review> reviewAdd(Review review,
+                                          @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
     log.info("@PostMapping ===========> /api/review");
-    log.info("authorizationHeader: {}", authorizationHeader);
     log.info("Review: {}", review);
     log.info("MultipartFile: {}", multipartFiles);
 
-
-    jwtUtils.verifyToken(authorizationHeader);
-
-    review.setMember(member);
-    Review insertReview = reviewService.addReview(review, multipartFiles);
+    Review insertReview = reviewModuleService.addReview(review, multipartFiles);
     log.info("insertReview: " + insertReview);
     return ResponseEntity.ok(insertReview);
   }
 
   @PutMapping
-  public ResponseEntity<Review> reviewUpdate(@RequestHeader("Authorization") String authorizationHeader, Review review) throws Exception {
+  public ResponseEntity<Review> reviewUpdate(Review review) {
     log.info("@PutMapping ===========> /api/review");
 
-    jwtUtils.verifyToken(authorizationHeader);
-    Review updateReview = reviewService.updateReview(review);
+    Review updateReview = reviewModuleService.updateReview(review);
     return ResponseEntity.ok(updateReview);
   }
 
   @DeleteMapping
-  public ResponseEntity<Review> reviewDelete(@RequestHeader("Authorization") String authorizationHeader, Long reviewNo) throws Exception {
+  public ResponseEntity<Review> reviewDelete(Long reviewNo) throws Exception {
     log.info("@DeleteMapping ===========> /api/review");
     log.info("reviewNo: {}", reviewNo);
-    jwtUtils.verifyToken(authorizationHeader);
-    return ResponseEntity.ok(reviewService.deleteReview(reviewNo));
+
+    return ResponseEntity.ok(reviewModuleService.deleteReview(reviewNo));
   }
 
   @DeleteMapping("/attach")
-  public ResponseEntity<Attach> reviewDeleteFile(@RequestHeader("Authorization") String authorizationHeader, Long fileNo) {
+  public ResponseEntity<Attach> reviewDeleteFile(Long fileNo) {
     log.info("@DeleteMapping ===========> api/review/attach");
-    log.info("authorizationHeader: {}", authorizationHeader);
     log.info("fileNo: {}", fileNo);
-    jwtUtils.verifyToken(authorizationHeader);
     return ResponseEntity.ok(attachComponentService.changeFileStatusDeleteByFileNo(fileNo));
   }
 }

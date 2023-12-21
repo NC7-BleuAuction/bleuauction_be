@@ -2,10 +2,12 @@ package bleuauction.bleuauction_be.server.answer.service;
 
 import bleuauction.bleuauction_be.server.answer.entity.Answer;
 import bleuauction.bleuauction_be.server.answer.entity.AnswerStatus;
+import bleuauction.bleuauction_be.server.answer.exception.AnswerNotFoundException;
 import bleuauction.bleuauction_be.server.answer.repository.AnswerRepository;
+import bleuauction.bleuauction_be.server.common.pagable.RowCountPerPage;
+import bleuauction.bleuauction_be.server.common.utils.SecurityUtils;
+import bleuauction.bleuauction_be.server.config.annotation.ModuleService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
-import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -22,20 +23,17 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Service
 @Transactional
+@ModuleService
 @RequiredArgsConstructor
-public class AnswerService {
+public class AnswerModuleService {
 
-    private final static int PAGE_ROW_COUNT = 2;
     private final AnswerRepository answerRepository;
     private final ReviewRepository reviewRepository;
-    private final MemberModuleService memberModuleService;
 
     @Transactional(readOnly = true)
     public Map<String, Object> selectAnswerList(Long reviewNo, int startPage) {
-        Pageable pageable = PageRequest.of(startPage, PAGE_ROW_COUNT, Sort.by(Sort.Order.desc("regDatetime")));
-
+        Pageable pageable = PageRequest.of(startPage, RowCountPerPage.ANSWER.getValue(), Sort.by(Sort.Order.desc("regDatetime")));
         Page<Answer> page = answerRepository.findByReviewAndStatus(findReviewById(reviewNo), AnswerStatus.Y, pageable);
 
         List<Answer> answerList = page.getContent();
@@ -51,15 +49,13 @@ public class AnswerService {
         return answerMap;
     }
 
-    public Answer addAnswer(TokenMember tokenMember, Answer answer) {
-        answer.setMember(memberModuleService.findById(tokenMember.getMemberNo()));
+    public Answer addAnswer(Answer answer) {
         return answerRepository.save(answer);
     }
 
-    public Answer updateAnswer(TokenMember tokenMember, Answer answer, Member member) throws Exception {
-        if (tokenMember.getMemberNo() != member.getId()) {
-            throw new Exception("답글 수정 권한이 없습니다!");
-        }
+    public Answer updateAnswer(Answer answer, Member member) throws Exception {
+        SecurityUtils.checkOwnsByMemberNo(member.getId());
+
         answer.setMember(member);
         Answer exitingAnswer = answerRepository.findByIdAndReviewAndStatus(answer.getId(), answer.getReview(), AnswerStatus.Y)
                 .orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
@@ -67,16 +63,14 @@ public class AnswerService {
         return answerRepository.save(exitingAnswer);
     }
 
+  public Answer deleteAnswer(Long answerNo, Long memberNo) {
+    SecurityUtils.checkOwnsByMemberNo(memberNo);
 
-    public Answer deleteAnswer(TokenMember tokenMember, Long answerNo, Long memberNo) throws Exception {
-        if (tokenMember.getMemberNo() != memberNo) {
-            throw new Exception("답글 삭제 권한이 없습니다!");
-        }
-
-        Answer exitingAnswer = answerRepository.findByIdAndStatus(answerNo, AnswerStatus.Y).orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
-        exitingAnswer.setStatus(AnswerStatus.N);
-        return answerRepository.save(exitingAnswer);
-    }
+      Answer exitingAnswer = answerRepository.findByIdAndStatus(answerNo, AnswerStatus.Y)
+              .orElseThrow(() -> new AnswerNotFoundException(answerNo));
+      exitingAnswer.setStatus(AnswerStatus.N);
+      return answerRepository.save(exitingAnswer);
+  }
 
     private Review findReviewById(Long reviewId) {
         return reviewRepository.findById(reviewId)

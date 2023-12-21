@@ -1,6 +1,6 @@
 package bleuauction.bleuauction_be.server.attach.exception;
 
-import bleuauction.bleuauction_be.server.exception.BaseException;
+import bleuauction.bleuauction_be.server.common.exception.BaseException;
 import lombok.extern.slf4j.Slf4j;
 
 import static bleuauction.bleuauction_be.server.attach.type.FileExceptionCode.ATTACH_NOT_FOUND_FILEID;

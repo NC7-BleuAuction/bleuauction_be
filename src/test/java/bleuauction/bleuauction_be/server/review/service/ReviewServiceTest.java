@@ -39,7 +39,7 @@ class ReviewServiceTest {
   @Mock
   private ReviewRepository reviewRepository;
   @InjectMocks
-  private ReviewService reviewService;
+  private ReviewModuleService reviewModuleService;
 
   private final Long TEST_MEMBER_NO = 1L;
   private final Long TEST_STORE_NO = 1L;
@@ -65,7 +65,7 @@ class ReviewServiceTest {
     given(reviewRepository.findAllReviewsWithMembersByReviewStatus(TEST_STORE_NO, ReviewStatus.Y, pageable)).willReturn(mockReviewList);
 
     // when
-    List<Review> selectReviewList = reviewService.selectReviewList(TEST_STORE_NO, TEST_START_PAGE);
+    List<Review> selectReviewList = reviewModuleService.selectReviewList(TEST_STORE_NO, TEST_START_PAGE);
 
     //then
     assertEquals(mockReviewList, selectReviewList);
@@ -87,7 +87,7 @@ class ReviewServiceTest {
     });
 
     // when
-    Review addReview = reviewService.addReview(mockReview, mockFileList);
+    Review addReview = reviewModuleService.addReview(mockReview, mockFileList);
 
     // then
     assertNotNull(addReview);
@@ -117,7 +117,7 @@ class ReviewServiceTest {
     given(reviewRepository.save(mockOriginReview)).willReturn(mockOriginReview);
 
     // when
-    Review updateReview = reviewService.updateReview(mockOriginReview);
+    Review updateReview = reviewModuleService.updateReview(mockOriginReview);
 
     // then
     assertEquals(mockOriginReview, updateReview);
@@ -135,7 +135,7 @@ class ReviewServiceTest {
     given(reviewRepository.save(mockReview)).willReturn(mockReview);
 
     // when
-    Review deleteReview = reviewService.deleteReview(mockReview.getReviewNo());
+    Review deleteReview = reviewModuleService.deleteReview(mockReview.getReviewNo());
 
     // then
     assertEquals(mockReview, deleteReview);

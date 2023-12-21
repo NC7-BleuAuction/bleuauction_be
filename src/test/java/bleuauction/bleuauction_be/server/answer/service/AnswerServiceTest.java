@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -38,7 +39,7 @@ class AnswerServiceTest {
   @Mock
   private AnswerRepository answerRepository;
   @InjectMocks
-  private AnswerService answerService;
+  private AnswerModuleService answerModuleService;
 
   private final Long TEST_MEMBER_NO = 1L;
   private final Long TEST_REVIEW_NO = 1L;
@@ -79,7 +80,7 @@ class AnswerServiceTest {
     mockAnswerMap.put("totalPages", totalPages);
 
     // when
-    Map<String, Object> selectAnswerMap = answerService.selectAnswerList(TEST_REVIEW_NO, TEST_START_PAGE);
+    Map<String, Object> selectAnswerMap = answerModuleService.selectAnswerList(TEST_REVIEW_NO, TEST_START_PAGE);
 
     //then
     assertEquals(mockAnswerMap, selectAnswerMap);
@@ -89,19 +90,19 @@ class AnswerServiceTest {
   @DisplayName("testAddAnswer(): Answer객체와 TokenMember객체가 주어질 경우 답글 등록에 성공한다.")
   void testAddAnswer() {
     // given
-    TokenMember mockTokenMember = TokenMember.builder()
-            .memberNo(TEST_MEMBER_NO)
+    Member mockMember = Member.builder()
             .memberEmail(TEST_MAIL)
             .memberName(TEST_NAME)
             .memberCategory(MemberCategory.M)
             .build();
+    mockMember.setMemberNo(TEST_MEMBER_NO);
 
     Answer mockAnswer = AnswerEntityFactory.of(TEST_REVIEW_NO,
-                                                MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, mockTokenMember.getMemberCategory()),
+                                                MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getMemberCategory()),
                                                 TEST_NAME, AnswerStatus.Y);
 
     given(answerRepository.save(mockAnswer)).willReturn(mockAnswer);
-    Answer addAnswer = answerService.addAnswer(mockTokenMember, mockAnswer);
+    Answer addAnswer = answerModuleService.addAnswer(mockAnswer);
 
     // then
     assertEquals(mockAnswer, addAnswer);
@@ -111,15 +112,16 @@ class AnswerServiceTest {
   @DisplayName("testUpdateAnswer(): TokenMember, Answer, Member 객체 등이 주어질 때 TokenMember.memberNo와 Memebr.memberNo가 같을 때 AnswerStatus.Y에 해당하는 답글 수정에 성공한다.")
   void testUpdateAnswer() throws Exception {
     // given
-    TokenMember mockTokenMember = TokenMember.builder()
-            .memberNo(TEST_MEMBER_NO)
+    Member mockMember = Member.builder()
             .memberEmail(TEST_MAIL)
             .memberName(TEST_NAME)
             .memberCategory(MemberCategory.M)
             .build();
 
-    Member mockCustomerMember = MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, mockTokenMember.getMemberCategory());
-    mockCustomerMember.setId(TEST_MEMBER_NO);
+    mockMember.setMemberNo(TEST_MEMBER_NO);
+
+    Member mockCustomerMember = MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getMemberCategory());
+    mockCustomerMember.setMemberNo(TEST_MEMBER_NO);
 
     Answer mockAnswer = AnswerEntityFactory.of(TEST_REVIEW_NO,
             mockCustomerMember,
@@ -130,7 +132,7 @@ class AnswerServiceTest {
     given(answerRepository.save(mockAnswer)).willReturn(mockAnswer);
 
     // when
-    Answer updateAnswer = answerService.updateAnswer(mockTokenMember, mockAnswer, mockCustomerMember);
+    Answer updateAnswer = answerModuleService.updateAnswer(mockAnswer, mockCustomerMember);
 
     // then
     assertEquals(mockAnswer, updateAnswer);
@@ -141,14 +143,14 @@ class AnswerServiceTest {
   @DisplayName("testDeleteAnswer(): TokenMember, answerNo, memebrNo 등의 파라미터가 주어질 때 TokenMemebr.memebrNo와 memebrNo가 같고 AnswerStatus.Y에 해당하는 답글의 상태를 AnswerStatus.N 으로 변경한다.")
   void testDeleteAnswer() throws Exception {
     // given
-    TokenMember mockTokenMember = TokenMember.builder()
-            .memberNo(TEST_MEMBER_NO)
+    Member mockMember = Member.builder()
             .memberEmail(TEST_MAIL)
             .memberName(TEST_NAME)
             .memberCategory(MemberCategory.M)
             .build();
+    mockMember.setMemberNo(TEST_MEMBER_NO);
 
-    Member mockCustomerMember = MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, mockTokenMember.getMemberCategory());
+    Member mockCustomerMember = MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getMemberCategory());
     mockCustomerMember.setId(TEST_MEMBER_NO);
 
     Answer mockAnswer = AnswerEntityFactory.of(TEST_REVIEW_NO,
@@ -160,8 +162,7 @@ class AnswerServiceTest {
     given(answerRepository.save(mockAnswer)).willReturn(mockAnswer);
 
     // when
-    Answer deleteAnswer = answerService.deleteAnswer(mockTokenMember, TEST_ANSWER_NO, TEST_MEMBER_NO);
-
+    Answer deleteAnswer = answerModuleService.deleteAnswer(TEST_ANSWER_NO, TEST_MEMBER_NO);
 
     // then
     assertEquals(mockAnswer, deleteAnswer);

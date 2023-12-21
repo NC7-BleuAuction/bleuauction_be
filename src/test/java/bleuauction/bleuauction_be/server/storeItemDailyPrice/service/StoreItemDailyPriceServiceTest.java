@@ -38,7 +38,7 @@ class StoreItemDailyPriceServiceTest {
   @Mock
   private StoreItemDailyPriceRepository storeItemDailyPriceRepository;
   @InjectMocks
-  private StoreItemDailyPriceService storeItemDailyPriceService;
+  private StoreItemDailyPriceModuleService storeItemDailyPriceModuleService;
 
   private final Long TEST_STORE_NO = 1L;
 
@@ -57,7 +57,7 @@ class StoreItemDailyPriceServiceTest {
     given(storeItemDailyPriceRepository.findAllByDailyPriceStatus(DailyPriceStatus.Y)).willReturn(Optional.of(mockSidpList));
 
     // when
-    List<StoreItemDailyPrice> sidpList = storeItemDailyPriceService.selectSidpList();
+    List<StoreItemDailyPrice> sidpList = storeItemDailyPriceModuleService.findAllByDailyPriceStatus(DailyPriceStatus.Y);
 
     //then
     assertEquals(mockSidpList, sidpList);
@@ -88,7 +88,7 @@ class StoreItemDailyPriceServiceTest {
     given(storeItemDailyPriceRepository.save(any(StoreItemDailyPrice.class))).willReturn(sidp);
 
     // when
-    StoreItemDailyPrice addStoreItemDailyPrice = storeItemDailyPriceService.addStoreItemDailyPrice(sidpInsertRequest, store);
+    StoreItemDailyPrice addStoreItemDailyPrice = storeItemDailyPriceModuleService.addStoreItemDailyPrice(sidp);
 
     //then
     verify(storeItemDailyPriceRepository, times(1)).save(any(StoreItemDailyPrice.class));

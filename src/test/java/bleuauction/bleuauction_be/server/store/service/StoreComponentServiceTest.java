@@ -163,14 +163,14 @@ class StoreComponentServiceTest {
         // given
         Member mockMember = MemberEntityFactory.of("test@test", "testPassword123!@#", "테스트입니다", MemberCategory.S);
         Store mockStore = StoreUtilFactory.of("노량진수산시장", "블루크오션", "111-11-11111");
-        mockStore.setStoreNo(1L);
+        mockStore.setId(1L);
 
-        given(storeModuleService.findById(mockStore.getStoreNo())).willReturn(mockStore);
+        given(storeModuleService.findById(mockStore.getId())).willReturn(mockStore);
 
         // when && then
         StoreUpdateUnAuthorizedException e = assertThrows(
                 StoreUpdateUnAuthorizedException.class,
-                () -> storeComponentService.withDrawStore(mockStore.getStoreNo(), mockMember)
+                () -> storeComponentService.withDrawStore(mockStore.getId(), mockMember)
         );
         assertTrue(e.getMessage().startsWith("[StoreUpdateUnAuthorizedException] UnAuthorized"));
     }
@@ -181,13 +181,13 @@ class StoreComponentServiceTest {
         // given
         Member mockMember = MemberEntityFactory.mockSellerMember;
         Store mockStore = StoreUtilFactory.of("노량진수산시장", "블루크오션", "111-11-11111");
-        mockStore.setStoreNo(1L);
+        mockStore.setId(1L);
 
-        given(storeModuleService.findById(mockStore.getStoreNo())).willReturn(mockStore);
+        given(storeModuleService.findById(mockStore.getId())).willReturn(mockStore);
         given(storeModuleService.save(mockStore)).willReturn(mockStore);
 
         // when
-        storeComponentService.withDrawStore(mockStore.getStoreNo(), mockMember);
+        storeComponentService.withDrawStore(mockStore.getId(), mockMember);
 
         // then
         assertEquals(StoreStatus.N, mockStore.getStoreStatus());

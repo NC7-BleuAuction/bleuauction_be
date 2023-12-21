@@ -1,6 +1,6 @@
 package bleuauction.bleuauction_be.server.storeItemDailyPrice.util;
 
-import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.ItemCode;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.ItemName;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.ItemSize;
@@ -14,8 +14,10 @@ public class StoreItemDailyPriceEntityFactory {
   public static final StoreItemDailyPrice mockStoreItemDailyPrice;
 
   static {
+    Store store = new Store();
+    store.setId(1L);
     StoreItemDailyPrice storeItemDailyPrice = StoreItemDailyPrice.builder()
-            .storeNo(1L)
+            .store(store)
             .dailyPrice(1000)
             .itemCode(ItemCode.S)
             .itemName(ItemName.FI)
@@ -25,15 +27,15 @@ public class StoreItemDailyPriceEntityFactory {
             .wildFarmStatus(WildFarmStatus.F)
             .dailyPriceStatus(DailyPriceStatus.Y)
             .build();
-    storeItemDailyPrice.setDailyPriceNo(1L);
+    storeItemDailyPrice.setId(1L);
 
     mockStoreItemDailyPrice = storeItemDailyPrice;
   }
 
 
-  public static StoreItemDailyPrice of(Long storeNo, int dailyPrice, ItemCode itemCode, ItemName itemName, ItemSize itemSize, OriginStatus originStatus, OriginPlaceStatus originPlaceStatus, WildFarmStatus wildFarmStatus, DailyPriceStatus dailyPriceStatus) {
+  public static StoreItemDailyPrice of(Store store, int dailyPrice, ItemCode itemCode, ItemName itemName, ItemSize itemSize, OriginStatus originStatus, OriginPlaceStatus originPlaceStatus, WildFarmStatus wildFarmStatus, DailyPriceStatus dailyPriceStatus) {
     return StoreItemDailyPrice.builder()
-            .storeNo(storeNo)
+            .store(store)
             .dailyPrice(dailyPrice)
             .itemCode(itemCode)
             .itemName(itemName)

@@ -79,7 +79,7 @@ public class StoreSignUpRequest {
 
     public Store getStoreEntity(Member signUpMemberEntity) {
         return Store.builder()
-                .memberNo(signUpMemberEntity)
+                .member(signUpMemberEntity)
                 .marketName(this.marketName)
                 .storeName(this.storeName)
                 .licenseNo(this.licenseNo)

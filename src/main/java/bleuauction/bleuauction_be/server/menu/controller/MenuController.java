@@ -5,7 +5,6 @@ import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.service.MenuComponentService;
 import bleuauction.bleuauction_be.server.menu.service.MenuModuleService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
@@ -31,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -83,7 +81,7 @@ public class MenuController {
       // 로그인 유저의 멤버 번호
       Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
       Store store = storeModuleService.findByMember(loginUser);
-      return menuModuleService.findMenusByStoreNo(store.getStoreNo());
+      return menuModuleService.findMenusByStoreNo(store.getId());
   }
 
   @DeleteMapping("/{menuNo}")

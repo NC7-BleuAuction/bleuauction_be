@@ -55,9 +55,9 @@ class MemberRepositoryTest {
         Member afterSaveMember = memberRepository.save(beforeSaveMember);
 
         // then
-        assertNotNull(afterSaveMember.getMemberNo());
+        assertNotNull(afterSaveMember.getId());
         assertEquals(memberRepository.findAll().size(), beforeSaveMemberCount +1);
-        assertEquals(memberRepository.findById(afterSaveMember.getMemberNo()).get(), afterSaveMember);
+        assertEquals(memberRepository.findById(afterSaveMember.getId()).get(), afterSaveMember);
     }
 
     @Test
@@ -119,7 +119,7 @@ class MemberRepositoryTest {
         // then
         assertTrue(result.isPresent());
         assertEquals(result.get().getClass(), Member.class);
-        assertEquals(result.get().getMemberEmail(), testMail);
+        assertEquals(result.get().getEmail(), testMail);
     }
 
     @Test

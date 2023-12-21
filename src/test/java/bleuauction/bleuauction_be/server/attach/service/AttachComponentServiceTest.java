@@ -29,11 +29,11 @@ class AttachComponentServiceTest {
     void whenGiveAttachFileNo_thenReturnAttachObjectChangeFileStatusDelete() {
         //given
         Attach attach = AttachUtilFactory.ofUseCase("/test1", "originalFileName1", "changeFileName1");
-        attach.setFileNo(1L);
-        given(attachModuleService.findById(attach.getFileNo())).willReturn(attach);
+        attach.setId(1L);
+        given(attachModuleService.findById(attach.getId())).willReturn(attach);
 
         //when
-        attachComponentService.changeFileStatusDeleteByFileNo(attach.getFileNo());
+        attachComponentService.changeFileStatusDeleteByFileNo(attach.getId());
 
         //then
         assertEquals(attach.getFileStatus(), FileStatus.N);
@@ -44,12 +44,12 @@ class AttachComponentServiceTest {
     void whenGiveAttachFileNo_thenThrowAttachNotFoundFileIdException() {
         //given
         Attach attach = AttachUtilFactory.ofUseCase("/test1", "originalFileName1", "changeFileName1");
-        attach.setFileNo(1L);
-        given(attachModuleService.findById(attach.getFileNo())).willThrow(new AttachNotFoundFileIdException(attach.getFileNo()));
+        attach.setId(1L);
+        given(attachModuleService.findById(attach.getId())).willThrow(new AttachNotFoundFileIdException(attach.getId()));
 
         //when && then
         assertThrows(AttachNotFoundFileIdException.class, () ->
-                attachComponentService.changeFileStatusDeleteByFileNo(attach.getFileNo())
+                attachComponentService.changeFileStatusDeleteByFileNo(attach.getId())
         );
     }
 

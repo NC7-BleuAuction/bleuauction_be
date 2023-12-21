@@ -35,7 +35,7 @@ public class MenuComponentService {
             multipartFiles.stream().filter(multipartFile -> multipartFile.getSize() > 0)
                     .forEach(multipartFile -> attachComponentService.saveWithMenu(menu, FileUploadUsage.MENU, multipartFile));
         }
-        return menu.getMenuNo();
+        return menu.getId();
     }
 
 
@@ -46,8 +46,8 @@ public class MenuComponentService {
             throw new IllegalArgumentException("메뉴와 가게 정보가 유효하지 않습니다.");
         }
 
-        for (Attach attach : menu.getMenuAttaches()) {
-            attachComponentService.changeFileStatusDeleteByFileNo(attach.getFileNo());
+        for (Attach attach : menu.getAttachs()) {
+            attachComponentService.changeFileStatusDeleteByFileNo(attach.getId());
         }
         menu.delete();
     }
@@ -55,7 +55,7 @@ public class MenuComponentService {
     //메뉴 수정
     public Menu update(long menuNo, List<MultipartFile> multipartFiles, Store store) {
         Menu updatedMenu = menuModuleService.findOne(menuNo);
-        Menu existingMenu = menuModuleService.findOne(updatedMenu.getMenuNo());
+        Menu existingMenu = menuModuleService.findOne(updatedMenu.getId());
 
         if (!existingMenu.getStoreNo().equals(store)) {
             throw new IllegalArgumentException("수정 권한이 없습니다.");

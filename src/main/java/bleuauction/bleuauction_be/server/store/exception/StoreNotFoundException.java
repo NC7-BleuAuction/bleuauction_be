@@ -18,6 +18,6 @@ public class StoreNotFoundException extends RuntimeException {
     }
 
     public StoreNotFoundException(Member member) {
-        super(String.format(MESSAGE + ", Request Member >>> %d", member.getMemberNo()));
+        super(String.format(MESSAGE + ", Request Member >>> %d", member.getId()));
     }
 }

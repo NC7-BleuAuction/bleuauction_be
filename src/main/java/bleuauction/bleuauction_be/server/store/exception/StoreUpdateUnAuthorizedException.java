@@ -16,8 +16,8 @@ public class StoreUpdateUnAuthorizedException extends RuntimeException{
         super(
                 String.format(
                         MESSAGE+"WithDraw, requestUser >>> [ID : %d, Email : %s], Store >>> [ID : %d, StoreName : %s], exceptionTime : %s",
-                        requestUser.getMemberNo(), requestUser.getMemberEmail(),
-                        store.getStoreNo(), store.getStoreName(),
+                        requestUser.getId(), requestUser.getEmail(),
+                        store.getId(), store.getStoreName(),
                         LocalDateTime.now()
                 )
 
@@ -27,8 +27,8 @@ public class StoreUpdateUnAuthorizedException extends RuntimeException{
         super(
                 String.format(
                         MESSAGE+"UpdateUser, requestUser >>> [ID : %d, Email : %s], targetUser >>> [ID : %d, Email : %s], exceptionTime : %s",
-                        requestUser.getMemberNo(), requestUser.getMemberEmail(),
-                        targetUser.getMemberNo(), targetUser.getMemberEmail(),
+                        requestUser.getId(), requestUser.getEmail(),
+                        targetUser.getId(), targetUser.getEmail(),
                         LocalDateTime.now()
                 )
 

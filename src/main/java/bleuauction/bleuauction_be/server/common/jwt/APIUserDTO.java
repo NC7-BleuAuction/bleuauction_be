@@ -30,12 +30,12 @@ public class APIUserDTO extends User {
 
   public Member toMemberEntity() {
     Member member = Member.builder()
-            .memberEmail(memberEmail)
-            .memberPwd(memberPwd)
-            .memberName(memberName)
-            .memberCategory(memberCategory)
+            .email(memberEmail)
+            .password(memberPwd)
+            .name(memberName)
+            .category(memberCategory)
             .build();
-    member.setMemberNo(memberNo);
+    member.setId(memberNo);
     return member;
   }
 }

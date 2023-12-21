@@ -58,7 +58,7 @@ class StoreModuleServiceTest {
     void findStoreById_givenStoreNoAndExists_thenReturnStore() {
         // given
         Store store = StoreUtilFactory.of(TEST_MARKETNAME, TEST_STORENAME, TEST_LICENSE);
-        store.setStoreNo(1L);
+        store.setId(1L);
 
         given(storeRepository.findById(1L)).willReturn(Optional.of(store));
 
@@ -92,7 +92,7 @@ class StoreModuleServiceTest {
         // given
         Member mockMember = MemberEntityFactory.mockSellerMember;
         Store store = StoreUtilFactory.of(TEST_MARKETNAME, TEST_STORENAME, TEST_LICENSE);
-        store.setStoreNo(1L);
+        store.setId(1L);
         given(storeRepository.findByMemberNo(mockMember)).willReturn(Optional.of(store));
 
         // when

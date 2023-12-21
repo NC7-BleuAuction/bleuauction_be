@@ -16,6 +16,6 @@ public class OrderMenuDTO {
   private Timestamp mdfDatetime;
   private OrderMenuStatus orderMenuStatus;
   private Menu menuNo; // 메뉴 번호
-  private Order orderNo; // 주문 번호
+  private Order order; // 주문 번호
   private Member memberNo; // 멤버 번호
 }

@@ -5,6 +5,9 @@ import bleuauction.bleuauction_be.server.answer.entity.AnswerStatus;
 import bleuauction.bleuauction_be.server.answer.repository.AnswerRepository;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
+import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
+import bleuauction.bleuauction_be.server.review.entity.Review;
+import bleuauction.bleuauction_be.server.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,54 +27,60 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AnswerService {
 
-  private final static int PAGE_ROW_COUNT = 2;
-  private final AnswerRepository answerRepository;
+    private final static int PAGE_ROW_COUNT = 2;
+    private final AnswerRepository answerRepository;
+    private final ReviewRepository reviewRepository;
+    private final MemberModuleService memberModuleService;
 
-  public Map<String, Object> selectAnswerList(Long reviewNo, int startPage) {
-    Pageable pageable = PageRequest.of(startPage, PAGE_ROW_COUNT, Sort.by(Sort.Order.desc("regDatetime")));
-    Page<Answer> page = answerRepository.findByReviewNoAndAnswerStatus(reviewNo,  AnswerStatus.Y, pageable);
+    @Transactional(readOnly = true)
+    public Map<String, Object> selectAnswerList(Long reviewNo, int startPage) {
+        Pageable pageable = PageRequest.of(startPage, PAGE_ROW_COUNT, Sort.by(Sort.Order.desc("regDatetime")));
 
-    List<Answer> answerList = page.getContent();
-    long totalRows = page.getTotalElements(); // 전체 행 수
-    int totalPages = page.getTotalPages(); // 전체 페이지 수
+        Page<Answer> page = answerRepository.findByReviewAndStatus(findReviewById(reviewNo), AnswerStatus.Y, pageable);
 
-    Map<String, Object> answerMap = new HashMap<>();
-    answerMap.put("answerList", answerList);
-    answerMap.put("totalRows", totalRows);
-    answerMap.put("totalPages", totalPages);
-    log.info("answerMap: ", answerMap);
+        List<Answer> answerList = page.getContent();
+        long totalRows = page.getTotalElements(); // 전체 행 수
+        int totalPages = page.getTotalPages(); // 전체 페이지 수
 
-    return answerMap;
-  }
+        Map<String, Object> answerMap = new HashMap<>();
+        answerMap.put("answerList", answerList);
+        answerMap.put("totalRows", totalRows);
+        answerMap.put("totalPages", totalPages);
+        log.info("answerMap: ", answerMap);
 
-  public Answer addAnswer(TokenMember tokenMember, Answer answer) {
-    Member m = new Member();
-    m.setMemberNo(tokenMember.getMemberNo());
-    answer.setMember(m);
-    return answerRepository.save(answer);
-  }
-
-  public Answer updateAnswer(TokenMember tokenMember, Answer answer, Member member) throws Exception {
-    if (tokenMember.getMemberNo() != member.getMemberNo()) {
-      throw new Exception("답글 수정 권한이 없습니다!");
-    }
-    answer.setMember(member);
-    Answer exitingAnswer = answerRepository.findByReviewNoAndAnswerNoAndAnswerStatus(answer.getReviewNo(), answer.getAnswerNo(), AnswerStatus.Y).orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
-    exitingAnswer.setAnswerContent(answer.getAnswerContent());
-    Answer updateAnswer = answerRepository.save(exitingAnswer);
-    return updateAnswer;
-  }
-
-
-  public Answer deleteAnswer(TokenMember tokenMember, Long answerNo, Long memberNo) throws Exception {
-    if (tokenMember.getMemberNo() != memberNo) {
-      throw new Exception("답글 삭제 권한이 없습니다!");
+        return answerMap;
     }
 
-    Answer exitingAnswer = answerRepository.findByAnswerNoAndAnswerStatus(answerNo, AnswerStatus.Y).orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
-    exitingAnswer.setAnswerStatus(AnswerStatus.N);
-    Answer deleteAnswer = answerRepository.save(exitingAnswer);
-    return deleteAnswer;
-  }
+    public Answer addAnswer(TokenMember tokenMember, Answer answer) {
+        answer.setMember(memberModuleService.findById(tokenMember.getMemberNo()));
+        return answerRepository.save(answer);
+    }
+
+    public Answer updateAnswer(TokenMember tokenMember, Answer answer, Member member) throws Exception {
+        if (tokenMember.getMemberNo() != member.getId()) {
+            throw new Exception("답글 수정 권한이 없습니다!");
+        }
+        answer.setMember(member);
+        Answer exitingAnswer = answerRepository.findByIdAndReviewAndStatus(answer.getId(), answer.getReview(), AnswerStatus.Y)
+                .orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
+        exitingAnswer.setContent(answer.getContent());
+        return answerRepository.save(exitingAnswer);
+    }
+
+
+    public Answer deleteAnswer(TokenMember tokenMember, Long answerNo, Long memberNo) throws Exception {
+        if (tokenMember.getMemberNo() != memberNo) {
+            throw new Exception("답글 삭제 권한이 없습니다!");
+        }
+
+        Answer exitingAnswer = answerRepository.findByIdAndStatus(answerNo, AnswerStatus.Y).orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
+        exitingAnswer.setStatus(AnswerStatus.N);
+        return answerRepository.save(exitingAnswer);
+    }
+
+    private Review findReviewById(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 존재하지 않습니다!"));
+    }
 
 }

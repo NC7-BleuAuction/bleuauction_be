@@ -19,7 +19,7 @@ public class MemberEntityFactory {
                 .memberCategory(MemberCategory.S)
                 .memberStatus(MemberStatus.Y)
                 .build();
-        member.setMemberNo(1L);
+        member.setId(1L);
 
         mockSellerMember = member;
     }

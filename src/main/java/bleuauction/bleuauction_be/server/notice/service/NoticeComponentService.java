@@ -38,7 +38,7 @@ public class NoticeComponentService {
                             attachComponentService.saveWithNotice(notice, FileUploadUsage.NOTICE, multipartFile)
                     );
         }
-        return noticeModuleService.save(notice).getNoticeNo();
+        return noticeModuleService.save(notice).getId();
 
     }
 
@@ -49,8 +49,8 @@ public class NoticeComponentService {
 
         Notice notice = noticeRepository.findByNoticeNo(noticeNo);
         notice.delete();
-        if (notice.getNoticeAttaches() != null && !notice.getNoticeAttaches().isEmpty()) {
-            notice.getNoticeAttaches().forEach(attach -> attachComponentService.changeFileStatusDeleteByFileNo(attach.getFileNo()));
+        if (notice.getAttaches() != null && !notice.getAttaches().isEmpty()) {
+            notice.getAttaches().forEach(attach -> attachComponentService.changeFileStatusDeleteByFileNo(attach.getId()));
         }
     }
 

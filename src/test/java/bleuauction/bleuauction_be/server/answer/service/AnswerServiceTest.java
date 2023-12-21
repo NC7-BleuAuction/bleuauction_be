@@ -119,14 +119,14 @@ class AnswerServiceTest {
             .build();
 
     Member mockCustomerMember = MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, mockTokenMember.getMemberCategory());
-    mockCustomerMember.setMemberNo(TEST_MEMBER_NO);
+    mockCustomerMember.setId(TEST_MEMBER_NO);
 
     Answer mockAnswer = AnswerEntityFactory.of(TEST_REVIEW_NO,
             mockCustomerMember,
             TEST_NAME, AnswerStatus.Y);
 
     given(answerRepository.findByReviewNoAndAnswerNoAndAnswerStatus(mockAnswer.getReviewNo(), mockAnswer.getAnswerNo(), AnswerStatus.Y)).willReturn(Optional.of(mockAnswer));
-    mockAnswer.setAnswerContent(TEST_ANSWER_CONTENT + "수정");
+    mockAnswer.setContent(TEST_ANSWER_CONTENT + "수정");
     given(answerRepository.save(mockAnswer)).willReturn(mockAnswer);
 
     // when
@@ -149,14 +149,14 @@ class AnswerServiceTest {
             .build();
 
     Member mockCustomerMember = MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, mockTokenMember.getMemberCategory());
-    mockCustomerMember.setMemberNo(TEST_MEMBER_NO);
+    mockCustomerMember.setId(TEST_MEMBER_NO);
 
     Answer mockAnswer = AnswerEntityFactory.of(TEST_REVIEW_NO,
             mockCustomerMember,
             TEST_NAME, AnswerStatus.Y);
 
     given(answerRepository.findByAnswerNoAndAnswerStatus(TEST_ANSWER_NO, AnswerStatus.Y)).willReturn(Optional.of(mockAnswer));
-    mockAnswer.setAnswerStatus(AnswerStatus.N);
+    mockAnswer.setStatus(AnswerStatus.N);
     given(answerRepository.save(mockAnswer)).willReturn(mockAnswer);
 
     // when

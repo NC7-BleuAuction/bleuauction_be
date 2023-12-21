@@ -1,7 +1,7 @@
 package bleuauction.bleuauction_be.server.attach.util;
 
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.entity.AttachVO;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.exception.AttachUploadBadRequestException;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
@@ -42,7 +42,7 @@ public class NcpObjectStorageUtil {
    * @param part
    * @return
    */
-  public Attach uploadFile(FileUploadUsage usage, MultipartFile part) {
+  public AttachVO uploadFile(FileUploadUsage usage, MultipartFile part) {
     // 요청해야 할 파일이 없는 경우
     if (part==null || part.isEmpty()) {
       throw new AttachUploadBadRequestException();
@@ -54,9 +54,9 @@ public class NcpObjectStorageUtil {
 
       this.uploadFileToObjectStorage(String.join("/", path, saveFileName), part);
 
-      return Attach.builder()
+      return AttachVO.builder()
               .originFilename(part.getOriginalFilename())
-              .saveFilename(saveFileName)
+              .saveFileName(saveFileName)
               .filePath(path)
               .fileStatus(FileStatus.Y)
               .build();

@@ -12,8 +12,6 @@ import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.entity.MenuSize;
 import bleuauction.bleuauction_be.server.menu.entity.MenuStatus;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
-import bleuauction.bleuauction_be.server.menu.service.MenuComponentService;
-import bleuauction.bleuauction_be.server.menu.service.MenuModuleService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
@@ -62,7 +60,7 @@ class MenuServiceTest {
         //given
         Member mockMember = MemberEntityFactory.of("test@test", "testPassword123!@#", "테스트입니다", MemberCategory.S);
         Store store = new Store();
-        store.setMemberNo(mockMember);
+        store.setMember(mockMember);
         Menu menu = new Menu();
         //List<MultipartFile> multipartFiles = new ArrayList<>();
         List<MultipartFile> multipartFiles = Collections.singletonList(new MockMultipartFile("file", "filename.txt", "text/plain", "content".getBytes()));
@@ -78,7 +76,7 @@ class MenuServiceTest {
         Long testmenu = menuComponentService.enroll(menu, store, multipartFiles);
 
         //then
-        assertEquals(menu.getMenuNo(), testmenu);
+        assertEquals(menu.getId(), testmenu);
     }
 
     @Test
@@ -117,9 +115,9 @@ class MenuServiceTest {
 
 
         //when
-        when(menuRepository.findMenusByStoreNoAndMenuStatus(store.getStoreNo(), MenuStatus.Y)).thenReturn(Arrays.asList(menu, menu1, menu2));
+        when(menuRepository.findMenusByStoreNoAndMenuStatus(store.getId(), MenuStatus.Y)).thenReturn(Arrays.asList(menu, menu1, menu2));
 
-        List<Menu> lists = menuModuleService.findMenusByStoreNo(store.getStoreNo());
+        List<Menu> lists = menuModuleService.findMenusByStoreNo(store.getId());
 
         // then
         assertEquals(menu2.getMenuContent(), "내용2");
@@ -163,9 +161,9 @@ class MenuServiceTest {
 
 
         //when
-        when(menuRepository.findMenusByStoreNoAndMenuStatus(store.getStoreNo(), MenuStatus.Y)).thenReturn(Arrays.asList(menu, menu1, menu2));
+        when(menuRepository.findMenusByStoreNoAndMenuStatus(store.getId(), MenuStatus.Y)).thenReturn(Arrays.asList(menu, menu1, menu2));
 
-        List<Menu> lists = menuModuleService.findMenusByStoreNo(store.getStoreNo());
+        List<Menu> lists = menuModuleService.findMenusByStoreNo(store.getId());
 
         // then
         assertEquals(menu2.getMenuContent(), "내용2");
@@ -189,8 +187,8 @@ class MenuServiceTest {
         menuRepository.save(menu);
 
         //when
-        when(menuRepository.findMenusByMenuNo(menu.getMenuNo())).thenReturn(menu);
-        Menu findMenu = menuModuleService.findOne(menu.getMenuNo());
+        when(menuRepository.findMenusByMenuNo(menu.getId())).thenReturn(menu);
+        Menu findMenu = menuModuleService.findOne(menu.getId());
 
         //then
         assertEquals(findMenu, menu);
@@ -203,7 +201,7 @@ class MenuServiceTest {
         //given
         Store store = new Store();
         Menu menu = new Menu();
-        menu.setMenuNo(100L);
+        menu.setId(100L);
 
         Attach attach1 = Attach.builder()
                 .filePath("FilePath")
@@ -223,14 +221,14 @@ class MenuServiceTest {
         menu.addAttach(attach1);
         menuRepository.save(menu);
 
-        when(menuRepository.findMenusByMenuNo(menu.getMenuNo())).thenReturn(menu);
-        when(attachComponentService.changeFileStatusDeleteByFileNo(attach1.getFileNo())).thenAnswer(invocation -> {
+        when(menuRepository.findMenusByMenuNo(menu.getId())).thenReturn(menu);
+        when(attachComponentService.changeFileStatusDeleteByFileNo(attach1.getId())).thenAnswer(invocation -> {
             attach1.changeFileStatusToDelete();
             return null;
         });
 
         //when
-        menuComponentService.deleteMenuByMenuNoAndStore(menu.getMenuNo(), store);
+        menuComponentService.deleteMenuByMenuNoAndStore(menu.getId(), store);
 
         //then
         Assertions.assertEquals(menu.getMenuStatus(), MenuStatus.N);
@@ -243,7 +241,7 @@ class MenuServiceTest {
         //given
         long menuNo = 1L;
         Store store = new Store();
-        store.setStoreNo(1L);
+        store.setId(1L);
 
         Menu existedmenu = new Menu();
         List<MultipartFile> multipartFiles = new ArrayList<>();
@@ -257,7 +255,7 @@ class MenuServiceTest {
         attach1.setMenuNo(existedmenu);
         attachRepository.save(attach1);
 
-        existedmenu.setMenuNo(menuNo);
+        existedmenu.setId(menuNo);
         existedmenu.setStoreNo(store);
         existedmenu.setMenuSize(MenuSize.L);
         existedmenu.setMenuContent("기존 내용");
@@ -267,7 +265,7 @@ class MenuServiceTest {
 
         // 업데이트할 내용을 담은 새로운 Menu 객체 생성
         Menu updatemenu = new Menu();
-        updatemenu.setMenuNo(menuNo);
+        updatemenu.setId(menuNo);
         updatemenu.setStoreNo(store);
         updatemenu.setMenuSize(MenuSize.L);
         updatemenu.setMenuContent("수정 내용");
@@ -277,13 +275,13 @@ class MenuServiceTest {
 
         // findOne 호출될 때 existedmenu를 리턴하도록 설정
         when(menuModuleServiceM.findOne(menuNo)).thenReturn(updatemenu);
-        when(menuModuleServiceM.findOne(updatemenu.getMenuNo())).thenReturn(existedmenu);
+        when(menuModuleServiceM.findOne(updatemenu.getId())).thenReturn(existedmenu);
 
         //when
         menuComponentService.update(1L, multipartFiles, store);
 
         //then
-        assertEquals(existedmenu.getMenuNo(), updatemenu.getMenuNo());
+        assertEquals(existedmenu.getId(), updatemenu.getId());
         assertEquals(20000, updatemenu.getMenuPrice());
 
     }

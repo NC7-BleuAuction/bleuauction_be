@@ -41,7 +41,7 @@ public class ReviewService {
     for (int i = 0; i < exitingReviewList.size(); i++) {
       Optional<List<Attach>> optionalAttachList = Optional.ofNullable(attachRepository.findAllByReviewAndFileStatus(exitingReviewList.get(i), FileStatus.Y));
       if (optionalAttachList.isPresent()) {
-        exitingReviewList.get(i).setReviewAttaches(optionalAttachList.get());
+        exitingReviewList.get(i).setAttaches(optionalAttachList.get());
       }
     }
     return exitingReviewList;
@@ -57,7 +57,7 @@ public class ReviewService {
           attachComponentService.saveWithReview(insertReview, FileUploadUsage.REVIEW, multipartFile);
         }
       }
-      insertReview.setReviewAttaches(attaches);
+      insertReview.setAttaches(attaches);
     }
     return insertReview;
   }
@@ -82,11 +82,9 @@ public class ReviewService {
       }
     }
 
-    Optional<List<Answer>> optionalAnswerList = answerRepository.findAllByReviewNoAndAnswerStatus(exitingReview.getReviewNo(), AnswerStatus.Y);
-    if (optionalAnswerList.isPresent()) {
-      for (Answer exitingAnswer : optionalAnswerList.get()) {
-        exitingAnswer.setAnswerStatus(AnswerStatus.N);
-      }
+    List<Answer> answerList = answerRepository.findAllByReviewAndStatus(exitingReview, AnswerStatus.Y);
+    for (Answer exitingAnswer : answerList) {
+      exitingAnswer.setStatus(AnswerStatus.N);
     }
     exitingReview.setReviewStatus(ReviewStatus.N);
     return reviewRepository.save(exitingReview);

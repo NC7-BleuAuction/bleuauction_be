@@ -34,14 +34,14 @@ public class OrderMenuComponentService {
     private final OrderMenuModuleService orderMenuModuleService;
 
     public ResponseEntity<String> addOrderMenuDTO(Member member, Order order, OrderMenuDTO orderMenuDTO) {
-        Optional<Menu> selectedMenu = Optional.ofNullable(menuModuleService.findOne(orderMenuDTO.getMenuNo().getMenuNo()));
+        Optional<Menu> selectedMenu = Optional.ofNullable(menuModuleService.findOne(orderMenuDTO.getMenuNo().getId()));
 
         if(selectedMenu.isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Selected menu not found");
         }
             OrderMenu orderMenu = new OrderMenu();
             orderMenu.setMemberNo(member);
-            orderMenu.setOrderNo(order);
+            orderMenu.setOrder(order);
             orderMenu.setOrderMenuCount(orderMenuDTO.getOrderMenuCount());
             orderMenu.setMenuNo(selectedMenu.get());
 

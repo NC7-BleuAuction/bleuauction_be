@@ -64,7 +64,7 @@ public class MemberModuleService {
      */
     public Member save(Member member) {
         log.info("[MemberModuleService] Member Save,Request Member Info : RequestEmail >>> {}, RequestName >>> {} , RequestPhone >>> {}",
-                member.getMemberEmail(), member.getMemberEmail(), member.getMemberPhone());
+                member.getEmail(), member.getEmail(), member.getPhone());
 
         return memberRepository.save(member);
     }

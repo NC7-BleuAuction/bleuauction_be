@@ -8,6 +8,8 @@ import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
 import bleuauction.bleuauction_be.server.member.dto.LoginResponseDto;
 import bleuauction.bleuauction_be.server.member.dto.UpdateMemberRequest;
+import bleuauction.bleuauction_be.server.member.entity.Address;
+import bleuauction.bleuauction_be.server.member.entity.BankAccount;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
 import bleuauction.bleuauction_be.server.member.exception.DuplicateMemberEmailException;
@@ -48,16 +50,16 @@ public class MemberComponentService {
     public LoginResponseDto login(String email, String requestPassword) {
         Member member = memberModuleService.findByEmail(email);
 
-        if(!passwordEncoder.matches(requestPassword, member.getMemberPwd())){
+        if(!passwordEncoder.matches(requestPassword, member.getPassword())){
             throw new MemberNotFoundException("Bad Request Password");
         }
 
         //로그인 정상처리에 대한 반환 정보 추출
         TokenMember tokenMember = TokenMember.builder()
-                .memberNo(member.getMemberNo())
-                .memberEmail(member.getMemberEmail())
-                .memberName(member.getMemberName())
-                .memberCategory(member.getMemberCategory())
+                .memberNo(member.getId())
+                .memberEmail(member.getEmail())
+                .memberName(member.getName())
+                .memberCategory(member.getCategory())
                 .build();
         String accessToken = jwtUtils.createAccessToken(tokenMember);
         String refreshToken = jwtUtils.createRefreshToken(tokenMember, accessToken);
@@ -92,13 +94,13 @@ public class MemberComponentService {
      * @return
      */
     public Member signUp(Member member) {
-        validateDuplicateMember(member.getMemberEmail());
+        validateDuplicateMember(member.getEmail());
 
         log.info("[MembeComponentrService] Member SignUp : RequestEmail >>> {}, RequestName >>> {} , RequestPhone >>> {}",
-                member.getMemberEmail(), member.getMemberEmail(), member.getMemberPhone());
+                member.getEmail(), member.getEmail(), member.getPhone());
 
         // Password Encoded(암호화)
-        member.setMemberPwd(passwordEncoder.encode(member.getMemberPwd()));
+        member.setPassword(passwordEncoder.encode(member.getPassword()));
 
         return memberModuleService.save(member);
     }
@@ -110,8 +112,8 @@ public class MemberComponentService {
     @Transactional
     public void withDrawMember(TokenMember tokenMember) {
         Member member = memberModuleService.findById(tokenMember.getMemberNo());
-        member.setMemberStatus(MemberStatus.N);
-        log.info("회원이 성공적으로 탈퇴되었습니다. 회원번호: {}", member.getMemberNo());
+        member.setStatus(MemberStatus.N);
+        log.info("회원이 성공적으로 탈퇴되었습니다. 회원번호: {}", member.getId());
 
         // 여기에서 토큰을 무효화하는 로직을 추가해야 합니다.
         // 토큰을 무효화하고 클라이언트 측에서도 토큰을 삭제하는 방법을 사용하십시오.
@@ -126,14 +128,22 @@ public class MemberComponentService {
             attachComponentService.saveWithMember(loginUser, FileUploadUsage.MEMBER, request.getProfileImage());
         }
 
-        loginUser.setMemberPwd(passwordEncoder.encode(request.getMemberPwd()));
-        loginUser.setMemberName(request.getMemberName());
-        loginUser.setMemberAddr(request.getMemberAddr());
-        loginUser.setMemberZipcode(request.getMemberZipcode());
-        loginUser.setMemberDetailAddr(request.getMemberDetailAddr());
-        loginUser.setMemberPhone(request.getMemberPhone());
-        loginUser.setMemberBank(request.getMemberBank());
-        loginUser.setMemberAccount(request.getMemberAccount());
+        loginUser.setPassword(passwordEncoder.encode(request.getMemberPwd()));
+        loginUser.setName(request.getMemberName());
+        loginUser.setAddress(
+                Address.builder()
+                        .zipCode(request.getMemberZipcode())
+                        .addr(request.getMemberAddr())
+                        .detailAddr(request.getMemberDetailAddr())
+                .build()
+        );
+        loginUser.setBankAccount(
+                BankAccount.builder()
+                        .bankName(request.getMemberBank())
+                        .bankAccount(request.getMemberAccount())
+                        .build()
+        );
+        loginUser.setPhone(request.getMemberPhone());
 
         return memberModuleService.save(loginUser);
     }

@@ -93,7 +93,7 @@ class ReviewServiceTest {
     assertNotNull(addReview);
 
     assertEquals(TEST_REVIEW_NO, addReview.getReviewNo());
-    assertEquals(TEST_MEMBER_NO, addReview.getMember().getMemberNo());
+    assertEquals(TEST_MEMBER_NO, addReview.getMember().getId());
     assertEquals(TEST_STORE_NO, addReview.getStoreNo());
     assertEquals(TEST_REVIEW_CONTENT, addReview.getReviewContent());
     assertEquals(ReviewFreshness.M, addReview.getReviewFreshness());

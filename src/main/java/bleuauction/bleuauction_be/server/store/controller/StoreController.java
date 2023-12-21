@@ -2,7 +2,6 @@ package bleuauction.bleuauction_be.server.store.controller;
 
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
-import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
@@ -104,7 +103,7 @@ public class StoreController {
       jwtUtils.verifyToken(authorizationHeader);
         Member requestUser = memberModuleService.findById(jwtUtils.getTokenMember(authorizationHeader).getMemberNo());
         Member targetUser = memberModuleService.findById(memberNo);
-        if (!requestUser.getMemberNo().equals(targetUser.getMemberNo())) {
+        if (!requestUser.getId().equals(targetUser.getId())) {
             throw new StoreUpdateUnAuthorizedException(requestUser, targetUser);
         }
         // E : 인증 인가, 검증로직

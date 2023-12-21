@@ -2,7 +2,6 @@ package bleuauction.bleuauction_be.server.orderMenu.service;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import static org.mockito.Mockito.when;
 
@@ -57,15 +56,15 @@ class OrderMenuServiceTest {
         // Given
         OrderMenuDTO mockDTO = new OrderMenuDTO();
         Menu mockMenu = new Menu();
-        mockMenu.setMenuNo(100L);
+        mockMenu.setId(100L);
         Order mockOrder = new Order();
-        mockOrder.setOrderNo(100L);
+        mockOrder.setId(100L);
         Member mockMember = new Member();
-        mockMember.setMemberNo(100L);
+        mockMember.setId(100L);
 
         mockDTO.setOrderMenuCount(2);
         mockDTO.setMenuNo(mockMenu);
-        mockDTO.setOrderNo(mockOrder);
+        mockDTO.setOrder(mockOrder);
         mockDTO.setMemberNo(mockMember);
 
         // When
@@ -102,7 +101,7 @@ class OrderMenuServiceTest {
         Long orderNo = 123L;
 
         Order mockOrder = new Order();
-        mockOrder.setOrderNo(orderNo);
+        mockOrder.setId(orderNo);
 
         OrderMenu mockOrderMenu1 = new OrderMenu();
         mockOrderMenu1.setOrderMenuStatus(OrderMenuStatus.Y);
@@ -131,20 +130,20 @@ class OrderMenuServiceTest {
 
         // Create an order
         Order mockOrder = new Order();
-        mockOrder.setOrderNo(orderNo);
+        mockOrder.setId(orderNo);
 
         // Create order menus with different statuses
         OrderMenu orderMenu1 = new OrderMenu();
         orderMenu1.setOrderMenuStatus(OrderMenuStatus.Y);
-        orderMenu1.setOrderNo(mockOrder);
+        orderMenu1.setOrder(mockOrder);
 
         OrderMenu orderMenu2 = new OrderMenu();
         orderMenu2.setOrderMenuStatus(OrderMenuStatus.N);
-        orderMenu2.setOrderNo(mockOrder);
+        orderMenu2.setOrder(mockOrder);
 
         OrderMenu orderMenu3 = new OrderMenu();
         orderMenu3.setOrderMenuStatus(OrderMenuStatus.Y);
-        orderMenu3.setOrderNo(mockOrder);
+        orderMenu3.setOrder(mockOrder);
 
         mockOrder.setOrderMenus(List.of(orderMenu1, orderMenu2, orderMenu3));
         when(orderService.findOne(orderNo)).thenReturn(Optional.of(mockOrder));

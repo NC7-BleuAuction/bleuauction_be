@@ -47,10 +47,12 @@ class StoreItemDailyPriceServiceTest {
   @DisplayName("testSelectSidpList(): DailyPriceStatus.Y(\"사용중\") 인 상태의 가게별 품목 당일 싯가 객체가 있으면 모두 조회한다. ")
   void testSelectSidpList() throws Exception {
     // given
+    Store store = new Store();
+    store.setId(TEST_STORE_NO);
     List<StoreItemDailyPrice> mockSidpList = List.of(
-            StoreItemDailyPriceEntityFactory.of(TEST_STORE_NO, 1000, ItemCode.S, ItemName.FI, ItemSize.S, OriginStatus.D, OriginPlaceStatus.WS, WildFarmStatus.F, DailyPriceStatus.Y),
-            StoreItemDailyPriceEntityFactory.of(TEST_STORE_NO, 2000, ItemCode.S, ItemName.SL, ItemSize.M, OriginStatus.D, OriginPlaceStatus.ES, WildFarmStatus.W, DailyPriceStatus.Y),
-            StoreItemDailyPriceEntityFactory.of(TEST_STORE_NO, 3000, ItemCode.S, ItemName.SL, ItemSize.L, OriginStatus.I, OriginPlaceStatus.JP, WildFarmStatus.F, DailyPriceStatus.Y)
+            StoreItemDailyPriceEntityFactory.of(store, 1000, ItemCode.S, ItemName.FI, ItemSize.S, OriginStatus.D, OriginPlaceStatus.WS, WildFarmStatus.F, DailyPriceStatus.Y),
+            StoreItemDailyPriceEntityFactory.of(store, 2000, ItemCode.S, ItemName.SL, ItemSize.M, OriginStatus.D, OriginPlaceStatus.ES, WildFarmStatus.W, DailyPriceStatus.Y),
+            StoreItemDailyPriceEntityFactory.of(store, 3000, ItemCode.S, ItemName.SL, ItemSize.L, OriginStatus.I, OriginPlaceStatus.JP, WildFarmStatus.F, DailyPriceStatus.Y)
     );
     given(storeItemDailyPriceRepository.findAllByDailyPriceStatus(DailyPriceStatus.Y)).willReturn(Optional.of(mockSidpList));
 
@@ -66,10 +68,9 @@ class StoreItemDailyPriceServiceTest {
   void testAddStoreItemDailyPrice() {
     // given
     Store store = new Store();
-    store.setStoreNo(1L);
+    store.setId(TEST_STORE_NO);
 
     StoreItemDailyPriceInsertRequest sidpInsertRequest = new StoreItemDailyPriceInsertRequest();
-    sidpInsertRequest.setStoreNo(store.getStoreNo());
     sidpInsertRequest.setDailyPrice(1000);
     sidpInsertRequest.setItemCode(ItemCode.S);
     sidpInsertRequest.setItemName(ItemName.FI);
@@ -81,8 +82,8 @@ class StoreItemDailyPriceServiceTest {
     sidpInsertRequest.setRegDatetime(Timestamp.valueOf(LocalDateTime.now()));
     sidpInsertRequest.setMdfDatetime(Timestamp.valueOf(LocalDateTime.now()));
 
-    StoreItemDailyPrice sidp = sidpInsertRequest.toEntity(sidpInsertRequest.getStoreNo());
-    sidp.setDailyPriceNo(1L);
+    StoreItemDailyPrice sidp = sidpInsertRequest.toEntity(store);
+    sidp.setId(1L);
 
     given(storeItemDailyPriceRepository.save(any(StoreItemDailyPrice.class))).willReturn(sidp);
 

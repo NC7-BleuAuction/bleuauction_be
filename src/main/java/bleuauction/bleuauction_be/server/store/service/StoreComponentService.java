@@ -71,7 +71,7 @@ public class StoreComponentService {
         }
 
         log.info("[{}] Store Info Update Start, Store [ID : {}, Name : {}]",
-                this.getClass().getName(), updateStore.getStoreNo(), updateStoreRequest.getStoreName());
+                this.getClass().getName(), updateStore.getId(), updateStoreRequest.getStoreName());
         updateStore.setStoreName(updateStoreRequest.getStoreName());
         updateStore.setMarketName(updateStoreRequest.getMarketName());
         updateStore.setLicenseNo(updateStoreRequest.getLicenseNo());
@@ -85,7 +85,7 @@ public class StoreComponentService {
 
         storeModuleService.save(updateStore);
         log.info("[{}] Store Info Update End, Store [ID : {}, Name : {}]",
-                this.getClass().getName(), updateStore.getStoreNo(), updateStore.getStoreName());
+                this.getClass().getName(), updateStore.getId(), updateStore.getStoreName());
     }
 
     /**
@@ -98,14 +98,14 @@ public class StoreComponentService {
         Store store = storeModuleService.findById(storeNo);
 
         // 가게 소유자가 아닌 경우
-        if (store.getMemberNo() == null || !store.getMemberNo().getMemberNo().equals(member.getMemberNo())) {
+        if (store.getMember() == null || !store.getMember().getId().equals(member.getId())) {
             log.error("올바른 가게 정보가 아닙니다.");
             throw new StoreUpdateUnAuthorizedException(store, member);
         }
         // 가게 상태를 'N'으로 변경하여 탈퇴 처리
         store.changeStoreStatusN();
         storeModuleService.save(store);
-        log.info("가게가 성공적으로 폐업되었습니다. 가게번호: {}, 가게명: {}", member.getMemberNo(), store.getStoreName());
+        log.info("가게가 성공적으로 폐업되었습니다. 가게번호: {}, 가게명: {}", member.getId(), store.getStoreName());
     }
 
     /**

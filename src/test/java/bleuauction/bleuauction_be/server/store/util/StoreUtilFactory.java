@@ -16,7 +16,7 @@ public class StoreUtilFactory {
 
     public static Store of(Member member, String marketName, String storeName, String licenseNo) {
         return Store.builder()
-                .memberNo(member)
+                .member(member)
                 .marketName(marketName)
                 .storeName(storeName)
                 .licenseNo(licenseNo)

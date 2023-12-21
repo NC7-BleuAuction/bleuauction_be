@@ -7,14 +7,11 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,30 +21,33 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.sql.Timestamp;
 
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 @Table(name = "ba_pay")
 public class Pay {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "pay_no")
-    private Long payNo;
+    private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="order_no")
-    private Order orderNo;
+    private Order order;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "pay_type")
     private PayType payType;
 
     @NotNull
     private Integer payPrice;
+
+    @Enumerated(EnumType.STRING)
+    private PayStatus payStatus;
 
     @CreationTimestamp
     @Column(name = "pay_datetime")
@@ -57,8 +57,13 @@ public class Pay {
     @Column(name = "pay_cancel_datetime")
     private Timestamp payCancelDatetime;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "pay_status")
-    private PayStatus payStatus;
-
+    @Builder
+    public Pay(Order order, PayType payType, Integer payPrice, PayStatus payStatus, Timestamp payDatetime, Timestamp payCancelDatetime){
+        this.order = order;
+        this.payType = payType;
+        this.payPrice = payPrice;
+        this.payStatus = payStatus;
+        this.payDatetime = payDatetime;
+        this.payCancelDatetime = payCancelDatetime;
+    }
 }

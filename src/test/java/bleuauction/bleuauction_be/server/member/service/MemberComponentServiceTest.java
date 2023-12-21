@@ -52,21 +52,21 @@ class MemberComponentServiceTest {
     void whenGivenMemberNo_thenReturnOptionalInMemberObject() {
         // given
         Member member = MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, MemberCategory.M);
-        member.setMemberNo(1L);
+        member.setId(1L);
 
-        given(memberModuleService.findByMemberNo(member.getMemberNo())).willReturn(Optional.of(member));
+        given(memberModuleService.findByMemberNo(member.getId())).willReturn(Optional.of(member));
 
 
         // when
-        Optional<Member> optionalFindMember = memberComponentService.findByMemberNo(member.getMemberNo());
+        Optional<Member> optionalFindMember = memberComponentService.findByMemberNo(member.getId());
 
         // then
         assertTrue(optionalFindMember.isPresent());
 
         Member findMember = optionalFindMember.get();
-        assertEquals(TEST_MAIL, findMember.getMemberEmail());
-        assertEquals(TEST_PWD, findMember.getMemberPwd());
-        assertEquals(TEST_NAME, findMember.getMemberName());
+        assertEquals(TEST_MAIL, findMember.getEmail());
+        assertEquals(TEST_PWD, findMember.getPassword());
+        assertEquals(TEST_NAME, findMember.getName());
     }
 
     @Test
@@ -87,18 +87,18 @@ class MemberComponentServiceTest {
     void whenGivenMemberNo_thenReturnMemberObject() {
         // given
         Member member = MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, MemberCategory.M);
-        member.setMemberNo(1L);
+        member.setId(1L);
 
-        given(memberModuleService.findById(member.getMemberNo())).willReturn(member);
+        given(memberModuleService.findById(member.getId())).willReturn(member);
 
 
         // when
-        Member findMember = memberModuleService.findById(member.getMemberNo());
+        Member findMember = memberModuleService.findById(member.getId());
 
         // then
-        assertEquals(TEST_MAIL, findMember.getMemberEmail());
-        assertEquals(TEST_PWD, findMember.getMemberPwd());
-        assertEquals(TEST_NAME, findMember.getMemberName());
+        assertEquals(TEST_MAIL, findMember.getEmail());
+        assertEquals(TEST_PWD, findMember.getPassword());
+        assertEquals(TEST_NAME, findMember.getName());
     }
 
     @Test
@@ -127,10 +127,10 @@ class MemberComponentServiceTest {
     void whenGivenPasswordNotMatch_ThenThrowMemberNotFoundException() {
         //given
         Member member = MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, MemberCategory.M);
-        member.setMemberNo(1L);
+        member.setId(1L);
 
         given(memberModuleService.findByEmail(TEST_MAIL)).willReturn(member);
-        given(passwordEncoder.matches(TEST_PWD, member.getMemberPwd())).willReturn(false);
+        given(passwordEncoder.matches(TEST_PWD, member.getPassword())).willReturn(false);
 
         // when && then
         MemberNotFoundException e = assertThrows(MemberNotFoundException.class, () -> memberComponentService.login(TEST_MAIL, TEST_PWD));
@@ -142,13 +142,13 @@ class MemberComponentServiceTest {
     void whenGivenEmailAndPasswordMatch_ThenReturnLoginResponseDto() {
         //given
         Member member = MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, MemberCategory.M);
-        member.setMemberNo(1L);
+        member.setId(1L);
 
         String accessToken = "testAccessTokenTest@test.com테스트토큰";
         String refreshToken =  "testRefreshTokenTest@test.com테스트토큰";
 
         given(memberModuleService.findByEmail(TEST_MAIL)).willReturn(member);
-        given(passwordEncoder.matches(TEST_PWD, member.getMemberPwd())).willReturn(true);
+        given(passwordEncoder.matches(TEST_PWD, member.getPassword())).willReturn(true);
         given(jwtUtils.createAccessToken(any(TokenMember.class))).willReturn(accessToken);
         given(jwtUtils.createRefreshToken(any(TokenMember.class), any(String.class))).willReturn(refreshToken);
 
@@ -199,11 +199,11 @@ class MemberComponentServiceTest {
         String encodePassword = UUID.randomUUID().toString();
 
         given(memberModuleService.isExistsByEmail(TEST_MAIL)).willReturn(false);
-        given(passwordEncoder.encode(member.getMemberPwd())).willReturn(encodePassword);
+        given(passwordEncoder.encode(member.getPassword())).willReturn(encodePassword);
 
         given(memberModuleService.save(member)).willAnswer(invocation -> {
             Member param = invocation.getArgument(0);
-            param.setMemberNo(1L);
+            param.setId(1L);
             return param;
         });
 
@@ -211,8 +211,8 @@ class MemberComponentServiceTest {
         Member signUpMember = memberComponentService.signUp(member);
 
         // then
-        assertEquals(signUpMember.getMemberNo(), 1L);
-        assertEquals(signUpMember.getMemberPwd(), encodePassword);
+        assertEquals(signUpMember.getId(), 1L);
+        assertEquals(signUpMember.getPassword(), encodePassword);
     }
 
 }

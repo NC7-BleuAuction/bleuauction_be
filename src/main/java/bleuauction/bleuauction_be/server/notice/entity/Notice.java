@@ -1,10 +1,19 @@
 package bleuauction.bleuauction_be.server.notice.entity;
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.entity.NoticeAttach;
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,9 +21,12 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
@@ -23,42 +35,36 @@ import java.util.List;
 @Table(name = "ba_notice")
 public class Notice {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long noticeNo;
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "notice_no")
+    private Long id;
 
-  private String noticeTitle;
+    private String noticeTitle;
 
-  @Column(columnDefinition = "LONGTEXT")
-  private String noticeContent;
+    @Lob
+    private String noticeContent;
 
-  @JsonBackReference
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name ="member_no")
-  private Member memberNo;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "member_no")
+    private Member member;
 
-  @CreationTimestamp
-  private Timestamp regDatetime;
+    @CreationTimestamp
+    private Timestamp regDatetime;
 
-  @UpdateTimestamp
-  private Timestamp mdfDatetime;
+    @UpdateTimestamp
+    private Timestamp mdfDatetime;
 
-  @Enumerated(EnumType.STRING)
-  private NoticeStatus noticeStatus; // 상태 [Y,N]
+    @Enumerated(STRING)
+    private NoticeStatus noticeStatus; // 상태 [Y,N]
 
-  @JsonManagedReference
-  @OneToMany(mappedBy = "noticeNo", cascade=CascadeType.ALL)
-  private List<Attach> noticeAttaches = new ArrayList<>();
+    @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL)
+    private List<NoticeAttach> attaches = new ArrayList<>();
 
-  // 비지니스 로직
-  // 공지사항 삭제
-  public void delete(){
-    this.setNoticeStatus(NoticeStatus.N);
-  }
+    // 비지니스 로직
+    // 공지사항 삭제
+    public void delete() {
+        this.setNoticeStatus(NoticeStatus.N);
+    }
 
-  // 이미지 추가를 위한 메서드
-  public void addNoticeAttach(Attach attach) {
-    noticeAttaches.add(attach);
-    attach.setNoticeNo(this); // 이미지와 메뉴를 연결
-  }
 }

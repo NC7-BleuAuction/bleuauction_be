@@ -26,6 +26,6 @@ public class StoreItemDailyPriceService {
   }
 
   public StoreItemDailyPrice addStoreItemDailyPrice(StoreItemDailyPriceInsertRequest request, Store store)  {
-    return storeItemDailyPriceRepository.save(request.toEntity(store.getStoreNo()));
+    return storeItemDailyPriceRepository.save(request.toEntity(store));
   }
 }

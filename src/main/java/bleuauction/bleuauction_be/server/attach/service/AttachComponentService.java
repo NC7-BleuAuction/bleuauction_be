@@ -1,6 +1,11 @@
 package bleuauction.bleuauction_be.server.attach.service;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.entity.MemberAttach;
+import bleuauction.bleuauction_be.server.attach.entity.MenuAttach;
+import bleuauction.bleuauction_be.server.attach.entity.NoticeAttach;
+import bleuauction.bleuauction_be.server.attach.entity.ReviewAttach;
+import bleuauction.bleuauction_be.server.attach.entity.StoreAttach;
 import bleuauction.bleuauction_be.server.attach.exception.AttachUploadBadRequestException;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.attach.util.NcpObjectStorageUtil;
@@ -45,9 +50,7 @@ public class AttachComponentService {
      */
     public Attach saveWithMember(Member member, FileUploadUsage usage, MultipartFile parts)  {
         isObjEmpty(member);
-        Attach attach = ncpObjectStorageUtil.uploadFile(usage, parts);
-        member.addAttaches(attach);
-        return attachModuleService.save(attach);
+        return attachModuleService.save(new MemberAttach(ncpObjectStorageUtil.uploadFile(usage, parts), member));
     }
 
     /**
@@ -59,9 +62,7 @@ public class AttachComponentService {
      */
     public Attach saveWithMenu(Menu menu, FileUploadUsage usage, MultipartFile parts)  {
         isObjEmpty(menu);
-        Attach attach = ncpObjectStorageUtil.uploadFile(usage, parts);
-        menu.addAttach(attach);
-        return attachModuleService.save(attach);
+        return attachModuleService.save(new MenuAttach(ncpObjectStorageUtil.uploadFile(usage, parts), menu));
     }
 
     /**
@@ -73,9 +74,7 @@ public class AttachComponentService {
      */
     public Attach saveWithReview(Review review, FileUploadUsage usage, MultipartFile parts)  {
         isObjEmpty(review);
-        Attach attach = ncpObjectStorageUtil.uploadFile(usage, parts);
-        review.addAttach(attach);
-        return attachModuleService.save(attach);
+        return attachModuleService.save(new ReviewAttach(ncpObjectStorageUtil.uploadFile(usage, parts), review));
     }
 
     /**
@@ -87,9 +86,7 @@ public class AttachComponentService {
      */
     public Attach saveWithNotice(Notice notice, FileUploadUsage usage, MultipartFile parts)  {
         isObjEmpty(notice);
-        Attach attach = ncpObjectStorageUtil.uploadFile(usage, parts);
-        notice.addNoticeAttach(attach);
-        return attachModuleService.save(attach);
+        return attachModuleService.save(new NoticeAttach(ncpObjectStorageUtil.uploadFile(usage, parts), notice));
     }
 
     /**
@@ -101,9 +98,7 @@ public class AttachComponentService {
      */
     public Attach saveWithStore(Store store, FileUploadUsage usage, MultipartFile parts)  {
         isObjEmpty(store);
-        Attach attach = ncpObjectStorageUtil.uploadFile(usage, parts);
-        store.addAttaches(attach);
-        return attachModuleService.save(attach);
+        return attachModuleService.save(new StoreAttach(ncpObjectStorageUtil.uploadFile(usage, parts), store));
     }
 
     /**

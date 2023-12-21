@@ -15,7 +15,7 @@ public class StoreRequestUnAuthorizationException extends RuntimeException {
         super(
                 String.format(
                         MESSAGE+"UpdateUser, requestUser >>> [ID : %d, Email : %s], exceptionTime : %s",
-                        requestMember.getMemberNo(), requestMember.getMemberEmail(), LocalDateTime.now()
+                        requestMember.getId(), requestMember.getEmail(), LocalDateTime.now()
                 )
         );
     }

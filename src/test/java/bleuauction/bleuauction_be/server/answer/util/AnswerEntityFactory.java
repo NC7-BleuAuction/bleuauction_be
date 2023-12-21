@@ -12,24 +12,29 @@ public class AnswerEntityFactory {
   public static final Answer mockAnswer;
 
   static {
-    Answer answer = Answer.builder()
-            .reviewNo(1L)
-            .member(MemberEntityFactory.of("testCustomerMember1", "testCustomerMemberPwd", "테스트 일반 회원 이름", MemberCategory.M ))
-            .answerContent("테스트 답글 내용")
-            .answerStatus(AnswerStatus.Y)
+    Review review = Review.builder()
+            .reviewContent("테스트 리뷰 내용")
+            .reviewStatus(ReviewStatus.Y)
             .build();
-    answer.setAnswerNo(1L);
+    review.setId(1L);
+    Answer answer = Answer.builder()
+            .review(review)
+            .member(MemberEntityFactory.of("testCustomerMember1", "testCustomerMemberPwd", "테스트 일반 회원 이름", MemberCategory.M ))
+            .content("테스트 답글 내용")
+            .status(AnswerStatus.Y)
+            .build();
+    answer.setId(1L);
 
     mockAnswer = answer;
   }
 
 
-  public static Answer of(Long reviewNo, Member member, String answerContent, AnswerStatus answerStatus) {
+  public static Answer of(Review review, Member member, String content, AnswerStatus status) {
     return Answer.builder()
-            .reviewNo(reviewNo)
+            .review(review)
             .member(member)
-            .answerContent(answerContent)
-            .answerStatus(answerStatus)
+            .content(content)
+            .status(status)
             .build();
   }
 }

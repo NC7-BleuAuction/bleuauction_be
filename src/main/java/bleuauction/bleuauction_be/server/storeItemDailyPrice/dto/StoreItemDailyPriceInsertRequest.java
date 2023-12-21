@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.storeItemDailyPrice.dto;
 
+import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.DailyPriceStatus;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.ItemCode;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.ItemName;
@@ -21,9 +22,6 @@ import java.sql.Timestamp;
 @Setter
 @NoArgsConstructor
 public class StoreItemDailyPriceInsertRequest {
-
-    private Long storeNo;
-
     private int dailyPrice;
 
     @Enumerated(EnumType.STRING)
@@ -52,9 +50,9 @@ public class StoreItemDailyPriceInsertRequest {
 
     private DailyPriceStatus dailyPriceStatus = DailyPriceStatus.Y;
 
-    public StoreItemDailyPrice toEntity(Long StoreNo) {
+    public StoreItemDailyPrice toEntity(Store store) {
         return StoreItemDailyPrice.builder()
-                .storeNo(storeNo)
+                .store(store)
                 .dailyPrice(this.dailyPrice)
                 .itemCode(this.itemCode)
                 .itemName(this.itemName)

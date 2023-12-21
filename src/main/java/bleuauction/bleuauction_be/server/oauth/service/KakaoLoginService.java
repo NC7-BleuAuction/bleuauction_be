@@ -127,8 +127,8 @@ public class KakaoLoginService {
 
             if (!memberModuleService.isExistsByEmail(email)) {
                 Member newMember = new Member();
-                newMember.setMemberEmail(email);
-                newMember.setMemberPwd(createRandomPassword(12));
+                newMember.setEmail(email);
+                newMember.setPassword(createRandomPassword(12));
                 // 다른 속성 설정
 
                 try {

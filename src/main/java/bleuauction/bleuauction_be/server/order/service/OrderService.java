@@ -74,7 +74,7 @@ public class OrderService {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문이 없습니다.");
     } else {
       // Assuming calculateOrderPrice is a method in the Order class
-      orders.forEach(Order::calculateOrderPrice); // 주문 가격 계산
+      orders.forEach(Order::calculOrderPrice); // 주문 가격 계산
       return ResponseEntity.ok(orders);
     }
   }

@@ -46,11 +46,11 @@ class PayModuleServiceTest {
         //given
         Long payNo = 1L;
         Pay mockPay = Pay.builder()
-                .payNo(payNo)
                 .payType(PayType.C)
                 .payPrice(80000)
                 .payStatus(PayStatus.Y)
                 .build();
+        mockPay.setId(payNo);
 
         given(payRepository.findById(payNo)).willReturn(Optional.of(mockPay));
 

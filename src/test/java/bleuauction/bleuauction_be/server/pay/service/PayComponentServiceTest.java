@@ -55,7 +55,7 @@ class PayComponentServiceTest {
     void createPayment_WhenOrderStatusIsY_ThenCreatePay() {
         // given
         Order mockOrder = new Order();
-        mockOrder.setOrderNo(1L);
+        mockOrder.setId(1L);
         mockOrder.setOrderType(OrderType.Q);
         mockOrder.setOrderPrice(50000);
         mockOrder.setOrderRequest("매운맛으로 부탁드립니다.");
@@ -69,7 +69,7 @@ class PayComponentServiceTest {
         mockOrder.setOrderStatus(OrderStatus.Y);
 
         PayInsertRequest payInsertRequest = new PayInsertRequest();
-        payInsertRequest.setOrderNo(mockOrder.getOrderNo());
+        payInsertRequest.setOrderNo(mockOrder.getId());
         payInsertRequest.setPayPrice(mockOrder.getOrderPrice());
         payInsertRequest.setOrderType(mockOrder.getOrderType());
         payInsertRequest.setOrderPrice(mockOrder.getOrderPrice());

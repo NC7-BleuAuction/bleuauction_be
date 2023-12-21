@@ -62,7 +62,7 @@ class OrderServiceTest {
     void testUpdateOrder() {
         // given
         Order existingOrder = new Order();
-        existingOrder.setOrderNo(2500L);
+        existingOrder.setId(2500L);
         existingOrder.setOrderType(T);
         existingOrder.setOrderPrice(10000);
         existingOrder.setOrderRequest("많이 주세요");
@@ -73,11 +73,11 @@ class OrderServiceTest {
         existingOrder.setRecipientDetailAddr("502-1호");
 
         // findOne 호출될 때 existingOrder를 리턴하도록 설정
-        when(orderRepository.findByOrderNo(existingOrder.getOrderNo())).thenReturn(Optional.of(existingOrder));
+        when(orderRepository.findByOrderNo(existingOrder.getId())).thenReturn(Optional.of(existingOrder));
 
         // 업데이트할 내용을 담은 새로운 Order 객체 생성
         Order updatedOrder = new Order();
-        updatedOrder.setOrderNo(existingOrder.getOrderNo()); // 기존의 orderNo를 설정
+        updatedOrder.setId(existingOrder.getId()); // 기존의 orderNo를 설정
         updatedOrder.setOrderType(T);
         updatedOrder.setOrderPrice(10000);
         updatedOrder.setOrderRequest("수정 요청");
@@ -89,7 +89,7 @@ class OrderServiceTest {
 
         // when
         // 서비스의 update 메소드 호출
-        ResponseEntity<String> responseEntity = orderService.update(updatedOrder.getOrderNo());
+        ResponseEntity<String> responseEntity = orderService.update(updatedOrder.getId());
 
         // then
         // 반환된 ResponseEntity의 상태 코드와 메시지를 확인
@@ -115,10 +115,10 @@ class OrderServiceTest {
 
 
             // findOne 메서드가 mockOrder를 반환하도록 설정
-            when(orderRepository.findByOrderNo(mockOrder.getOrderNo())).thenReturn(Optional.of(mockOrder));
+            when(orderRepository.findByOrderNo(mockOrder.getId())).thenReturn(Optional.of(mockOrder));
 
             // When
-            orderService.deleteOrder(mockOrder.getOrderNo());
+            orderService.deleteOrder(mockOrder.getId());
 
             // Then
             // mockNotice의 status가 N인지 확인
@@ -148,7 +148,7 @@ class OrderServiceTest {
         Long memberNo = 123L;
 
         Member fakeLoginUser = new Member();
-        fakeLoginUser.setMemberNo(memberNo);
+        fakeLoginUser.setId(memberNo);
 
         when(memberComponentService.findByMemberNo(memberNo)).thenReturn(Optional.of(fakeLoginUser));
 
@@ -187,7 +187,7 @@ class OrderServiceTest {
         Long memberNo = 123L;
 
         Member fakeLoginUser = new Member();
-        fakeLoginUser.setMemberNo(memberNo);
+        fakeLoginUser.setId(memberNo);
 
         // 로그인한 사용자를 찾았다고 설정
         when(memberComponentService.findByMemberNo(memberNo)).thenReturn(Optional.of(fakeLoginUser));

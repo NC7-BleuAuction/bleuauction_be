@@ -47,7 +47,7 @@ class NoticeServiceTest {
         mockMember.setMemberCategory(MemberCategory.A);
 
         Notice mockNotice = new Notice();
-        mockNotice.setNoticeNo(100L);
+        mockNotice.setId(100L);
         mockNotice.setMemberNo(mockMember);
 
         List<MultipartFile> multipartFiles = new ArrayList<>();
@@ -57,7 +57,7 @@ class NoticeServiceTest {
         Long result = noticeComponentService.enroll(mockNotice, multipartFiles, mockMember);
 
         // Then
-        assertEquals(mockNotice.getNoticeNo(), result);
+        assertEquals(mockNotice.getId(), result);
     }
 
     @Test
@@ -65,7 +65,7 @@ class NoticeServiceTest {
         // Given
         Long noticeNo = 1L;
         Notice mockNotice = new Notice();
-        mockNotice.setNoticeNo(noticeNo);
+        mockNotice.setId(noticeNo);
 
         // When
         when(noticeRepository.findByNoticeNo(noticeNo)).thenReturn(mockNotice);
@@ -73,7 +73,7 @@ class NoticeServiceTest {
 
         // Then
         assertNotNull(result);
-        assertEquals(noticeNo, result.getNoticeNo());
+        assertEquals(noticeNo, result.getId());
     }
 
     @Test
@@ -84,7 +84,7 @@ class NoticeServiceTest {
         Member mockMember = new Member();
         mockMember.setMemberCategory(MemberCategory.A);
         Notice existingNotice = new Notice();
-        existingNotice.setNoticeNo(100L);
+        existingNotice.setId(100L);
         List<MultipartFile> multipartFiles = new ArrayList<>();
 
         Attach attach1 = Attach.builder()
@@ -93,7 +93,7 @@ class NoticeServiceTest {
                 .saveFilename("saveFilename")
                 .fileStatus(FileStatus.Y)
                 .build();
-        attach1.setNoticeNo(existingNotice);
+        attach1.setNotice(existingNotice);
         attachRepository.save(attach1);
 
         existingNotice.setNoticeTitle("기존 제목");
@@ -102,13 +102,13 @@ class NoticeServiceTest {
 
         // 업데이트할 내용을 담은 새로운 Notice 객체 생성
         Notice updatedNotice = new Notice();
-        updatedNotice.setNoticeNo(existingNotice.getNoticeNo()); // 기존의 noticeNo를 설정
+        updatedNotice.setId(existingNotice.getId()); // 기존의 noticeNo를 설정
         updatedNotice.setNoticeTitle("새로운 제목");
         updatedNotice.setNoticeContent("새로운 내용");
 
         // findOne  호출될 때 existingNotice를 리턴하도록 설정
-        when(noticeModuleServiceM.findOne(updatedNotice.getNoticeNo())).thenReturn(updatedNotice);
-        when(noticeRepository.findByNoticeNo(updatedNotice.getNoticeNo())).thenReturn(existingNotice);
+        when(noticeModuleServiceM.findOne(updatedNotice.getId())).thenReturn(updatedNotice);
+        when(noticeRepository.findByNoticeNo(updatedNotice.getId())).thenReturn(existingNotice);
 
 
         //when
@@ -127,7 +127,7 @@ class NoticeServiceTest {
         mockMember.setMemberCategory(MemberCategory.A);
         Long noticeNo = 1L;
         Notice mockNotice = new Notice();
-        mockNotice.setNoticeNo(noticeNo);
+        mockNotice.setId(noticeNo);
         mockNotice.setNoticeTitle("가짜 제목");
         mockNotice.setNoticeContent("가짜 내용");
 

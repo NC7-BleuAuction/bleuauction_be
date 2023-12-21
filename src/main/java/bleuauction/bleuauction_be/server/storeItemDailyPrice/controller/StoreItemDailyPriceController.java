@@ -23,7 +23,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/sidp")
 public class StoreItemDailyPriceController {
-    private final StoreModuleService storeModuleService;
+  private final StoreModuleService storeModuleService;
   private final StoreItemDailyPriceService storeItemDailyPriceService;
 
   @GetMapping

@@ -1,13 +1,16 @@
 package bleuauction.bleuauction_be.server.store.entity;
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.entity.StoreAttach;
+import bleuauction.bleuauction_be.server.member.entity.Address;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.CascadeType;
+import bleuauction.bleuauction_be.server.review.entity.Review;
+import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDailyPrice;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +20,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,88 +30,102 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
+@Entity
 @NoArgsConstructor
 @Table(name = "ba_store")
 public class Store {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "store_no")
-  private Long storeNo;
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "store_no")
+    private Long id;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "member_no")
+    private Member member;
 
-  @JsonManagedReference
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "member_no")
-  private Member memberNo;
+    @NotNull
+    private String marketName; // (수산)시장명
 
-  @NotNull
-  private String marketName; // (수산)시장명
+    @NotNull
+    private String storeName; // 가게명
 
-  @NotNull
-  private String storeName; // 가게명
+    @NotNull
+    private String licenseNo;
 
-  @NotNull
-  private String licenseNo;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "zipCode", column = @Column(name = "store_zipcode")),
+            @AttributeOverride(name = "addr", column = @Column(name = "store_addr")),
+            @AttributeOverride(name = "detailAddr", column = @Column(name = "store_detail_addr"))
+    })
+    private Address storeAddress;
 
-  @NotNull
-  private String storeZipcode;
+    private Time weekdayStartTime; // 평일 시작시간
 
-  @NotNull
-  private String storeAddr;
+    private Time weekdayEndTime; // 평일 종료시간
 
-  @NotNull
-  private String storeDetailAddr;
+    private Time weekendStartTime; // 주말 시작시간
 
-  //@NotNull
-//  @UpdateTimestamp
-//  @Column(columnDefinition = "TIME DEFAULT '09:00:00'")
-  private Time weekdayStartTime; // 평일 시작시간
+    private Time weekendEndTime; //  주말 종료시간
 
-  //@NotNull
-//  @UpdateTimestamp
-//  @Column(columnDefinition = "TIME DEFAULT '09:00:00'")
-  private Time weekdayEndTime; // 평일 종료시간
+    @Enumerated(STRING)
+    private UnsupportedType unsupportedType; // 주문 불가 유형
 
-  //@NotNull
-//  @UpdateTimestamp
-//  @Column(columnDefinition = "TIME DEFAULT '00:00:00'")
-  private Time weekendStartTime; // 주말 시작시간
+    @Enumerated(STRING)
+    private StoreStatus storeStatus;
 
-  //@NotNull
-//  @UpdateTimestamp
-//  @Column(columnDefinition = "TIME DEFAULT '00:00:00'")
-  private Time weekendEndTime; //  주말 종료시간
+    @OneToMany(mappedBy = "store", cascade = ALL)
+    private List<Menu> menus = new ArrayList<>();
 
-  @Enumerated(EnumType.STRING)
-  private UnsupportedType unsupportedType; // 주문 불가 유형
+    @OneToMany(mappedBy ="store", cascade = ALL)
+    private List<Review> reviews = new ArrayList<>();
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "store_status", columnDefinition = "VARCHAR(1) DEFAULT 'Y'")
-  private StoreStatus storeStatus;
+    @OneToMany(mappedBy = "store", cascade = ALL)
+    private List<StoreItemDailyPrice> storeItemDailyPrices = new ArrayList<>();
 
-  @Builder.Default
-  @JsonManagedReference
-  @OneToMany(mappedBy = "storeNo")
-  private List<Menu> menus = new ArrayList<>();
+    @OneToMany(mappedBy = "store", cascade = ALL)
+    private List<StoreAttach> attaches = new ArrayList<>();
 
-  @Builder.Default
-  @OneToMany(mappedBy = "storeNo", cascade = CascadeType.ALL)
-  private List<Attach> storeAttaches = new ArrayList<>();
+    @Builder
+    public Store(Member member, @NotNull String marketName, @NotNull String storeName, @NotNull String licenseNo, @NotNull String storeZipcode, @NotNull String storeAddr, @NotNull String storeDetailAddr, Time weekdayStartTime, Time weekdayEndTime, Time weekendStartTime, Time weekendEndTime, UnsupportedType unsupportedType, StoreStatus storeStatus) {
+        this.member = member;
+        this.marketName = marketName;
+        this.storeName = storeName;
+        this.licenseNo = licenseNo;
+        this.storeAddress = Address.builder()
+                .zipCode(storeZipcode)
+                .addr(storeAddr)
+                .detailAddr(storeDetailAddr)
+                .build();
+        this.weekdayStartTime = weekdayStartTime;
+        this.weekdayEndTime = weekdayEndTime;
+        this.weekendStartTime = weekendStartTime;
+        this.weekendEndTime = weekendEndTime;
+        this.unsupportedType = unsupportedType;
+        this.storeStatus = storeStatus;
+    }
 
-  public void addAttaches(Attach attach) {
-    storeAttaches.add(attach);
-    attach.setStoreNo(this);
-  }
-  public void changeStoreStatusN() {
-    this.setStoreStatus(StoreStatus.N);
-  }
-  public void changeStoreStatusY() {
-    this.setStoreStatus(StoreStatus.Y);
-  }
+    public void setStoreAddress(String storeZipcode, String storeAddr, String storeDetailAddr) {
+        this.storeAddress = Address.builder()
+                .zipCode(storeZipcode)
+                .addr(storeAddr)
+                .detailAddr(storeDetailAddr)
+                .build();
+    }
+
+    public void changeStoreStatusN() {
+        this.setStoreStatus(StoreStatus.N);
+    }
+
+    public void changeStoreStatusY() {
+        this.setStoreStatus(StoreStatus.Y);
+    }
 }

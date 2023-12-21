@@ -22,7 +22,7 @@ public class APIUserDetailsService implements UserDetailsService {
     Member loginMemebr =  memberRepository.findByMemberEmail(username).orElseThrow(() -> new UsernameNotFoundException("cannot found Email"));
     log.info("loadUserByUsername() - loginMemebr: >>>>>>>>>>>>>>>> {}", loginMemebr);
 
-    APIUserDTO apiUserDTO = new APIUserDTO(loginMemebr.getMemberNo(), loginMemebr.getMemberEmail(),loginMemebr.getMemberPwd(),loginMemebr.getMemberName(), loginMemebr.getMemberCategory());
+    APIUserDTO apiUserDTO = new APIUserDTO(loginMemebr.getId(), loginMemebr.getEmail(),loginMemebr.getPassword(),loginMemebr.getName(), loginMemebr.getMemberCategory());
     log.info("loadUserByUsername() - apiUserDTO: >>>>>>>>>>>>>>>> {}", apiUserDTO);
 
     return apiUserDTO;

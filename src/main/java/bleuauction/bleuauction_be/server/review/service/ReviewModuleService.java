@@ -8,14 +8,17 @@ import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.repository.AttachRepository;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
+import bleuauction.bleuauction_be.server.common.pagable.RowCountPerPage;
+import bleuauction.bleuauction_be.server.common.utils.SecurityUtils;
+import bleuauction.bleuauction_be.server.config.annotation.ModuleService;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
+import bleuauction.bleuauction_be.server.review.exception.ReviewNotFoundException;
 import bleuauction.bleuauction_be.server.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,31 +27,30 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Service
 @Transactional
+@ModuleService
 @RequiredArgsConstructor
-public class ReviewService {
+public class ReviewModuleService {
 
-  private static final int PAGE_ROW_COUNT = 4;
   private final AttachComponentService attachComponentService;
   private final ReviewRepository reviewRepository;
   private final AnswerRepository answerRepository;
   private final AttachRepository attachRepository;
 
   public List<Review> selectReviewList(Long storeNo, int startPage) {
-    Pageable pageable = PageRequest.of(startPage, PAGE_ROW_COUNT);
+    Pageable pageable = PageRequest.of(startPage, RowCountPerPage.REVIEW.getValue());
     List<Review> exitingReviewList = reviewRepository.findAllReviewsWithMembersByReviewStatus(storeNo, ReviewStatus.Y, pageable);
-    for (int i = 0; i < exitingReviewList.size(); i++) {
-      Optional<List<Attach>> optionalAttachList = Optional.ofNullable(attachRepository.findAllByReviewAndFileStatus(exitingReviewList.get(i), FileStatus.Y));
+    for (Review review : exitingReviewList) {
+      Optional<List<Attach>> optionalAttachList = Optional.ofNullable(attachRepository.findAllByReviewAndFileStatus(review, FileStatus.Y));
       if (optionalAttachList.isPresent()) {
-        exitingReviewList.get(i).setReviewAttaches(optionalAttachList.get());
+        review.setReviewAttaches(optionalAttachList.get());
       }
     }
     return exitingReviewList;
   }
 
-  public Review addReview(Review review, List<MultipartFile> multipartFiles) throws Exception {
-
+  public Review addReview(Review review, List<MultipartFile> multipartFiles) {
+    review.setMember(SecurityUtils.getAuthenticatedUserToMember());
     Review insertReview = reviewRepository.save(review);
     if (!multipartFiles.isEmpty()) {
       ArrayList<Attach> attaches = new ArrayList<>();
@@ -62,8 +64,12 @@ public class ReviewService {
     return insertReview;
   }
 
-  public Review updateReview(Review review) throws Exception {
-    Review exitingReview = reviewRepository.findById(review.getReviewNo()).orElseThrow(() -> new Exception("해당 리뷰가 존재하지 않습니다!"));
+  public Review updateReview(Review review) {
+
+    Review exitingReview = reviewRepository.findById(review.getReviewNo())
+                           .orElseThrow(() -> new ReviewNotFoundException(review.getReviewNo()));
+
+    SecurityUtils.checkOwnsByMemberNo(exitingReview.getMember().getMemberNo());
 
     exitingReview.setReviewContent(review.getReviewContent());
     exitingReview.setReviewFreshness(review.getReviewFreshness());
@@ -73,7 +79,10 @@ public class ReviewService {
 
 
   public Review deleteReview(Long reviewNo) throws Exception {
-    Review exitingReview = reviewRepository.findByReviewNoAndReviewStatus(reviewNo, ReviewStatus.Y).orElseThrow(() -> new Exception("해당 리뷰가 존재하지 않습니다!"));
+    Review exitingReview = reviewRepository.findByReviewNoAndReviewStatus(reviewNo, ReviewStatus.Y)
+                           .orElseThrow(() -> new ReviewNotFoundException(reviewNo));
+
+    SecurityUtils.checkOwnsByMemberNo(exitingReview.getMember().getMemberNo());
 
     Optional<List<Attach>> optionalAttachList = Optional.ofNullable(attachRepository.findAllByReviewAndFileStatus(exitingReview, FileStatus.Y));
     if (optionalAttachList.isPresent()) {

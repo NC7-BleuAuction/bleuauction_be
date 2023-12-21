@@ -1,6 +1,6 @@
-package bleuauction.bleuauction_be.server.exception;
+package bleuauction.bleuauction_be.server.common.exception;
 
-import static bleuauction.bleuauction_be.server.exception.GlobalException.RENEW_ACCESS_TOKEN_EXCEPTION;
+import static bleuauction.bleuauction_be.server.common.exception.GlobalException.RENEW_ACCESS_TOKEN_EXCEPTION;
 
 
 public class RenewAccessTokenException extends BaseException {

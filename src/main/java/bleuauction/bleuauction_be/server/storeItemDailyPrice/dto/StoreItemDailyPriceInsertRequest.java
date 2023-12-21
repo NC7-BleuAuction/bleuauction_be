@@ -52,9 +52,9 @@ public class StoreItemDailyPriceInsertRequest {
 
     private DailyPriceStatus dailyPriceStatus = DailyPriceStatus.Y;
 
-    public StoreItemDailyPrice toEntity(Long StoreNo) {
+    public StoreItemDailyPrice toEntity() {
         return StoreItemDailyPrice.builder()
-                .storeNo(storeNo)
+                .storeNo(this.getStoreNo())
                 .dailyPrice(this.dailyPrice)
                 .itemCode(this.itemCode)
                 .itemName(this.itemName)

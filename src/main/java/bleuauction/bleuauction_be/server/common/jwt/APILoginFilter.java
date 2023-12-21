@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import java.util.Map;
 
@@ -15,9 +16,12 @@ import java.util.Map;
 @Slf4j
 
 public class APILoginFilter extends AbstractAuthenticationProcessingFilter {
-  public APILoginFilter(String defaultFilterProcessesUrl) {
+
+  public APILoginFilter(String defaultFilterProcessesUrl, AuthenticationSuccessHandler authenticationSuccessHandler) {
     super(defaultFilterProcessesUrl);
+    super.setAuthenticationSuccessHandler(authenticationSuccessHandler);
   }
+
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {

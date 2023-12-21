@@ -2,16 +2,19 @@ package bleuauction.bleuauction_be.server.answer.service;
 
 import bleuauction.bleuauction_be.server.answer.entity.Answer;
 import bleuauction.bleuauction_be.server.answer.entity.AnswerStatus;
+import bleuauction.bleuauction_be.server.answer.exception.AnswerNotFoundException;
 import bleuauction.bleuauction_be.server.answer.repository.AnswerRepository;
+import bleuauction.bleuauction_be.server.common.exception.ForbiddenAccessException;
+import bleuauction.bleuauction_be.server.common.pagable.RowCountPerPage;
+import bleuauction.bleuauction_be.server.common.utils.SecurityUtils;
+import bleuauction.bleuauction_be.server.config.annotation.ModuleService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -19,16 +22,15 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Service
 @Transactional
+@ModuleService
 @RequiredArgsConstructor
-public class AnswerService {
+public class AnswerModuleService {
 
-  private final static int PAGE_ROW_COUNT = 2;
   private final AnswerRepository answerRepository;
 
   public Map<String, Object> selectAnswerList(Long reviewNo, int startPage) {
-    Pageable pageable = PageRequest.of(startPage, PAGE_ROW_COUNT, Sort.by(Sort.Order.desc("regDatetime")));
+    Pageable pageable = PageRequest.of(startPage, RowCountPerPage.ANSWER.getValue(), Sort.by(Sort.Order.desc("regDatetime")));
     Page<Answer> page = answerRepository.findByReviewNoAndAnswerStatus(reviewNo,  AnswerStatus.Y, pageable);
 
     List<Answer> answerList = page.getContent();
@@ -44,31 +46,27 @@ public class AnswerService {
     return answerMap;
   }
 
-  public Answer addAnswer(TokenMember tokenMember, Answer answer) {
-    Member m = new Member();
-    m.setMemberNo(tokenMember.getMemberNo());
-    answer.setMember(m);
+  public Answer addAnswer(Answer answer) {
     return answerRepository.save(answer);
   }
 
-  public Answer updateAnswer(TokenMember tokenMember, Answer answer, Member member) throws Exception {
-    if (tokenMember.getMemberNo() != member.getMemberNo()) {
-      throw new Exception("답글 수정 권한이 없습니다!");
-    }
+  public Answer updateAnswer(Answer answer, Member member) throws Exception {
+    SecurityUtils.checkOwnsByMemberNo(member.getMemberNo());
+
     answer.setMember(member);
-    Answer exitingAnswer = answerRepository.findByReviewNoAndAnswerNoAndAnswerStatus(answer.getReviewNo(), answer.getAnswerNo(), AnswerStatus.Y).orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
+    Answer exitingAnswer = answerRepository.findByReviewNoAndAnswerNoAndAnswerStatus(answer.getReviewNo(), answer.getAnswerNo(), AnswerStatus.Y)
+                          .orElseThrow(() -> new AnswerNotFoundException(answer.getReviewNo()));
     exitingAnswer.setAnswerContent(answer.getAnswerContent());
     Answer updateAnswer = answerRepository.save(exitingAnswer);
     return updateAnswer;
   }
 
 
-  public Answer deleteAnswer(TokenMember tokenMember, Long answerNo, Long memberNo) throws Exception {
-    if (tokenMember.getMemberNo() != memberNo) {
-      throw new Exception("답글 삭제 권한이 없습니다!");
-    }
+  public Answer deleteAnswer(Long answerNo, Long memberNo) {
+    SecurityUtils.checkOwnsByMemberNo(memberNo);
 
-    Answer exitingAnswer = answerRepository.findByAnswerNoAndAnswerStatus(answerNo, AnswerStatus.Y).orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
+    Answer exitingAnswer = answerRepository.findByAnswerNoAndAnswerStatus(answerNo, AnswerStatus.Y)
+                          .orElseThrow(() -> new AnswerNotFoundException(answerNo));
     exitingAnswer.setAnswerStatus(AnswerStatus.N);
     Answer deleteAnswer = answerRepository.save(exitingAnswer);
     return deleteAnswer;

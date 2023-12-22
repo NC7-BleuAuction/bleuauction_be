@@ -9,17 +9,17 @@ public class MemberEntityFactory {
     static {
         Member member =
                 Member.builder()
-                        .memberEmail("test@test.com")
-                        .memberPwd("testpassword123")
-                        .memberName("테스트이름")
-                        .memberZipcode("14055")
-                        .memberAddr("경기도 안양시 동안구 시민대로 327번길 55")
-                        .memberDetailAddr("999동1234호")
-                        .memberPhone("010-1111-1111")
-                        .memberBank("시난으냉")
-                        .memberAccount("111-111-111111")
-                        .memberCategory(MemberCategory.S)
-                        .memberStatus(MemberStatus.Y)
+                        .email("test@test.com")
+                        .password("testpassword123")
+                        .name("테스트이름")
+                        .zipCode("14055")
+                        .addr("경기도 안양시 동안구 시민대로 327번길 55")
+                        .detailAddr("999동1234호")
+                        .phone("010-1111-1111")
+                        .bankName("시난으냉")
+                        .bankAccount("111-111-111111")
+                        .category(MemberCategory.S)
+                        .status(MemberStatus.Y)
                         .build();
         member.setId(1L);
 
@@ -30,17 +30,17 @@ public class MemberEntityFactory {
 
     public static Member of(String email, String pwd, String name, MemberCategory category) {
         return Member.builder()
-                .memberEmail(email)
-                .memberPwd(pwd)
-                .memberName(name)
-                .memberZipcode("14055")
-                .memberAddr("경기도 안양시 동안구 시민대로 327번길 55")
-                .memberDetailAddr("999동1234호")
-                .memberPhone("010-1111-1111")
-                .memberBank("시난으냉")
-                .memberAccount("111-111-111111")
-                .memberCategory(category)
-                .memberStatus(MemberStatus.Y)
+                .email(email)
+                .password(pwd)
+                .name(name)
+                .zipCode("14055")
+                .addr("경기도 안양시 동안구 시민대로 327번길 55")
+                .detailAddr("999동1234호")
+                .phone("010-1111-1111")
+                .bankName("시난으냉")
+                .bankAccount("111-111-111111")
+                .category(category)
+                .status(MemberStatus.Y)
                 .build();
     }
 }

@@ -37,7 +37,7 @@ public class AttachComponentService {
      */
     public Attach changeFileStatusDeleteByFileNo(Long fileNo) {
         Attach target = attachModuleService.findById(fileNo);
-        target.changeFileStatusToDelete();
+        target.deleteAttach();
         return attachModuleService.save(target);
     }
 

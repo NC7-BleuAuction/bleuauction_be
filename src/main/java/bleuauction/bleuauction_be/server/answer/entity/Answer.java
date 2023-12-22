@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.answer.entity;
 
+import static bleuauction.bleuauction_be.server.answer.entity.AnswerStatus.N;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -65,5 +66,10 @@ public class Answer {
     public void setReview(Review review) {
         this.review = review;
         review.getAnswers().add(this);
+    }
+
+    // === 비즈니스 로직 ===
+    public void deleteAnswer() {
+        this.status = N;
     }
 }

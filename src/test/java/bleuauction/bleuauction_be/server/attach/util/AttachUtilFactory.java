@@ -2,6 +2,8 @@ package bleuauction.bleuauction_be.server.attach.util;
 
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.entity.AttachVO;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -17,7 +19,7 @@ public class AttachUtilFactory {
      */
     public static Attach ofUseCase(String filePath, String originalFileName, String saveFileName) {
         Attach attach = ofDefaultAttach(filePath, originalFileName, saveFileName);
-        attach.changeFileStatusToUsecase();
+        attach.useAttach();
         return attach;
     }
 
@@ -32,7 +34,7 @@ public class AttachUtilFactory {
     public static Attach ofDeleteCase(
             String filePath, String originalFileName, String saveFileName) {
         Attach attach = ofDefaultAttach(filePath, originalFileName, saveFileName);
-        attach.changeFileStatusToDelete();
+        attach.deleteAttach();
         return attach;
     }
 
@@ -47,10 +49,10 @@ public class AttachUtilFactory {
     private static Attach ofDefaultAttach(
             String filePath, String originalFileName, String saveFileName) {
         Attach attach =
-                Attach.builder()
+                AttachVO.builder()
                         .filePath(filePath)
                         .originFilename(originalFileName)
-                        .saveFilename(saveFileName)
+                        .saveFileName(saveFileName)
                         .build();
         attach.setRegDatetime(Timestamp.valueOf(LocalDateTime.now()));
         attach.setMdfDatetime(Timestamp.valueOf(LocalDateTime.now()));

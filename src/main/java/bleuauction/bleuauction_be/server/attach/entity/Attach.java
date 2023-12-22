@@ -55,11 +55,13 @@ public abstract class Attach {
         this.fileStatus = attachVO.getFileStatus();
     }
 
-    public void changeFileStatusToDelete() {
+
+    // 비즈니스 로직
+    public void deleteAttach() {
         this.fileStatus = FileStatus.N;
     }
 
-    public void changeFileStatusToUsecase() {
+    public void useAttach() {
         this.fileStatus = FileStatus.Y;
     }
 }

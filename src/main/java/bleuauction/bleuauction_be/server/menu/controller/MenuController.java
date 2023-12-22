@@ -10,7 +10,6 @@ import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.service.MenuComponentService;
 import bleuauction.bleuauction_be.server.menu.service.MenuModuleService;
 import bleuauction.bleuauction_be.server.store.entity.Store;
-import bleuauction.bleuauction_be.server.store.repository.StoreRepository;
 import bleuauction.bleuauction_be.server.store.service.StoreModuleService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,6 @@ public class MenuController {
     private final AttachComponentService attachComponentService;
     private final JwtUtils jwtUtils;
     private final MemberModuleService memberModuleService;
-    private final StoreRepository storeRepository;
 
     // 등록
     @PostMapping("/new")
@@ -70,7 +68,7 @@ public class MenuController {
     // 가게별 목록 조회
     @GetMapping(value = "/{storeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Menu> findMenusByStoreNo(@PathVariable("storeNo") Long storeNo) throws Exception {
-        return menuModuleService.findMenusByStoreNo(storeNo);
+        return menuModuleService.findAllByStore(storeModuleService.findById(storeNo));
     }
 
     // 가게(회원)별 목록 조회
@@ -83,7 +81,7 @@ public class MenuController {
         // 로그인 유저의 멤버 번호
         Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
         Store store = storeModuleService.findByMember(loginUser);
-        return menuModuleService.findMenusByStoreNo(store.getId());
+        return menuModuleService.findAllByStore(store);
     }
 
     @DeleteMapping("/{menuNo}")

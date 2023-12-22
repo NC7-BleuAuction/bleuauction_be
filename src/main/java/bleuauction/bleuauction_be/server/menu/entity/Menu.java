@@ -90,6 +90,6 @@ public class Menu {
     }
 
     public void deleteAttaches() {
-        this.attachs.forEach(Attach::changeFileStatusToDelete);
+        this.attachs.forEach(Attach::deleteAttach);
     }
 }

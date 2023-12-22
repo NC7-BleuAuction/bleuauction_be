@@ -12,12 +12,13 @@ import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
 import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,19 +34,14 @@ public class OrderMenuComponentService {
     private final MenuModuleService menuModuleService;
     private final OrderMenuModuleService orderMenuModuleService;
 
-    public ResponseEntity<String> addOrderMenuDTO(
-            Member member, Order order, OrderMenuDTO orderMenuDTO) {
-        Optional<Menu> selectedMenu =
-                Optional.ofNullable(menuModuleService.findOne(orderMenuDTO.getMenuNo().getId()));
-
-        if (selectedMenu.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Selected menu not found");
-        }
-        OrderMenu orderMenu = new OrderMenu();
-        orderMenu.setMemberNo(member);
-        orderMenu.setOrder(order);
-        orderMenu.setOrderMenuCount(orderMenuDTO.getOrderMenuCount());
-        orderMenu.setMenuNo(selectedMenu.get());
+    public ResponseEntity<String> addOrderMenuDTO(Member member, Order order, OrderMenuDTO orderMenuDTO) {
+        Menu selectedMenu = menuModuleService.findOne(orderMenuDTO.getMenu().getId());
+        OrderMenu orderMenu = OrderMenu.builder()
+                .member(member)
+                .order(order)
+                .orderMenuCount(orderMenuDTO.getOrderMenuCount())
+                .menu(selectedMenu)
+                .build();
 
         orderMenuRepository.save(orderMenu);
         log.info("ordermenu/postnew");
@@ -82,8 +78,8 @@ public class OrderMenuComponentService {
             throw new IllegalArgumentException("주문 메뉴가 존재하지 않습니다.");
         }
 
-        existingOrderMenu.setMemberNo(request.getMemberNo());
-        existingOrderMenu.setMenuNo(request.getMenuNo());
+        existingOrderMenu.setMember(request.getMember());
+        existingOrderMenu.setMenu(request.getMenu());
         existingOrderMenu.setOrderMenuCount(request.getOrderMenuCount());
 
         return orderMenuModuleService.save(existingOrderMenu);
@@ -91,7 +87,7 @@ public class OrderMenuComponentService {
 
     @Transactional(readOnly = true)
     public List<OrderMenu> findOrderMenuDTOsByOrderNo(Long orderNo) {
-        Optional<Order> order = orderRepository.findByOrderNo(orderNo);
+        Optional<Order> order = orderRepository.findById(orderNo);
 
         if (order.isEmpty()) {
             return new ArrayList<>();

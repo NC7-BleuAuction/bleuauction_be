@@ -3,12 +3,10 @@ package bleuauction.bleuauction_be.server.order.controller;
 
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
-import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
+import bleuauction.bleuauction_be.server.order.dto.MemberFindOrdersResponseDto;
 import bleuauction.bleuauction_be.server.order.entity.Order;
-import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
 import jakarta.servlet.http.HttpSession;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +18,16 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Optional;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/order")
 public class OrderController {
 
-    private final MemberComponentService memberComponentService;
     private final OrderService orderService;
-    private final OrderRepository orderRepository;
     private final JwtUtils jwtUtils;
 
     // 등록
@@ -41,26 +40,31 @@ public class OrderController {
 
     // 회원별 주문 조회
     @GetMapping
-    public ResponseEntity<?> findOrders(
+    public ResponseEntity<MemberFindOrdersResponseDto> findOrders(
             @RequestHeader("Authorization") String authorizationHeader) {
         jwtUtils.verifyToken(authorizationHeader);
 
         TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
         log.info("token: " + tokenMember);
 
-        return orderService.findOrdersByMemberNo(tokenMember.getMemberNo());
+        return ResponseEntity.ok(
+                MemberFindOrdersResponseDto.builder()
+                        .orders(orderService.findOrdersByMemberNo(tokenMember.getMemberNo()))
+                        .build()
+        );
     }
 
     // 가게(가게주인)별 주문 조회
-    @GetMapping("/store")
-    public ResponseEntity<?> findOrdersbyStore(
-            @RequestHeader("Authorization") String authorizationHeader) {
+    @GetMapping("/store/{storeNo}")
+    public ResponseEntity<List<Order>> findOrdersbyStore(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable("storeNo") Long storeNo) {
         jwtUtils.verifyToken(authorizationHeader);
 
         TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
         log.info("token: " + tokenMember);
 
-        return orderService.findOrdersByMemberAndStore(tokenMember.getMemberNo());
+        return ResponseEntity.ok(orderService.findOrdersByMemberAndStore(tokenMember.getMemberNo(), storeNo));
     }
 
     // 삭제--오더메뉴도 같이

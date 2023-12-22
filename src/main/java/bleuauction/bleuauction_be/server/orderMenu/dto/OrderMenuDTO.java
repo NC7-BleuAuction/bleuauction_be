@@ -8,14 +8,18 @@ import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
 import java.sql.Timestamp;
 import lombok.*;
 
-@Data
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderMenuDTO {
-    private Long orderMenuNo;
+    private Long id;
     private int orderMenuCount;
     private Timestamp regDatetime;
     private Timestamp mdfDatetime;
     private OrderMenuStatus orderMenuStatus;
-    private Menu menuNo; // 메뉴 번호
+    private Menu menu; // 메뉴 번호
     private Order order; // 주문 번호
-    private Member memberNo; // 멤버 번호
+    private Member member; // 멤버 번호
 }

@@ -2,6 +2,7 @@ package bleuauction.bleuauction_be.server.orderMenu.entity;
 
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
@@ -15,7 +16,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.sql.Timestamp;
+
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -24,11 +28,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Setter
 @Entity
 @Table(name = "ba_order_menu")
+@NoArgsConstructor(access = PROTECTED)
 public class OrderMenu {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    private Long orderMenuNo;
+    private Long id;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_no")
@@ -44,12 +49,21 @@ public class OrderMenu {
 
     private int orderMenuCount;
 
+    @Enumerated(EnumType.STRING)
+    private OrderMenuStatus orderMenuStatus; // 상태 [Y,N]
+
     @CreationTimestamp private Timestamp regDatetime;
 
     @UpdateTimestamp private Timestamp mdfDatetime;
 
-    @Enumerated(EnumType.STRING)
-    private OrderMenuStatus orderMenuStatus; // 상태 [Y,N]
+    @Builder
+    public OrderMenu(Member member, Menu menu, Order order, int orderMenuCount, OrderMenuStatus orderMenuStatus) {
+        this.member = member;
+        this.menu = menu;
+        this.order = order;
+        this.orderMenuCount = orderMenuCount;
+        this.orderMenuStatus = orderMenuStatus;
+    }
 
     // 비지니스 로직
     // 공지사항 삭제

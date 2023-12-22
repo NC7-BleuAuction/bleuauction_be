@@ -7,6 +7,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 import bleuauction.bleuauction_be.server.attach.entity.MemberAttach;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
+import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.store.entity.Store;
@@ -65,6 +66,9 @@ public class Member {
     @CreationTimestamp private Timestamp regDatetime;
 
     @UpdateTimestamp private Timestamp mdfDatetime;
+
+    @OneToMany(mappedBy = "member", cascade = ALL)
+    private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = ALL)
     private List<Notice> notices = new ArrayList<>();

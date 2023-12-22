@@ -3,14 +3,21 @@ package bleuauction.bleuauction_be.server.order.entity;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
+import bleuauction.bleuauction_be.server.member.entity.Address;
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.pay.entity.Pay;
+import bleuauction.bleuauction_be.server.store.entity.Store;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -19,6 +26,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Getter
 @Setter
 @Table(name = "ba_order")
+@NoArgsConstructor(access = PROTECTED)
 public class Order {
 
     @Id
@@ -26,8 +34,13 @@ public class Order {
     @Column(name = "order_no")
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private OrderType orderType; // Q:퀵배송, T:포장
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "member_no")
+    private Member member; //주문자 정보
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "store_no")
+    private Store store; //주문한 가게 정보
 
     private int orderPrice;
 
@@ -37,37 +50,97 @@ public class Order {
 
     private String recipientName;
 
-    private String recipientZipcode;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "zipCode", column = @Column(name = "recipient_zipcode")),
+            @AttributeOverride(name = "addr", column = @Column(name = "recipient_addr")),
+            @AttributeOverride(name = "detailAddr", column = @Column(name = "recipient_detail_addr"))
+    })
+    private Address recipientAddress;
 
-    private String recipientAddr;
+    @Enumerated(EnumType.STRING)
+    private OrderType orderType; // Q:퀵배송, T:포장
 
-    private String recipientDetailAddr;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus; // 상태 [Y,N]
+
+    @OneToOne(mappedBy = "order", fetch = LAZY, cascade = ALL)
+    private Pay pay;
 
     @CreationTimestamp private Timestamp regDatetime;
 
     @UpdateTimestamp private Timestamp mdfDatetime;
 
-    @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus; // 상태 [Y,N]
-
     @OneToMany(mappedBy = "order", cascade = ALL)
     private List<OrderMenu> orderMenus = new ArrayList<>();
 
-    @OneToOne(mappedBy = "order", fetch = LAZY, cascade = ALL)
-    private Pay pay;
 
-    // TODO : 실제 사용이 이뤄지진 않고 있슴, 확인바람 by.승현
-    public int calculOrderPrice() {
+    @Builder
+    public Order(Member member, Store store, int orderPrice, String orderRequest, String recipientPhone, String recipientName,
+                String recipientZipcode, String recipientAddr, String recipientDetailAddr, OrderType orderType, OrderStatus orderStatus, Pay pay) {
+        this.member = member;
+        this.store = store;
+        this.orderPrice = orderPrice;
+        this.orderRequest = orderRequest;
+        this.recipientPhone = recipientPhone;
+        this.recipientName = recipientName;
+        this.recipientAddress = Address.builder()
+                .zipCode(recipientZipcode)
+                .addr(recipientAddr)
+                .detailAddr(recipientDetailAddr)
+                .build();
+        this.orderType = orderType;
+        this.orderStatus = orderStatus;
+        this.pay = pay;
+    }
+
+    public Long calculOrderPrice() {
         return this.orderMenus.stream()
                 .filter(orderMenu -> orderMenu.getMenu() != null)
-                .mapToInt(orderMenu -> orderMenu.getMenu().getPrice())
+                .mapToLong(orderMenu -> orderMenu.getMenu().getPrice())
                 .sum();
     }
 
-    // 비지니스 로직
-    // 공지사항 삭제
-    public void delete() {
+    // ===  편의 메서드 ===
+    /**
+     * 주문자 정보 변경
+     */
+    public void setMember(Member member) {
+        this.member = member;
+        member.getOrders().add(this);
+    }
+
+    /**
+     * 주문한 가게 정보 변경
+     */
+    public void setStore(Store store) {
+        this.store = store;
+        store.getOrders().add(this);
+    }
+
+    /**
+     * 주문 주소 변경 (혹시 몰라서)
+     * @param recipientZipCode
+     * @param recipientAddr
+     * @param recipientDetailAddr
+     */
+    public void setRecipientAddress(String recipientZipCode, String recipientAddr, String recipientDetailAddr) {
+        setRecipientAddress(
+                Address.builder()
+                        .zipCode(recipientZipCode)
+                        .addr(recipientAddr)
+                        .detailAddr(recipientDetailAddr)
+                        .build()
+        );
+    }
+
+    // === 비지니스 로직 ===
+    /**
+     *  주문 취소
+     */
+    public void deleteOrder() {
         this.setOrderStatus(OrderStatus.N);
         this.orderMenus.forEach(OrderMenu::delete);
     }
+
 }

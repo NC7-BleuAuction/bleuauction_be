@@ -10,6 +10,7 @@ import bleuauction.bleuauction_be.server.attach.entity.StoreAttach;
 import bleuauction.bleuauction_be.server.member.entity.Address;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDailyPrice;
 import jakarta.persistence.AttributeOverride;
@@ -76,6 +77,9 @@ public class Store {
 
     @Enumerated(STRING)
     private StoreStatus storeStatus;
+
+    @OneToMany(mappedBy = "store", cascade = ALL)
+    private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "store", cascade = ALL)
     private List<Menu> menus = new ArrayList<>();

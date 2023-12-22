@@ -120,7 +120,7 @@ class AnswerServiceTest {
                 AnswerEntityFactory.of(
                         TEST_REVIEW_NO,
                         MemberEntityFactory.of(
-                                TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getMemberCategory()),
+                                TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getCategory()),
                         TEST_NAME,
                         AnswerStatus.Y);
 
@@ -147,7 +147,7 @@ class AnswerServiceTest {
 
         Member mockCustomerMember =
                 MemberEntityFactory.of(
-                        TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getMemberCategory());
+                        TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getCategory());
         mockCustomerMember.setMemberNo(TEST_MEMBER_NO);
 
         Answer mockAnswer =
@@ -183,7 +183,7 @@ class AnswerServiceTest {
 
         Member mockCustomerMember =
                 MemberEntityFactory.of(
-                        TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getMemberCategory());
+                        TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getCategory());
         mockCustomerMember.setId(TEST_MEMBER_NO);
 
         Answer mockAnswer =

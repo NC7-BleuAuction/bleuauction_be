@@ -76,7 +76,7 @@ public class Store {
     private UnsupportedType unsupportedType; // 주문 불가 유형
 
     @Enumerated(STRING)
-    private StoreStatus storeStatus;
+    private StoreStatus status;
 
     @OneToMany(mappedBy = "store", cascade = ALL)
     private List<Order> orders = new ArrayList<>();
@@ -107,7 +107,7 @@ public class Store {
             Time weekendStartTime,
             Time weekendEndTime,
             UnsupportedType unsupportedType,
-            StoreStatus storeStatus) {
+            StoreStatus status) {
         this.member = member;
         this.marketName = marketName;
         this.storeName = storeName;
@@ -123,7 +123,7 @@ public class Store {
         this.weekendStartTime = weekendStartTime;
         this.weekendEndTime = weekendEndTime;
         this.unsupportedType = unsupportedType;
-        this.storeStatus = storeStatus;
+        this.status = status;
     }
 
     public void setStoreAddress(String storeZipcode, String storeAddr, String storeDetailAddr) {
@@ -136,10 +136,10 @@ public class Store {
     }
 
     public void changeStoreStatusN() {
-        this.setStoreStatus(StoreStatus.N);
+        this.setStatus(StoreStatus.N);
     }
 
     public void changeStoreStatusY() {
-        this.setStoreStatus(StoreStatus.Y);
+        this.setStatus(StoreStatus.Y);
     }
 }

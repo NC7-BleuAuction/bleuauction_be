@@ -22,7 +22,7 @@ public class APIUserDetailsService implements UserDetailsService {
 
         Member loginMemebr =
                 memberRepository
-                        .findByMemberEmail(username)
+                        .findByEmail(username)
                         .orElseThrow(() -> new UsernameNotFoundException("cannot found Email"));
         log.info("loadUserByUsername() - loginMemebr: >>>>>>>>>>>>>>>> {}", loginMemebr);
 
@@ -32,7 +32,7 @@ public class APIUserDetailsService implements UserDetailsService {
                         loginMemebr.getEmail(),
                         loginMemebr.getPassword(),
                         loginMemebr.getName(),
-                        loginMemebr.getMemberCategory());
+                        loginMemebr.getCategory());
         log.info("loadUserByUsername() - apiUserDTO: >>>>>>>>>>>>>>>> {}", apiUserDTO);
 
         return apiUserDTO;

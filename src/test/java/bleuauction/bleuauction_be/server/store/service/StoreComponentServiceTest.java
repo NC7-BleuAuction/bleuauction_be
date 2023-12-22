@@ -198,7 +198,7 @@ class StoreComponentServiceTest {
         storeComponentService.withDrawStore(mockStore.getId(), mockMember);
 
         // then
-        assertEquals(StoreStatus.N, mockStore.getStoreStatus());
+        assertEquals(StoreStatus.N, mockStore.getStatus());
         InOrder inOrder = inOrder(storeModuleService);
         inOrder.verify(storeModuleService, times(1)).save(mockStore);
     }

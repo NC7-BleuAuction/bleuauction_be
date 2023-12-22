@@ -70,7 +70,7 @@ class StoreModuleServiceTest {
         // given
         Member mockMember = MemberEntityFactory.mockSellerMember;
         StoreNotFoundException expectException = new StoreNotFoundException(mockMember);
-        given(storeRepository.findByMemberNo(mockMember)).willReturn(Optional.empty());
+        given(storeRepository.findByMember(mockMember)).willReturn(Optional.empty());
 
         // when && then
         StoreNotFoundException e =
@@ -87,7 +87,7 @@ class StoreModuleServiceTest {
         Member mockMember = MemberEntityFactory.mockSellerMember;
         Store store = StoreUtilFactory.of(TEST_MARKETNAME, TEST_STORENAME, TEST_LICENSE);
         store.setId(1L);
-        given(storeRepository.findByMemberNo(mockMember)).willReturn(Optional.of(store));
+        given(storeRepository.findByMember(mockMember)).willReturn(Optional.of(store));
 
         // when
         Store foundStore = storeModuleService.findByMember(mockMember);
@@ -107,7 +107,7 @@ class StoreModuleServiceTest {
                         StoreUtilFactory.of("노량진수산시장", "가게이름3", "111-11-11113"));
         Page<Store> mockPage = new PageImpl<>(mockReturnList, PageRequest.of(0, 3), 5L);
 
-        given(storeRepository.findAllByStoreStatus(any(StoreStatus.class), any(Pageable.class)))
+        given(storeRepository.findAllByStatus(any(StoreStatus.class), any(Pageable.class)))
                 .willReturn(mockPage);
 
         // when

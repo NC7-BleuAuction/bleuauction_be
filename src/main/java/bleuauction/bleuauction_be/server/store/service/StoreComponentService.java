@@ -51,7 +51,7 @@ public class StoreComponentService {
      * @param request
      */
     public void signup(StoreSignUpRequest request, Member member) {
-        if (!MemberCategory.isMemberSeller(member.getMemberCategory())) {
+        if (!MemberCategory.isMemberSeller(member.getCategory())) {
             throw new IllegalArgumentException("판매자 회원만 등록 가능합니다.");
         }
         validateDuplicateStore(request.getStoreName());

@@ -191,7 +191,7 @@ public class StoreController {
     }
 
     private void verifyIsMemberCategorySeller(Member member) {
-        if (!MemberCategory.isMemberSeller(member.getMemberCategory())) {
+        if (!MemberCategory.isMemberSeller(member.getCategory())) {
             throw new StoreRequestUnAuthorizationException(member);
         }
     }

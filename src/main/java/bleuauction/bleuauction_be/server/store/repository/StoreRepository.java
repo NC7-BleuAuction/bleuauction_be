@@ -8,16 +8,12 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
 
-    Page<Store> findAllByStoreStatus(
-            @Param("storeStatus") StoreStatus storeStatus, Pageable pageable);
+    Page<Store> findAllByStatus(StoreStatus status, Pageable pageable);
 
-    Optional<Store> findByMemberNo(Member member);
+    Optional<Store> findByMember(Member member);
 
     Optional<Store> findByStoreName(String storeName);
 

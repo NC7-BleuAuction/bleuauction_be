@@ -79,7 +79,7 @@ class MemberRepositoryTest {
                         .build());
 
         // when && then
-        assertTrue(memberRepository.existsByMemberEmail(testMail));
+        assertTrue(memberRepository.existsByEmail(testMail));
     }
 
     @Test
@@ -89,7 +89,7 @@ class MemberRepositoryTest {
         String testMail = "test@test.com";
 
         // when && then
-        assertFalse(memberRepository.existsByMemberEmail(testMail));
+        assertFalse(memberRepository.existsByEmail(testMail));
     }
 
     @Test
@@ -113,7 +113,7 @@ class MemberRepositoryTest {
                         .build());
 
         // when
-        Optional<Member> result = memberRepository.findByMemberEmail(testMail);
+        Optional<Member> result = memberRepository.findByEmail(testMail);
 
         // then
         assertTrue(result.isPresent());
@@ -128,7 +128,7 @@ class MemberRepositoryTest {
         String testMail = "test@test.com";
 
         // when
-        Optional<Member> result = memberRepository.findByMemberEmail(testMail);
+        Optional<Member> result = memberRepository.findByEmail(testMail);
 
         // then
         assertFalse(result.isPresent());

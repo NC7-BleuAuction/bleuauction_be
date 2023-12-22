@@ -47,7 +47,7 @@ class StoreRepositoryTest {
 
         // when
         Page<Store> foundList =
-                storeRepository.findAllByStoreStatus(StoreStatus.Y, PageRequest.of(0, 3));
+                storeRepository.findAllByStatus(StoreStatus.Y, PageRequest.of(0, 3));
 
         // then
         assertEquals(foundList.getSize(), 3);
@@ -67,7 +67,7 @@ class StoreRepositoryTest {
                         StoreUtilFactory.of(seller, "노량진수산시장", "가게이름1", "111-11-11111"));
 
         // when
-        Optional<Store> foundStore = storeRepository.findByMemberNo(seller);
+        Optional<Store> foundStore = storeRepository.findByMember(seller);
 
         // then
         assertTrue(foundStore.isPresent());
@@ -84,7 +84,7 @@ class StoreRepositoryTest {
                                 "test@test.com", "1111111", "테스트아무개", MemberCategory.S));
 
         // when
-        Optional<Store> foundStore = storeRepository.findByMemberNo(seller);
+        Optional<Store> foundStore = storeRepository.findByMember(seller);
 
         // then
         assertTrue(foundStore.isEmpty());

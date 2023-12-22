@@ -27,7 +27,7 @@ public class NoticeComponentService {
     @Transactional
     public Long enroll(Notice notice, List<MultipartFile> multipartFiles, Member member) {
 
-        isMemberAdmin(member.getMemberCategory());
+        isMemberAdmin(member.getCategory());
         notice.setMemberNo(member);
 
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
@@ -44,7 +44,7 @@ public class NoticeComponentService {
     // 노티스 삭제(N)
     @Transactional
     public void deleteNotice(Long noticeNo, Member member) {
-        isMemberAdmin(member.getMemberCategory());
+        isMemberAdmin(member.getCategory());
 
         Notice notice = noticeRepository.findByNoticeNo(noticeNo);
         notice.delete();
@@ -65,7 +65,7 @@ public class NoticeComponentService {
         Notice updatedNotice = noticeModuleService.findOne(noticeNo);
         Notice existingnotice = noticeRepository.findByNoticeNo(noticeNo);
 
-        isMemberAdmin(member.getMemberCategory());
+        isMemberAdmin(member.getCategory());
 
         existingnotice.setNoticeTitle(updatedNotice.getNoticeTitle());
         existingnotice.setNoticeContent(updatedNotice.getNoticeContent());

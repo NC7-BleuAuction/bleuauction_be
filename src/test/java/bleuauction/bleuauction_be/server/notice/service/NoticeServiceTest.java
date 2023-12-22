@@ -40,7 +40,7 @@ class NoticeServiceTest {
     void testEnroll() {
         // Given
         Member mockMember = new Member();
-        mockMember.setMemberCategory(MemberCategory.A);
+        mockMember.setCategory(MemberCategory.A);
 
         Notice mockNotice = new Notice();
         mockNotice.setId(100L);
@@ -78,7 +78,7 @@ class NoticeServiceTest {
 
         // given
         Member mockMember = new Member();
-        mockMember.setMemberCategory(MemberCategory.A);
+        mockMember.setCategory(MemberCategory.A);
         Notice existingNotice = new Notice();
         existingNotice.setId(100L);
         List<MultipartFile> multipartFiles = new ArrayList<>();
@@ -119,7 +119,7 @@ class NoticeServiceTest {
     void testDeleteNotice() {
         // Given
         Member mockMember = new Member();
-        mockMember.setMemberCategory(MemberCategory.A);
+        mockMember.setCategory(MemberCategory.A);
         Long noticeNo = 1L;
         Notice mockNotice = new Notice();
         mockNotice.setId(noticeNo);

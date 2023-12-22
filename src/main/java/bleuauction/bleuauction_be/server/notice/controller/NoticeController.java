@@ -88,7 +88,7 @@ public class NoticeController {
         TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
         Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
-        if (MemberCategory.A.equals(loginUser.getMemberCategory())) {
+        if (MemberCategory.A.equals(loginUser.getCategory())) {
             attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
             return ResponseEntity.ok("File deleted successfully");
         } else {

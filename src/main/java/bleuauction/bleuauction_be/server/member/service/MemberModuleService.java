@@ -44,7 +44,7 @@ public class MemberModuleService {
      */
     public Member findByEmail(String email) {
         return memberRepository
-                .findByMemberEmail(email)
+                .findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("Bad Request Email"));
     }
 
@@ -83,7 +83,7 @@ public class MemberModuleService {
      * @return
      */
     public boolean isExistsByEmail(String email) {
-        return memberRepository.existsByMemberEmail(email);
+        return memberRepository.existsByEmail(email);
     }
 
     /**

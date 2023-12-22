@@ -40,7 +40,7 @@ public class StoreModuleService {
      */
     public Store findByMember(Member member) {
         return storeRepository
-                .findByMemberNo(member)
+                .findByMember(member)
                 .orElseThrow(() -> new StoreNotFoundException(member));
     }
 
@@ -52,7 +52,7 @@ public class StoreModuleService {
      * @return
      */
     public Page<Store> findPageByStoreStatus(StoreStatus storeStatus, Pageable pageable) {
-        return storeRepository.findAllByStoreStatus(storeStatus, pageable);
+        return storeRepository.findAllByStatus(storeStatus, pageable);
     }
 
     /**

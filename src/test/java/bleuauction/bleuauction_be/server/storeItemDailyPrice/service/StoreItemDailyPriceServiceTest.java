@@ -43,7 +43,7 @@ class StoreItemDailyPriceServiceTest {
             "testSelectSidpList(): DailyPriceStatus.Y(\"사용중\") 인 상태의 가게별 품목 당일 싯가 객체가 있으면 모두 조회한다. ")
     void testSelectSidpList() throws Exception {
         // given
-        Store store = new Store();
+        Store store = Store.builder().build();
         store.setId(TEST_STORE_NO);
         List<StoreItemDailyPrice> mockSidpList =
                 List.of(
@@ -78,7 +78,7 @@ class StoreItemDailyPriceServiceTest {
                                 WildFarmStatus.F,
                                 DailyPriceStatus.Y));
         given(storeItemDailyPriceRepository.findAllByDailyPriceStatus(DailyPriceStatus.Y))
-                .willReturn(Optional.of(mockSidpList));
+                .willReturn(mockSidpList);
 
         // when
         List<StoreItemDailyPrice> sidpList =
@@ -92,7 +92,7 @@ class StoreItemDailyPriceServiceTest {
     @DisplayName("testAddStoreItemDailyPrice(): 가게별 품목 당일 싯가 등록에 성공한다.")
     void testAddStoreItemDailyPrice() {
         // given
-        Store store = new Store();
+        Store store = Store.builder().build();
         store.setId(TEST_STORE_NO);
 
         StoreItemDailyPriceInsertRequest sidpInsertRequest = new StoreItemDailyPriceInsertRequest();

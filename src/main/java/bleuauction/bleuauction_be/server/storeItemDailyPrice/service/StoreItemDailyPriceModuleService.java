@@ -19,9 +19,7 @@ public class StoreItemDailyPriceModuleService {
     private final StoreItemDailyPriceRepository storeItemDailyPriceRepository;
 
     public List<StoreItemDailyPrice> findAllByDailyPriceStatus(DailyPriceStatus dailyPriceStatus) {
-        return storeItemDailyPriceRepository
-                .findAllByDailyPriceStatus(dailyPriceStatus)
-                .orElseThrow(() -> new StoreItemDailyPriceNotFoundException(dailyPriceStatus));
+        return storeItemDailyPriceRepository.findAllByDailyPriceStatus(dailyPriceStatus);
     }
 
     public StoreItemDailyPrice addStoreItemDailyPrice(StoreItemDailyPrice storeItemDailyPrice) {

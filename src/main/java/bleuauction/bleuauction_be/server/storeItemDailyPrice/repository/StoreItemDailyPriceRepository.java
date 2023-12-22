@@ -8,6 +8,5 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StoreItemDailyPriceRepository extends JpaRepository<StoreItemDailyPrice, Long> {
-    Optional<List<StoreItemDailyPrice>> findAllByDailyPriceStatus(
-            DailyPriceStatus dailyPriceStatus);
+    List<StoreItemDailyPrice> findAllByDailyPriceStatus(DailyPriceStatus dailyPriceStatus);
 }

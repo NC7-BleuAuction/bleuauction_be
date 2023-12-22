@@ -23,9 +23,9 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 
-@Entity
 @Getter
 @Setter
+@Entity
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "ba_pay")
 public class Pay {
@@ -42,31 +42,29 @@ public class Pay {
     @Enumerated(EnumType.STRING)
     private PayType payType;
 
-    @NotNull private Integer payPrice;
+    @NotNull private Integer price;
 
     @Enumerated(EnumType.STRING)
-    private PayStatus payStatus;
+    private PayStatus status;
 
     @CreationTimestamp
-    @Column(name = "pay_datetime")
     private Timestamp payDatetime;
 
     @LastModifiedDate
-    @Column(name = "pay_cancel_datetime")
     private Timestamp payCancelDatetime;
 
     @Builder
     public Pay(
             Order order,
             PayType payType,
-            Integer payPrice,
-            PayStatus payStatus,
+            Integer price,
+            PayStatus status,
             Timestamp payDatetime,
             Timestamp payCancelDatetime) {
         this.order = order;
         this.payType = payType;
-        this.payPrice = payPrice;
-        this.payStatus = payStatus;
+        this.price = price;
+        this.status = status;
         this.payDatetime = payDatetime;
         this.payCancelDatetime = payCancelDatetime;
     }

@@ -80,7 +80,7 @@ public class StoreSignUpRequest {
                 .storeZipcode(this.storeZipcode)
                 .storeAddr(this.storeAddr)
                 .storeDetailAddr(this.storeDetailAddr)
-                .storeStatus(StoreStatus.Y)
+                .status(StoreStatus.Y)
                 .weekdayStartTime(this.weekdayStartTime)
                 .weekdayEndTime(this.weekdayEndTime)
                 .weekendStartTime(this.weekendStartTime)

@@ -12,8 +12,8 @@ import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDai
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.WildFarmStatus;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +23,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class StoreItemDailyPriceInsertRequest {
     private int dailyPrice;
+
+    private Long storeId;
 
     @Enumerated(EnumType.STRING)
     private ItemCode itemCode;
@@ -42,7 +44,7 @@ public class StoreItemDailyPriceInsertRequest {
     @Enumerated(EnumType.STRING)
     private WildFarmStatus wildFarmStatus;
 
-    private Date dailyPriceDate;
+    private LocalDateTime dailyPriceDate;
 
     private Timestamp regDatetime;
 

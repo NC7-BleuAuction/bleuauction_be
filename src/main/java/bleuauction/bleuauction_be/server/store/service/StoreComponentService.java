@@ -84,13 +84,15 @@ public class StoreComponentService {
         updateStore.setStoreName(updateStoreRequest.getStoreName());
         updateStore.setMarketName(updateStoreRequest.getMarketName());
         updateStore.setLicenseNo(updateStoreRequest.getLicenseNo());
-        updateStore.setStoreZipcode(updateStoreRequest.getStoreZipcode());
-        updateStore.setStoreAddr(updateStoreRequest.getStoreAddr());
-        updateStore.setStoreDetailAddr(updateStoreRequest.getStoreDetailAddr());
         updateStore.setWeekdayStartTime(updateStoreRequest.getWeekdayStartTime());
         updateStore.setWeekdayEndTime(updateStoreRequest.getWeekdayEndTime());
         updateStore.setWeekendStartTime(updateStoreRequest.getWeekendStartTime());
         updateStore.setWeekendEndTime(updateStoreRequest.getWeekendEndTime());
+
+        updateStore.setStoreAddress(
+                updateStoreRequest.getStoreZipcode(),
+                updateStoreRequest.getStoreAddr(),
+                updateStoreRequest.getStoreDetailAddr());
 
         storeModuleService.save(updateStore);
         log.info(

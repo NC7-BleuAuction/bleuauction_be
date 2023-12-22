@@ -43,8 +43,7 @@ class PayModuleServiceTest {
     void getPay_WhenPayNoIsExist_ThenReturnPay() {
         // given
         Long payNo = 1L;
-        Pay mockPay =
-                Pay.builder().payType(PayType.C).payPrice(80000).payStatus(PayStatus.Y).build();
+        Pay mockPay = Pay.builder().payType(PayType.C).price(80000).status(PayStatus.Y).build();
         mockPay.setId(payNo);
 
         given(payRepository.findById(payNo)).willReturn(Optional.of(mockPay));

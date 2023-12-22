@@ -10,6 +10,7 @@ import bleuauction.bleuauction_be.server.answer.util.AnswerEntityFactory;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.util.MemberEntityFactory;
+import bleuauction.bleuauction_be.server.review.entity.Review;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,28 +54,31 @@ class AnswerServiceTest {
         final int TEST_START_PAGE = 0;
         final int PAGE_ROW_COUNT = 2;
 
+        Review mockTestReview = Review.builder().build();
+        mockTestReview.setId(TEST_REVIEW_NO);
+
         List<Answer> mockAnswerList =
                 List.of(
                         AnswerEntityFactory.of(
-                                TEST_REVIEW_NO,
+                                mockTestReview,
                                 MemberEntityFactory.of(
                                         TEST_MAIL, TEST_PWD, TEST_NAME, MemberCategory.M),
                                 TEST_ANSWER_CONTENT + 1,
                                 AnswerStatus.Y),
                         AnswerEntityFactory.of(
-                                TEST_REVIEW_NO,
+                                mockTestReview,
                                 MemberEntityFactory.of(
                                         TEST_MAIL, TEST_PWD, TEST_NAME, MemberCategory.M),
                                 TEST_ANSWER_CONTENT + 2,
                                 AnswerStatus.Y),
                         AnswerEntityFactory.of(
-                                TEST_REVIEW_NO,
+                                mockTestReview,
                                 MemberEntityFactory.of(
                                         TEST_MAIL, TEST_PWD, TEST_NAME, MemberCategory.M),
                                 TEST_ANSWER_CONTENT + 3,
                                 AnswerStatus.Y),
                         AnswerEntityFactory.of(
-                                TEST_REVIEW_NO,
+                                mockTestReview,
                                 MemberEntityFactory.of(
                                         TEST_MAIL, TEST_PWD, TEST_NAME, MemberCategory.M),
                                 TEST_ANSWER_CONTENT + 4,
@@ -82,9 +86,7 @@ class AnswerServiceTest {
 
         Pageable pageable = PageRequest.of(TEST_START_PAGE, PAGE_ROW_COUNT, SORT_BY_ORDER_DESC);
         Page<Answer> mockPage = new PageImpl<>(mockAnswerList, pageable, 3L);
-        given(
-                        answerRepository.findByReviewNoAndAnswerStatus(
-                                TEST_REVIEW_NO, AnswerStatus.Y, pageable))
+        given(answerRepository.findAllByReviewAndStatus(mockTestReview, AnswerStatus.Y, pageable))
                 .willReturn(mockPage);
 
         List<Answer> answerList = mockPage.getContent();
@@ -110,15 +112,18 @@ class AnswerServiceTest {
         // given
         Member mockMember =
                 Member.builder()
-                        .memberEmail(TEST_MAIL)
-                        .memberName(TEST_NAME)
-                        .memberCategory(MemberCategory.M)
+                        .email(TEST_MAIL)
+                        .name(TEST_NAME)
+                        .category(MemberCategory.M)
                         .build();
-        mockMember.setMemberNo(TEST_MEMBER_NO);
+        mockMember.setId(TEST_MEMBER_NO);
+
+        Review mockTestReview = Review.builder().build();
+        mockTestReview.setId(TEST_REVIEW_NO);
 
         Answer mockAnswer =
                 AnswerEntityFactory.of(
-                        TEST_REVIEW_NO,
+                        mockTestReview,
                         MemberEntityFactory.of(
                                 TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getCategory()),
                         TEST_NAME,
@@ -136,27 +141,28 @@ class AnswerServiceTest {
             "testUpdateAnswer(): TokenMember, Answer, Member 객체 등이 주어질 때 TokenMember.memberNo와 Memebr.memberNo가 같을 때 AnswerStatus.Y에 해당하는 답글 수정에 성공한다.")
     void testUpdateAnswer() throws Exception {
         // given
+        Review mockTestReview = Review.builder().build();
+        mockTestReview.setId(TEST_REVIEW_NO);
+
         Member mockMember =
                 Member.builder()
-                        .memberEmail(TEST_MAIL)
-                        .memberName(TEST_NAME)
-                        .memberCategory(MemberCategory.M)
+                        .email(TEST_MAIL)
+                        .name(TEST_NAME)
+                        .category(MemberCategory.M)
                         .build();
-
-        mockMember.setMemberNo(TEST_MEMBER_NO);
+        mockMember.setId(TEST_MEMBER_NO);
 
         Member mockCustomerMember =
-                MemberEntityFactory.of(
-                        TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getCategory());
-        mockCustomerMember.setMemberNo(TEST_MEMBER_NO);
+                MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getCategory());
+        mockCustomerMember.setId(TEST_MEMBER_NO);
 
         Answer mockAnswer =
                 AnswerEntityFactory.of(
-                        TEST_REVIEW_NO, mockCustomerMember, TEST_NAME, AnswerStatus.Y);
+                        mockTestReview, mockCustomerMember, TEST_NAME, AnswerStatus.Y);
 
         given(
-                        answerRepository.findByReviewNoAndAnswerNoAndAnswerStatus(
-                                mockAnswer.getReviewNo(), mockAnswer.getAnswerNo(), AnswerStatus.Y))
+                        answerRepository.findByIdAndReviewAndStatus(
+                                mockAnswer.getId(), mockAnswer.getReview(), AnswerStatus.Y))
                 .willReturn(Optional.of(mockAnswer));
         mockAnswer.setContent(TEST_ANSWER_CONTENT + "수정");
         given(answerRepository.save(mockAnswer)).willReturn(mockAnswer);
@@ -173,24 +179,26 @@ class AnswerServiceTest {
             "testDeleteAnswer(): TokenMember, answerNo, memebrNo 등의 파라미터가 주어질 때 TokenMemebr.memebrNo와 memebrNo가 같고 AnswerStatus.Y에 해당하는 답글의 상태를 AnswerStatus.N 으로 변경한다.")
     void testDeleteAnswer() throws Exception {
         // given
+        Review mockTestReview = Review.builder().build();
+        mockTestReview.setId(TEST_REVIEW_NO);
+
         Member mockMember =
                 Member.builder()
-                        .memberEmail(TEST_MAIL)
-                        .memberName(TEST_NAME)
-                        .memberCategory(MemberCategory.M)
+                        .email(TEST_MAIL)
+                        .name(TEST_NAME)
+                        .category(MemberCategory.M)
                         .build();
-        mockMember.setMemberNo(TEST_MEMBER_NO);
+        mockMember.setId(TEST_MEMBER_NO);
 
         Member mockCustomerMember =
-                MemberEntityFactory.of(
-                        TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getCategory());
+                MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, mockMember.getCategory());
         mockCustomerMember.setId(TEST_MEMBER_NO);
 
         Answer mockAnswer =
                 AnswerEntityFactory.of(
-                        TEST_REVIEW_NO, mockCustomerMember, TEST_NAME, AnswerStatus.Y);
+                        mockTestReview, mockCustomerMember, TEST_NAME, AnswerStatus.Y);
 
-        given(answerRepository.findByAnswerNoAndAnswerStatus(TEST_ANSWER_NO, AnswerStatus.Y))
+        given(answerRepository.findByIdAndStatus(TEST_ANSWER_NO, AnswerStatus.Y))
                 .willReturn(Optional.of(mockAnswer));
         mockAnswer.setStatus(AnswerStatus.N);
         given(answerRepository.save(mockAnswer)).willReturn(mockAnswer);

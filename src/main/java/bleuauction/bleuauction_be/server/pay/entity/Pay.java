@@ -47,11 +47,9 @@ public class Pay {
     @Enumerated(EnumType.STRING)
     private PayStatus status;
 
-    @CreationTimestamp
-    private Timestamp payDatetime;
+    @CreationTimestamp private Timestamp payDatetime;
 
-    @LastModifiedDate
-    private Timestamp payCancelDatetime;
+    @LastModifiedDate private Timestamp payCancelDatetime;
 
     @Builder
     public Pay(

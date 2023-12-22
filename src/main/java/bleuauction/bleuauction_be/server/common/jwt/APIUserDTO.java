@@ -5,12 +5,10 @@ import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import java.util.Collections;
 import lombok.Getter;
-import lombok.ToString;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 @Getter
-@ToString
 public class APIUserDTO extends User {
 
     private Long memberNo;

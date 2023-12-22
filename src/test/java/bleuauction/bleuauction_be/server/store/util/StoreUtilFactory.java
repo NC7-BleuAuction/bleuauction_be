@@ -27,7 +27,7 @@ public class StoreUtilFactory {
                 .weekdayEndTime(Time.valueOf(LocalTime.of(23, 0, 0)))
                 .weekendStartTime(Time.valueOf(LocalTime.of(11, 0, 0)))
                 .weekendEndTime(Time.valueOf(LocalTime.of(23, 59, 59)))
-                .storeStatus(StoreStatus.Y)
+                .status(StoreStatus.Y)
                 .build();
     }
 }

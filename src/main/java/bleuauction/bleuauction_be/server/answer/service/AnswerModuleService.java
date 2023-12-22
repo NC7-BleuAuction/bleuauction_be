@@ -39,7 +39,7 @@ public class AnswerModuleService {
                         RowCountPerPage.ANSWER.getValue(),
                         Sort.by(Sort.Order.desc("regDatetime")));
         Page<Answer> page =
-                answerRepository.findByReviewAndStatus(
+                answerRepository.findAllByReviewAndStatus(
                         findReviewById(reviewNo), AnswerStatus.Y, pageable);
 
         List<Answer> answerList = page.getContent();

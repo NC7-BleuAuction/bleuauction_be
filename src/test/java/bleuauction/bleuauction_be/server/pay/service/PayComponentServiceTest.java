@@ -54,19 +54,19 @@ class PayComponentServiceTest {
     @DisplayName("결제 정보를 생성 할 때, 주문이 완료된 상태인 경우, 결제정보가 생성된다")
     void createPayment_WhenOrderStatusIsY_ThenCreatePay() {
         // given
-        Order mockOrder = new Order();
+        Order mockOrder =
+                Order.builder()
+                        .orderType(OrderType.Q)
+                        .orderPrice(50000)
+                        .orderRequest("매운맛으로 부탁드립니다.")
+                        .recipientName("뭐가 들어가는지 모르겠어요")
+                        .recipientPhone("010-1111-1111")
+                        .recipientZipcode("12345")
+                        .recipientAddr("서울특별시 강남의")
+                        .recipientDetailAddr("빌딩 5층일까 7층일까")
+                        .orderStatus(OrderStatus.Y)
+                        .build();
         mockOrder.setId(1L);
-        mockOrder.setOrderType(OrderType.Q);
-        mockOrder.setOrderPrice(50000);
-        mockOrder.setOrderRequest("매운맛으로 부탁드립니다.");
-        mockOrder.setRecipientName("뭐가 들어가는지 모르겠어요");
-        mockOrder.setRecipientPhone("010-1111-1111");
-        mockOrder.setRecipientZipcode("12345");
-        mockOrder.setRecipientAddr("서울특별시 강남의");
-        mockOrder.setRecipientDetailAddr("빌딩 5층일까 7층일까");
-        mockOrder.setRegDatetime(Timestamp.valueOf(LocalDateTime.now()));
-        mockOrder.setMdfDatetime(Timestamp.valueOf(LocalDateTime.now()));
-        mockOrder.setOrderStatus(OrderStatus.Y);
 
         PayInsertRequest payInsertRequest = new PayInsertRequest();
         payInsertRequest.setOrderNo(mockOrder.getId());
@@ -77,7 +77,7 @@ class PayComponentServiceTest {
         payInsertRequest.setPayDatetime(Timestamp.valueOf(LocalDateTime.now()));
 
         Pay pay = payInsertRequest.getPayEntity(mockOrder);
-        pay.setPayNo(1L);
+        pay.setId(1L);
 
         given(payModuleService.save(any(Pay.class))).willReturn(pay);
 

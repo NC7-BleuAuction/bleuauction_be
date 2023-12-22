@@ -13,8 +13,7 @@ public class AnswerEntityFactory {
     public static final Answer mockAnswer;
 
     static {
-        Review review =
-                Review.builder().reviewContent("테스트 리뷰 내용").reviewStatus(ReviewStatus.Y).build();
+        Review review = Review.builder().content("테스트 리뷰 내용").status(ReviewStatus.Y).build();
         review.setId(1L);
         Answer answer =
                 Answer.builder()

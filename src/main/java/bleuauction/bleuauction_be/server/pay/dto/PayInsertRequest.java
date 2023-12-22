@@ -42,10 +42,10 @@ public class PayInsertRequest {
 
     public Pay getPayEntity(Order order) {
         return Pay.builder()
-                .orderNo(order)
+                .order(order)
                 .payType(PayType.C)
-                .payPrice(this.payPrice)
-                .payStatus(this.payStatus)
+                .price(this.payPrice)
+                .status(this.payStatus)
                 .payDatetime(this.payDatetime)
                 .payCancelDatetime(this.payCancelDatetime)
                 .build();

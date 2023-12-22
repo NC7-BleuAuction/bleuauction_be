@@ -15,7 +15,7 @@ public class StoreItemDailyPriceEntityFactory {
     public static final StoreItemDailyPrice mockStoreItemDailyPrice;
 
     static {
-        Store store = new Store();
+        Store store = Store.builder().build();
         store.setId(1L);
         StoreItemDailyPrice storeItemDailyPrice =
                 StoreItemDailyPrice.builder()

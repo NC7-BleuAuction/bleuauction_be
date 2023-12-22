@@ -1,6 +1,6 @@
 package bleuauction.bleuauction_be.server.attach.entity;
 
-import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.DiscriminatorType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static jakarta.persistence.InheritanceType.SINGLE_TABLE;
 import static lombok.AccessLevel.PROTECTED;
@@ -8,6 +8,7 @@ import static lombok.AccessLevel.PROTECTED;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @Setter
 @Inheritance(strategy = SINGLE_TABLE)
-@DiscriminatorColumn(name = "attach_type")
+@DiscriminatorColumn(name = "attach_type", discriminatorType = STRING)
 @Table(name = "ba_attach")
 @NoArgsConstructor(access = PROTECTED)
 public abstract class Attach {
@@ -35,7 +36,7 @@ public abstract class Attach {
     @Column(name = "file_no")
     private Long id;
 
-    @Enumerated(STRING)
+    @Enumerated(EnumType.STRING)
     private FileStatus fileStatus;
 
     @NotNull private String filePath;

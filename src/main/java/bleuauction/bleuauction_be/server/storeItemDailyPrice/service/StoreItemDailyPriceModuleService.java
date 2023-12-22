@@ -6,7 +6,6 @@ import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.dto.StoreItemDailyPriceInsertRequest;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.DailyPriceStatus;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDailyPrice;
-import bleuauction.bleuauction_be.server.storeItemDailyPrice.exception.StoreItemDailyPriceNotFoundException;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.repository.StoreItemDailyPriceRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

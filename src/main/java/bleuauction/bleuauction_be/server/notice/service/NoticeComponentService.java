@@ -28,7 +28,7 @@ public class NoticeComponentService {
     public Long enroll(Notice notice, List<MultipartFile> multipartFiles, Member member) {
 
         isMemberAdmin(member.getCategory());
-        notice.setMemberNo(member);
+        notice.setMember(member);
 
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             multipartFiles.stream()

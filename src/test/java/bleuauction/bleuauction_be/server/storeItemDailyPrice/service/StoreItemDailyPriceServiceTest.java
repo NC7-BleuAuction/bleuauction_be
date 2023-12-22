@@ -21,7 +21,6 @@ import bleuauction.bleuauction_be.server.storeItemDailyPrice.util.StoreItemDaily
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

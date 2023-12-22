@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.entity.AttachVO;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
+import bleuauction.bleuauction_be.server.attach.entity.NoticeAttach;
 import bleuauction.bleuauction_be.server.attach.repository.AttachRepository;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
@@ -39,12 +41,12 @@ class NoticeServiceTest {
     @Test
     void testEnroll() {
         // Given
-        Member mockMember = new Member();
+        Member mockMember = Member.builder().build();
         mockMember.setCategory(MemberCategory.A);
 
         Notice mockNotice = new Notice();
         mockNotice.setId(100L);
-        mockNotice.setMemberNo(mockMember);
+        mockNotice.setMember(mockMember);
 
         List<MultipartFile> multipartFiles = new ArrayList<>();
 
@@ -77,20 +79,22 @@ class NoticeServiceTest {
     void testUpdateNotice() throws Exception {
 
         // given
-        Member mockMember = new Member();
+        Member mockMember = Member.builder().build();
         mockMember.setCategory(MemberCategory.A);
+
         Notice existingNotice = new Notice();
         existingNotice.setId(100L);
         List<MultipartFile> multipartFiles = new ArrayList<>();
 
         Attach attach1 =
-                Attach.builder()
-                        .filePath("FilePath")
-                        .originFilename("originFilename")
-                        .saveFilename("saveFilename")
-                        .fileStatus(FileStatus.Y)
-                        .build();
-        attach1.setNotice(existingNotice);
+                new NoticeAttach(
+                        AttachVO.builder()
+                                .filePath("FilePath")
+                                .originFilename("originFilename")
+                                .saveFileName("saveFilename")
+                                .fileStatus(FileStatus.Y)
+                                .build(),
+                        existingNotice);
         attachRepository.save(attach1);
 
         existingNotice.setNoticeTitle("기존 제목");
@@ -118,7 +122,7 @@ class NoticeServiceTest {
     @Test
     void testDeleteNotice() {
         // Given
-        Member mockMember = new Member();
+        Member mockMember = Member.builder().build();
         mockMember.setCategory(MemberCategory.A);
         Long noticeNo = 1L;
         Notice mockNotice = new Notice();

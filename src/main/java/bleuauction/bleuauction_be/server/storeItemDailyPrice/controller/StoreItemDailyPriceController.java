@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.storeItemDailyPrice.controller;
 
 
+import bleuauction.bleuauction_be.server.store.service.StoreModuleService;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.dto.StoreItemDailyPriceInsertRequest;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.DailyPriceStatus;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDailyPrice;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/sidp")
 public class StoreItemDailyPriceController {
     private final StoreItemDailyPriceModuleService storeItemDailyPriceModuleService;
+    private final StoreModuleService storeModuleService;
 
     @GetMapping
     public ResponseEntity<List<StoreItemDailyPrice>> sidpList() {
@@ -39,7 +41,8 @@ public class StoreItemDailyPriceController {
         log.info("StoreItemDailyPriceInsertRequest: {}", request);
 
         StoreItemDailyPrice insertStoreItemDailyPrice =
-                storeItemDailyPriceModuleService.addStoreItemDailyPrice(request.toEntity());
+                storeItemDailyPriceModuleService.addStoreItemDailyPrice(
+                        request.toEntity(storeModuleService.findById(request.getStoreId())));
 
         log.info("insertStoreItemDailyPrice: {} ", insertStoreItemDailyPrice);
 

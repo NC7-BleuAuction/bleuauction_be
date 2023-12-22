@@ -35,17 +35,17 @@ class MemberRepositoryTest {
         // given
         Member beforeSaveMember =
                 Member.builder()
-                        .memberEmail("test@test.com")
-                        .memberPwd(passwordEncoder.encode("testPassword"))
-                        .memberName("테스트계정")
-                        .memberZipcode("11111")
-                        .memberAddr("서울시 강남구 서초대로")
-                        .memberDetailAddr("비트캠프 5층")
-                        .memberPhone("010-1111-1111")
-                        .memberBank("신한은행")
-                        .memberAccount("010-111-123456")
-                        .memberCategory(MemberCategory.M)
-                        .memberStatus(MemberStatus.Y)
+                        .email("test@test.com")
+                        .password(passwordEncoder.encode("testPassword"))
+                        .name("테스트계정")
+                        .zipCode("11111")
+                        .addr("서울시 강남구 서초대로")
+                        .detailAddr("비트캠프 5층")
+                        .phone("010-1111-1111")
+                        .bankName("신한은행")
+                        .bankAccount("010-111-123456")
+                        .category(MemberCategory.M)
+                        .status(MemberStatus.Y)
                         .build();
 
         int beforeSaveMemberCount = memberRepository.findAll().size();
@@ -65,17 +65,17 @@ class MemberRepositoryTest {
         String testMail = "test@test.com";
         memberRepository.save(
                 Member.builder()
-                        .memberEmail(testMail)
-                        .memberPwd(passwordEncoder.encode("testPassword"))
-                        .memberName("테스트계정")
-                        .memberZipcode("11111")
-                        .memberAddr("서울시 강남구 서초대로")
-                        .memberDetailAddr("비트캠프 5층")
-                        .memberPhone("010-1111-1111")
-                        .memberBank("신한은행")
-                        .memberAccount("010-111-123456")
-                        .memberCategory(MemberCategory.M)
-                        .memberStatus(MemberStatus.Y)
+                        .email(testMail)
+                        .password(passwordEncoder.encode("testPassword"))
+                        .name("테스트계정")
+                        .zipCode("11111")
+                        .addr("서울시 강남구 서초대로")
+                        .detailAddr("비트캠프 5층")
+                        .phone("010-1111-1111")
+                        .bankName("신한은행")
+                        .bankAccount("010-111-123456")
+                        .category(MemberCategory.M)
+                        .status(MemberStatus.Y)
                         .build());
 
         // when && then
@@ -99,17 +99,17 @@ class MemberRepositoryTest {
         String testMail = "test@test.com";
         memberRepository.save(
                 Member.builder()
-                        .memberEmail(testMail)
-                        .memberPwd(passwordEncoder.encode("testPassword"))
-                        .memberName("테스트계정")
-                        .memberZipcode("11111")
-                        .memberAddr("서울시 강남구 서초대로")
-                        .memberDetailAddr("비트캠프 5층")
-                        .memberPhone("010-1111-1111")
-                        .memberBank("신한은행")
-                        .memberAccount("010-111-123456")
-                        .memberCategory(MemberCategory.M)
-                        .memberStatus(MemberStatus.Y)
+                        .email(testMail)
+                        .password(passwordEncoder.encode("testPassword"))
+                        .name("테스트계정")
+                        .zipCode("11111")
+                        .addr("서울시 강남구 서초대로")
+                        .detailAddr("비트캠프 5층")
+                        .phone("010-1111-1111")
+                        .bankName("신한은행")
+                        .bankAccount("010-111-123456")
+                        .category(MemberCategory.M)
+                        .status(MemberStatus.Y)
                         .build());
 
         // when

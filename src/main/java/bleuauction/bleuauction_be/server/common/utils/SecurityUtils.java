@@ -29,7 +29,7 @@ public class SecurityUtils {
      * @throws ForbiddenAccessException
      */
     public static void checkOwnsByMemberNo(Long memberNo) {
-        if (getAuthenticatedUserToMember().getMemberNo() != memberNo) {
+        if (getAuthenticatedUserToMember().getId() != memberNo) {
             throw ForbiddenAccessException.EXCEPTION;
         }
     }

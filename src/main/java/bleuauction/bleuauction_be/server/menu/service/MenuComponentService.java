@@ -1,11 +1,11 @@
 package bleuauction.bleuauction_be.server.menu.service;
 
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.menu.exception.MenuNotFoundException;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import java.util.List;
@@ -26,7 +26,7 @@ public class MenuComponentService {
     // 등록
     public Long enroll(Menu menu, Store store, List<MultipartFile> multipartFiles) {
 
-        menu.setStoreNo(store);
+        menu.addStore(store);
         menuModuleService.save(menu);
 
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
@@ -41,30 +41,34 @@ public class MenuComponentService {
     }
 
     // 메뉴 삭제(N)
-    public void deleteMenuByMenuNoAndStore(Long menuNo, Store store) {
-        Menu menu = menuRepository.findMenusByMenuNo(menuNo);
-        if (menu == null || !menu.getStoreNo().equals(store)) {
-            throw new IllegalArgumentException("메뉴와 가게 정보가 유효하지 않습니다.");
-        }
-
-        for (Attach attach : menu.getAttachs()) {
-            attachComponentService.changeFileStatusDeleteByFileNo(attach.getId());
-        }
-        menu.delete();
+    public void deleteMenuByMenuNoAndStore(Long menuId, Store store) {
+        menuRepository
+                .findById(menuId)
+                .ifPresentOrElse(
+                        menu -> {
+                            if (!menu.getStore().equals(store)) {
+                                throw new IllegalArgumentException("메뉴와 가게 정보가 유효하지 않습니다.");
+                            }
+                            menu.delete();
+                        },
+                        () -> {
+                            throw MenuNotFoundException.EXCEPTION;
+                        });
     }
 
     // 메뉴 수정
-    public Menu update(long menuNo, List<MultipartFile> multipartFiles, Store store) {
-        Menu updatedMenu = menuModuleService.findOne(menuNo);
+    // TODO : 로직이 어구가 맞지 않네요, 수정필요합니다. 아니면 파일만 수정하는건가요?
+    public Menu update(Long menuId, List<MultipartFile> multipartFiles, Store store) {
+        Menu updatedMenu = menuModuleService.findOne(menuId);
         Menu existingMenu = menuModuleService.findOne(updatedMenu.getId());
 
-        if (!existingMenu.getStoreNo().equals(store)) {
+        if (!existingMenu.getStore().equals(store)) {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
         }
-        existingMenu.setMenuName(updatedMenu.getMenuName());
-        existingMenu.setMenuSize(updatedMenu.getMenuSize());
-        existingMenu.setMenuPrice(updatedMenu.getMenuPrice());
-        existingMenu.setMenuContent(updatedMenu.getMenuContent());
+        existingMenu.setName(updatedMenu.getName());
+        existingMenu.setSize(updatedMenu.getSize());
+        existingMenu.setPrice(updatedMenu.getPrice());
+        existingMenu.setContent(updatedMenu.getContent());
 
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             multipartFiles.stream()

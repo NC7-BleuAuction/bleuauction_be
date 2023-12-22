@@ -22,7 +22,6 @@ import jakarta.persistence.Table;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -69,7 +68,8 @@ public class Menu {
     private List<OrderMenu> orderMenus = new ArrayList<>();
 
     @Builder
-    public Menu(Store store, String name, MenuSize size, int price, String content, MenuStatus status) {
+    public Menu(
+            Store store, String name, MenuSize size, int price, String content, MenuStatus status) {
         this.store = store;
         this.name = name;
         this.size = size;

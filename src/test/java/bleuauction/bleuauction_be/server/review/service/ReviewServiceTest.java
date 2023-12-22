@@ -1,5 +1,9 @@
 package bleuauction.bleuauction_be.server.review.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.BDDMockito.given;
+
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.member.util.MemberEntityFactory;
 import bleuauction.bleuauction_be.server.review.entity.Review;
@@ -9,6 +13,9 @@ import bleuauction.bleuauction_be.server.review.repository.ReviewRepository;
 import bleuauction.bleuauction_be.server.review.util.ReviewEntityFactory;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.util.StoreUtilFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,14 +26,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.BDDMockito.given;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -85,12 +84,15 @@ class ReviewServiceTest {
                                 ReviewFreshness.L,
                                 ReviewStatus.Y));
         Pageable pageable = PageRequest.of(TEST_START_PAGE, PAGE_ROW_COUNT);
-        given(reviewRepository.findAllByStoreAndStatusOrderByRegDatetimeDesc(mockStore, ReviewStatus.Y, pageable))
+        given(
+                        reviewRepository.findAllByStoreAndStatusOrderByRegDatetimeDesc(
+                                mockStore, ReviewStatus.Y, pageable))
                 .willReturn(mockReviewList);
 
         // when
         List<Review> selectReviewList =
-                reviewModuleService.findAllByStoreAndReviewStatus(mockStore, ReviewStatus.Y, TEST_START_PAGE);
+                reviewModuleService.findAllByStoreAndReviewStatus(
+                        mockStore, ReviewStatus.Y, TEST_START_PAGE);
 
         // then
         assertEquals(mockReviewList, selectReviewList);
@@ -184,12 +186,14 @@ class ReviewServiceTest {
         mockReview.setId(TEST_REVIEW_NO);
         given(reviewRepository.findByIdAndStatus(mockReview.getId(), mockReview.getStatus()))
                 .willReturn(Optional.of(mockReview));
-        given(reviewRepository.save(mockReview)).willAnswer(invocation -> {
-            Review param = invocation.getArgument(0);
-            param.setStatus(ReviewStatus.N);
-            param.deleteReview();
-            return param;
-        });
+        given(reviewRepository.save(mockReview))
+                .willAnswer(
+                        invocation -> {
+                            Review param = invocation.getArgument(0);
+                            param.setStatus(ReviewStatus.N);
+                            param.deleteReview();
+                            return param;
+                        });
 
         // when
         Review deleteReview = reviewModuleService.deleteReview(mockReview.getId());

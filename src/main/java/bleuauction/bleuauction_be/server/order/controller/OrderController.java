@@ -7,6 +7,8 @@ import bleuauction.bleuauction_be.server.order.dto.MemberFindOrdersResponseDto;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -50,8 +49,7 @@ public class OrderController {
         return ResponseEntity.ok(
                 MemberFindOrdersResponseDto.builder()
                         .orders(orderService.findOrdersByMemberNo(tokenMember.getMemberNo()))
-                        .build()
-        );
+                        .build());
     }
 
     // 가게(가게주인)별 주문 조회
@@ -64,7 +62,8 @@ public class OrderController {
         TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
         log.info("token: " + tokenMember);
 
-        return ResponseEntity.ok(orderService.findOrdersByMemberAndStore(tokenMember.getMemberNo(), storeNo));
+        return ResponseEntity.ok(
+                orderService.findOrdersByMemberAndStore(tokenMember.getMemberNo(), storeNo));
     }
 
     // 삭제--오더메뉴도 같이

@@ -12,11 +12,9 @@ import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
 import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +32,16 @@ public class OrderMenuComponentService {
     private final MenuModuleService menuModuleService;
     private final OrderMenuModuleService orderMenuModuleService;
 
-    public ResponseEntity<String> addOrderMenuDTO(Member member, Order order, OrderMenuDTO orderMenuDTO) {
+    public ResponseEntity<String> addOrderMenuDTO(
+            Member member, Order order, OrderMenuDTO orderMenuDTO) {
         Menu selectedMenu = menuModuleService.findOne(orderMenuDTO.getMenu().getId());
-        OrderMenu orderMenu = OrderMenu.builder()
-                .member(member)
-                .order(order)
-                .orderMenuCount(orderMenuDTO.getOrderMenuCount())
-                .menu(selectedMenu)
-                .build();
+        OrderMenu orderMenu =
+                OrderMenu.builder()
+                        .member(member)
+                        .order(order)
+                        .orderMenuCount(orderMenuDTO.getOrderMenuCount())
+                        .menu(selectedMenu)
+                        .build();
 
         orderMenuRepository.save(orderMenu);
         log.info("ordermenu/postnew");

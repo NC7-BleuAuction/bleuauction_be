@@ -9,15 +9,14 @@ import bleuauction.bleuauction_be.server.order.entity.OrderStatus;
 import bleuauction.bleuauction_be.server.order.exception.OrderNotFoundException;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.store.entity.Store;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -56,14 +55,14 @@ public class OrderService {
         }
 
         // TODO : Exception 적당한걸로 바꿔주세요 By.승현
-        Store findStore = storeMember.getStores()
-                .stream()
-                .filter(store -> store.getId().equals(storeNo))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("가게 주인이 아닙니다."));
+        Store findStore =
+                storeMember.getStores().stream()
+                        .filter(store -> store.getId().equals(storeNo))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("가게 주인이 아닙니다."));
 
-
-        return orderRepository.findAllByStoreAndOrderStatusOrderByRegDatetimeDesc(findStore, OrderStatus.Y);
+        return orderRepository.findAllByStoreAndOrderStatusOrderByRegDatetimeDesc(
+                findStore, OrderStatus.Y);
     }
 
     // 회원 별 주문 조회
@@ -75,21 +74,27 @@ public class OrderService {
 
     // 메뉴 삭제(N)
     public ResponseEntity<String> deleteOrder(Long orderNo) {
-        Order order = orderRepository.findById(orderNo)
-                .orElseThrow(() -> new OrderNotFoundException(orderNo));
+        Order order =
+                orderRepository
+                        .findById(orderNo)
+                        .orElseThrow(() -> new OrderNotFoundException(orderNo));
         order.deleteOrder();
         return ResponseEntity.ok("Order deleted successfully");
     }
 
-
-    // TODO : 기능은 이전과 동일하게 만들었는데, 조회를 위한 NO만 있고, 수정을 하는 정보도 모두 DB에서 가져와서 기능이 아얘 없는거나 마찬가지. 수정필요 By.승현
+    // TODO : 기능은 이전과 동일하게 만들었는데, 조회를 위한 NO만 있고, 수정을 하는 정보도 모두 DB에서 가져와서 기능이 아얘 없는거나 마찬가지. 수정필요
+    // By.승현
     // 메뉴 수정
     public ResponseEntity<String> update(Long orderNo) {
-        Order order = orderRepository.findById(orderNo)
-                .orElseThrow(() -> new OrderNotFoundException(orderNo));
+        Order order =
+                orderRepository
+                        .findById(orderNo)
+                        .orElseThrow(() -> new OrderNotFoundException(orderNo));
 
-        Order updateorder = orderRepository.findById(orderNo)
-                .orElseThrow(() -> new OrderNotFoundException(orderNo));
+        Order updateorder =
+                orderRepository
+                        .findById(orderNo)
+                        .orElseThrow(() -> new OrderNotFoundException(orderNo));
 
         updateorder.setOrderType(order.getOrderType());
         // existingOrder.setOrderPrice(order.getOrderPrice()); // 필요하다면 주석 해제

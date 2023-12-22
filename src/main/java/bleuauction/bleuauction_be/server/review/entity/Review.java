@@ -21,11 +21,9 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,8 +43,7 @@ public class Review {
     @Column(name = "review_no")
     private Long id;
 
-    @Lob
-    private String content;
+    @Lob private String content;
 
     @Enumerated(STRING)
     private ReviewFreshness freshness;
@@ -68,11 +65,9 @@ public class Review {
     @OneToMany(mappedBy = "review", fetch = LAZY, cascade = ALL)
     private List<Answer> answers = new ArrayList<>();
 
-    @CreationTimestamp
-    private Timestamp regDatetime;
+    @CreationTimestamp private Timestamp regDatetime;
 
-    @UpdateTimestamp
-    private Timestamp mdfDatetime;
+    @UpdateTimestamp private Timestamp mdfDatetime;
 
     @Builder
     public Review(
@@ -101,26 +96,19 @@ public class Review {
 
     // === 비즈니스 로직 ===
 
-    /**
-     * 리뷰 삭제처리
-     * casecade전파가 ALL이기 때문에, 그냥 값만 바꿔주고, 트랜잭션 열려있으면 DirtyChecking으로 저장됨
-     */
+    /** 리뷰 삭제처리 casecade전파가 ALL이기 때문에, 그냥 값만 바꿔주고, 트랜잭션 열려있으면 DirtyChecking으로 저장됨 */
     public void deleteReview() {
         deleteAllAnswer();
         deleteAllAttach();
         this.status = ReviewStatus.N;
     }
 
-    /**
-     * 리뷰에 달린 답변 삭제처리
-     */
+    /** 리뷰에 달린 답변 삭제처리 */
     public void deleteAllAnswer() {
         this.answers.forEach(Answer::deleteAnswer);
     }
 
-    /**
-     * 리뷰에 달려있는 첨부파일 전체 삭제
-     */
+    /** 리뷰에 달려있는 첨부파일 전체 삭제 */
     public void deleteAllAttach() {
         this.attaches.forEach(Attach::deleteAttach);
     }

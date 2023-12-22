@@ -114,7 +114,7 @@ class OrderMenuServiceTest {
         Long orderNo = 1L;
 
         // Create an order
-        Order mockOrder =Order.builder().build();
+        Order mockOrder = Order.builder().build();
         mockOrder.setId(orderNo);
 
         // Create order menus with different statuses
@@ -153,11 +153,8 @@ class OrderMenuServiceTest {
         Menu mockMenu = Menu.builder().build();
         Menu mockMenu2 = Menu.builder().build();
 
-        OrderMenu existingOrderMenu = OrderMenu.builder()
-                .member(mockMember)
-                .menu(mockMenu)
-                .orderMenuCount(3)
-                .build();
+        OrderMenu existingOrderMenu =
+                OrderMenu.builder().member(mockMember).menu(mockMenu).orderMenuCount(3).build();
         existingOrderMenu.setId(orderMenuNo);
 
         orderMenuModuleService.save(existingOrderMenu);

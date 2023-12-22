@@ -16,7 +16,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.sql.Timestamp;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,7 +56,12 @@ public class OrderMenu {
     @UpdateTimestamp private Timestamp mdfDatetime;
 
     @Builder
-    public OrderMenu(Member member, Menu menu, Order order, int orderMenuCount, OrderMenuStatus orderMenuStatus) {
+    public OrderMenu(
+            Member member,
+            Menu menu,
+            Order order,
+            int orderMenuCount,
+            OrderMenuStatus orderMenuStatus) {
         this.member = member;
         this.menu = menu;
         this.order = order;

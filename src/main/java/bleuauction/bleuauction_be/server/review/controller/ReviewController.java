@@ -6,9 +6,8 @@ import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import bleuauction.bleuauction_be.server.review.service.ReviewModuleService;
-import java.util.List;
-
 import bleuauction.bleuauction_be.server.store.service.StoreModuleService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +37,8 @@ public class ReviewController {
         log.info("storeNo: {}", storeNo);
         log.info("startPage: {}", startPage);
         List<Review> reviewList =
-                reviewModuleService.findAllByStoreAndReviewStatus(storeModuleService.findById(storeNo), ReviewStatus.Y, startPage);
+                reviewModuleService.findAllByStoreAndReviewStatus(
+                        storeModuleService.findById(storeNo), ReviewStatus.Y, startPage);
         log.info("reviewList: {}", reviewList);
 
         return ResponseEntity.ok(reviewList);

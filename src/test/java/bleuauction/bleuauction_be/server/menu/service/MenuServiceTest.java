@@ -8,7 +8,6 @@ import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.AttachVO;
 import bleuauction.bleuauction_be.server.attach.entity.FileStatus;
 import bleuauction.bleuauction_be.server.attach.entity.MenuAttach;
-import bleuauction.bleuauction_be.server.attach.repository.AttachRepository;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;

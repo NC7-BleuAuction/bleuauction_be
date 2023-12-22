@@ -29,7 +29,7 @@ public class MenuAttach extends Attach {
 
     public MenuAttach(AttachVO attachVO, Menu menu) {
         this(attachVO);
-        this.menu = menu;
+        setMenu(menu);
     }
 
     // 파일추가 및 메뉴 추가

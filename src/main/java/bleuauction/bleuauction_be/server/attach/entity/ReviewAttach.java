@@ -28,7 +28,7 @@ public class ReviewAttach extends Attach {
 
     public ReviewAttach(AttachVO attachVO, Review review) {
         this(attachVO);
-        this.review = review;
+        setReview(review);
     }
 
     public void setReview(Review review) {

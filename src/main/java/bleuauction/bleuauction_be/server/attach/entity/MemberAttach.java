@@ -28,7 +28,7 @@ public class MemberAttach extends Attach {
 
     public MemberAttach(AttachVO attachVO, Member member) {
         this(attachVO);
-        this.member = member;
+        setMember(member);
     }
 
     // 파일추가 및 회원 추가

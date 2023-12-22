@@ -43,13 +43,13 @@ public class Review {
     @Column(name = "review_no")
     private Long id;
 
-    @Lob private String reviewContent;
+    @Lob private String content;
 
     @Enumerated(STRING)
-    private ReviewFreshness reviewFreshness;
+    private ReviewFreshness freshness;
 
     @Enumerated(STRING)
-    private ReviewStatus reviewStatus;
+    private ReviewStatus status;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "store_no")
@@ -73,17 +73,17 @@ public class Review {
     public Review(
             Store store,
             Member member,
-            String reviewContent,
-            ReviewFreshness reviewFreshness,
-            List<Attach> attaches,
-            ReviewStatus reviewStatus) {
+            String content,
+            ReviewFreshness freshness,
+            ReviewStatus status) {
         this.store = store;
         this.member = member;
-        this.reviewContent = reviewContent;
-        this.reviewFreshness = reviewFreshness;
-        this.reviewStatus = reviewStatus;
+        this.content = content;
+        this.freshness = freshness;
+        this.status = status;
     }
 
+    // === 연관관계 메서드 ====
     public void addStore(Store store) {
         this.store = store;
         store.getReviews().add(this);

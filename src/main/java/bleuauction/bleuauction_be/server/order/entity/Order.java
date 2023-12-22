@@ -60,7 +60,7 @@ public class Order {
     public int calculOrderPrice() {
         return this.orderMenus.stream()
                 .filter(orderMenu -> orderMenu.getMenu() != null)
-                .mapToInt(orderMenu -> orderMenu.getMenu().getMenuPrice())
+                .mapToInt(orderMenu -> orderMenu.getMenu().getPrice())
                 .sum();
     }
 

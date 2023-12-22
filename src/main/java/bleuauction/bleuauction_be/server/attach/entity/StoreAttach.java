@@ -29,7 +29,7 @@ public class StoreAttach extends Attach {
 
     public StoreAttach(AttachVO attachVO, Store store) {
         this(attachVO);
-        this.store = store;
+        setStore(store);
     }
 
     public void setStore(Store store) {

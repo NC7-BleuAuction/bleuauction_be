@@ -4,6 +4,7 @@ import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 import bleuauction.bleuauction_be.server.attach.entity.StoreAttach;
 import bleuauction.bleuauction_be.server.member.entity.Address;
@@ -35,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = PROTECTED)
 @Table(name = "ba_store")
 public class Store {
 

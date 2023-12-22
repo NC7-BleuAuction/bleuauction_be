@@ -28,7 +28,7 @@ public class NoticeAttach extends Attach {
 
     public NoticeAttach(AttachVO attachVO, Notice notice) {
         this(attachVO);
-        this.notice = notice;
+        setNotice(notice);
     }
 
     public void setNotice(Notice notice) {

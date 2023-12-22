@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ReviewAttachRepository extends JpaRepository<ReviewAttach, Long> {
+public interface ReviewAttachRepository extends AttachRepository<ReviewAttach> {
     List<Attach> findAllByReviewAndFileStatus(Review exitingReview, FileStatus fileStatus);
 
 }

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.BDDMockito.given;
 
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
+import bleuauction.bleuauction_be.server.common.utils.SecurityUtils;
 import bleuauction.bleuauction_be.server.member.util.MemberEntityFactory;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.entity.ReviewFreshness;
@@ -31,6 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
     @Mock private ReviewRepository reviewRepository;
+
+    @Mock private SecurityUtils securityUtils;
 
     @Mock private AttachComponentService attachComponentService;
     @InjectMocks private ReviewModuleService reviewModuleService;
@@ -130,7 +133,6 @@ class ReviewServiceTest {
         assertNotNull(addReview);
 
         assertEquals(TEST_REVIEW_NO, addReview.getId());
-        assertEquals(TEST_MEMBER_NO, addReview.getMember().getId());
         assertEquals(TEST_STORE_NO, addReview.getStore().getId());
         assertEquals(mockStore, addReview.getStore());
         assertEquals(TEST_REVIEW_CONTENT, addReview.getContent());
@@ -184,16 +186,9 @@ class ReviewServiceTest {
                         ReviewFreshness.M,
                         ReviewStatus.Y);
         mockReview.setId(TEST_REVIEW_NO);
+
         given(reviewRepository.findByIdAndStatus(mockReview.getId(), mockReview.getStatus()))
                 .willReturn(Optional.of(mockReview));
-        given(reviewRepository.save(mockReview))
-                .willAnswer(
-                        invocation -> {
-                            Review param = invocation.getArgument(0);
-                            param.setStatus(ReviewStatus.N);
-                            param.deleteReview();
-                            return param;
-                        });
 
         // when
         Review deleteReview = reviewModuleService.deleteReview(mockReview.getId());

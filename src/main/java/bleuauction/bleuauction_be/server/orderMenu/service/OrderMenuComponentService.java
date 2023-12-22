@@ -11,7 +11,6 @@ import bleuauction.bleuauction_be.server.order.service.OrderService;
 import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
-import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class OrderMenuComponentService {
-
-    private final OrderMenuRepository orderMenuRepository;
     private final OrderRepository orderRepository;
     private final OrderService orderService;
     private final MenuModuleService menuModuleService;
@@ -43,7 +40,7 @@ public class OrderMenuComponentService {
                         .menu(selectedMenu)
                         .build();
 
-        orderMenuRepository.save(orderMenu);
+        orderMenuModuleService.save(orderMenu);
         log.info("ordermenu/postnew");
         return ResponseEntity.ok("OrderMenu created successfully");
     }

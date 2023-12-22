@@ -5,6 +5,7 @@ import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import bleuauction.bleuauction_be.server.common.entity.AbstractTimeStamp;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,21 +15,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "ba_store_item_daily_price")
-public class StoreItemDailyPrice {
+public class StoreItemDailyPrice extends AbstractTimeStamp {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -63,10 +61,6 @@ public class StoreItemDailyPrice {
     private DailyPriceStatus dailyPriceStatus;
 
     private LocalDateTime daliyPriceDate;
-
-    @CreationTimestamp private Timestamp regDatetime;
-
-    @UpdateTimestamp private Timestamp mdfDatetime;
 
     @Builder
     public StoreItemDailyPrice(

@@ -35,8 +35,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/notice")
 public class NoticeController {
 
-    private final MemberModuleService memberModuleService;
     private final JwtUtils jwtUtils;
+    private final MemberModuleService memberModuleService;
     private final NoticeModuleService noticeModuleService;
     private final NoticeComponentService noticeComponentService;
     private final AttachComponentService attachComponentService;

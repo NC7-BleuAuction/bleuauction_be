@@ -30,6 +30,7 @@ public class AnswerModuleService {
 
     private final AnswerRepository answerRepository;
     private final ReviewRepository reviewRepository;
+    private final SecurityUtils securityUtils;
 
     @Transactional(readOnly = true)
     public Map<String, Object> selectAnswerList(Long reviewNo, int startPage) {
@@ -60,7 +61,7 @@ public class AnswerModuleService {
     }
 
     public Answer updateAnswer(Answer answer, Member member) throws Exception {
-        SecurityUtils.checkOwnsByMemberNo(member.getId());
+        securityUtils.checkOwnsByMemberNo(member.getId());
 
         answer.setMember(member);
         Answer exitingAnswer =
@@ -73,7 +74,7 @@ public class AnswerModuleService {
     }
 
     public Answer deleteAnswer(Long answerNo, Long memberNo) {
-        SecurityUtils.checkOwnsByMemberNo(memberNo);
+        securityUtils.checkOwnsByMemberNo(memberNo);
 
         Answer exitingAnswer =
                 answerRepository

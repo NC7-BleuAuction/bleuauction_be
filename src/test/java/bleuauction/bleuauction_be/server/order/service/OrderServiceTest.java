@@ -165,6 +165,8 @@ class OrderServiceTest {
         Member mockNormalMember =
                 MemberEntityFactory.of(TEST_MAIL, TEST_PWD, TEST_NAME, MemberCategory.M);
         Store mockStore = StoreUtilFactory.of("노량진수산시장", "가게이름1", "111-11-11111");
+        mockStore.setId(1L);
+        mockStore.addMember(mockSellerMember);
 
         // 가짜 메뉴 리스트를 생성
         Menu menu1 =
@@ -252,8 +254,8 @@ class OrderServiceTest {
         when(memberModuleService.findById(mockSellerMember.getId())).thenReturn(mockSellerMember);
 
         // 주문이 있는 상황을 가정하고, 주문 리스트를 반환하도록 설정
-        when(orderRepository.findAllByMemberAndOrderStatusOrderByRegDatetimeDesc(
-                        mockSellerMember, OrderStatus.Y))
+        when(orderRepository.findAllByStoreAndOrderStatusOrderByRegDatetimeDesc(
+                        mockStore, OrderStatus.Y))
                 .thenReturn(fakeOrders);
 
         // when
@@ -272,7 +274,7 @@ class OrderServiceTest {
         Long memberNo = 123L;
 
         // 로그인한 사용자를 찾지 못하도록 설정
-        when(memberModuleService.findByMemberNo(memberNo))
+        when(memberModuleService.findById(memberNo))
                 .thenThrow(new MemberNotFoundException(memberNo));
 
         // when && then

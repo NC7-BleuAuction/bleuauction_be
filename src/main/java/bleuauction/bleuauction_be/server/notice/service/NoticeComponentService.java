@@ -7,7 +7,6 @@ import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
-import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class NoticeComponentService {
 
     private final NoticeModuleService noticeModuleService;
-    private final NoticeRepository noticeRepository;
     private final AttachComponentService attachComponentService;
 
     @Transactional
@@ -46,7 +44,7 @@ public class NoticeComponentService {
     public void deleteNotice(Long noticeNo, Member member) {
         isMemberAdmin(member.getCategory());
 
-        Notice notice = noticeRepository.findByNoticeNo(noticeNo);
+        Notice notice = noticeModuleService.findOne(noticeNo);
         notice.delete();
         if (notice.getAttaches() != null && !notice.getAttaches().isEmpty()) {
             notice.getAttaches()
@@ -63,7 +61,7 @@ public class NoticeComponentService {
             throws Exception {
 
         Notice updatedNotice = noticeModuleService.findOne(noticeNo);
-        Notice existingnotice = noticeRepository.findByNoticeNo(noticeNo);
+        Notice existingnotice = noticeModuleService.findOne(noticeNo);
 
         isMemberAdmin(member.getCategory());
 

@@ -9,6 +9,7 @@ import static lombok.AccessLevel.PROTECTED;
 import bleuauction.bleuauction_be.server.answer.entity.Answer;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.ReviewAttach;
+import bleuauction.bleuauction_be.server.common.entity.AbstractTimeStamp;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import jakarta.persistence.Column;
@@ -21,22 +22,19 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor(access = PROTECTED)
 @Table(name = "ba_review")
-public class Review {
+@NoArgsConstructor(access = PROTECTED)
+public class Review extends AbstractTimeStamp {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -64,10 +62,6 @@ public class Review {
 
     @OneToMany(mappedBy = "review", fetch = LAZY, cascade = ALL)
     private List<Answer> answers = new ArrayList<>();
-
-    @CreationTimestamp private Timestamp regDatetime;
-
-    @UpdateTimestamp private Timestamp mdfDatetime;
 
     @Builder
     public Review(

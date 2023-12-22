@@ -9,6 +9,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
     List<Notice> findByNoticeStatus(NoticeStatus status);
-
-    Notice findByNoticeNo(Long noticeNo);
 }

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AnswerController {
 
     private final AnswerModuleService answerModuleService;
+    private final SecurityUtils securityUtils;
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> answerList(
@@ -40,7 +41,7 @@ public class AnswerController {
         log.info("@PostMapping ===========> /api/answer");
         log.info("Answer: {}", answer);
 
-        answer.setMember(SecurityUtils.getAuthenticatedUserToMember());
+        answer.setMember(securityUtils.getAuthenticatedUserToMember());
         Answer insertAnswer = answerModuleService.addAnswer(answer);
         return ResponseEntity.ok(insertAnswer);
     }

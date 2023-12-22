@@ -5,6 +5,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static jakarta.persistence.InheritanceType.SINGLE_TABLE;
 import static lombok.AccessLevel.PROTECTED;
 
+import bleuauction.bleuauction_be.server.common.entity.AbstractTimeStamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -14,12 +15,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.Table;
-import java.sql.Timestamp;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.jetbrains.annotations.NotNull;
 
 /** JOINED전략을 사용할지 SINGLE_TABLE 전략을 사용할지 고민했으나, 굳이 더 컬럼이 늘진 않을것 같아 SINGLE_TABLE 전략을 사용했습니다. */
@@ -30,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 @DiscriminatorColumn(name = "attach_type", discriminatorType = STRING)
 @Table(name = "ba_attach")
 @NoArgsConstructor(access = PROTECTED)
-public abstract class Attach {
+public abstract class Attach extends AbstractTimeStamp {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "file_no")
@@ -44,10 +42,6 @@ public abstract class Attach {
     @NotNull private String originFilename;
 
     @NotNull private String saveFilename;
-
-    @CreationTimestamp private Timestamp regDatetime;
-
-    @UpdateTimestamp private Timestamp mdfDatetime;
 
     protected Attach(AttachVO attachVO) {
         this.filePath = attachVO.getFilePath();

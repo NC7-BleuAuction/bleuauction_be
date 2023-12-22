@@ -4,6 +4,7 @@ package bleuauction.bleuauction_be.server.notice.service;
 import bleuauction.bleuauction_be.server.config.annotation.ModuleService;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
+import bleuauction.bleuauction_be.server.notice.exception.NoticeNotFoundException;
 import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,9 @@ public class NoticeModuleService {
 
     @Transactional(readOnly = true)
     public Notice findOne(Long noticeNo) {
-        return noticeRepository.findByNoticeNo(noticeNo);
+        return noticeRepository
+                .findById(noticeNo)
+                .orElseThrow(() -> NoticeNotFoundException.EXCEPTION);
     }
 
     public List<Notice> findNoticesByStatus(NoticeStatus status) {

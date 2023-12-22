@@ -16,6 +16,7 @@ import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,9 +45,8 @@ class NoticeServiceTest {
         Member mockMember = Member.builder().build();
         mockMember.setCategory(MemberCategory.A);
 
-        Notice mockNotice = new Notice();
+        Notice mockNotice = Notice.builder().member(mockMember).build();
         mockNotice.setId(100L);
-        mockNotice.setMember(mockMember);
 
         List<MultipartFile> multipartFiles = new ArrayList<>();
 
@@ -62,11 +62,11 @@ class NoticeServiceTest {
     void testFindOne() {
         // Given
         Long noticeNo = 1L;
-        Notice mockNotice = new Notice();
+        Notice mockNotice = Notice.builder().build();
         mockNotice.setId(noticeNo);
 
         // When
-        when(noticeRepository.findByNoticeNo(noticeNo)).thenReturn(mockNotice);
+        when(noticeRepository.findById(noticeNo)).thenReturn(Optional.ofNullable(mockNotice));
         Notice result = noticeModuleService.findOne(noticeNo);
 
         // Then
@@ -82,7 +82,7 @@ class NoticeServiceTest {
         Member mockMember = Member.builder().build();
         mockMember.setCategory(MemberCategory.A);
 
-        Notice existingNotice = new Notice();
+        Notice existingNotice = Notice.builder().build();
         existingNotice.setId(100L);
         List<MultipartFile> multipartFiles = new ArrayList<>();
 
@@ -102,14 +102,15 @@ class NoticeServiceTest {
         noticeRepository.save(existingNotice);
 
         // 업데이트할 내용을 담은 새로운 Notice 객체 생성
-        Notice updatedNotice = new Notice();
+        Notice updatedNotice = Notice.builder().build();
         updatedNotice.setId(existingNotice.getId()); // 기존의 noticeNo를 설정
         updatedNotice.setNoticeTitle("새로운 제목");
         updatedNotice.setNoticeContent("새로운 내용");
 
         // findOne  호출될 때 existingNotice를 리턴하도록 설정
         when(noticeModuleServiceM.findOne(updatedNotice.getId())).thenReturn(updatedNotice);
-        when(noticeRepository.findByNoticeNo(updatedNotice.getId())).thenReturn(existingNotice);
+        when(noticeRepository.findById(updatedNotice.getId()))
+                .thenReturn(Optional.ofNullable(existingNotice));
 
         // when
         noticeComponentService.update(100L, mockMember, multipartFiles);
@@ -125,13 +126,13 @@ class NoticeServiceTest {
         Member mockMember = Member.builder().build();
         mockMember.setCategory(MemberCategory.A);
         Long noticeNo = 1L;
-        Notice mockNotice = new Notice();
+        Notice mockNotice = Notice.builder().build();
         mockNotice.setId(noticeNo);
         mockNotice.setNoticeTitle("가짜 제목");
         mockNotice.setNoticeContent("가짜 내용");
 
         // findOne 메서드가 mockNotice를 반환하도록 설정
-        when(noticeRepository.findByNoticeNo(anyLong())).thenReturn(mockNotice);
+        when(noticeRepository.findById(anyLong())).thenReturn(Optional.ofNullable(mockNotice));
 
         // When
         noticeComponentService.deleteNotice(noticeNo, mockMember);

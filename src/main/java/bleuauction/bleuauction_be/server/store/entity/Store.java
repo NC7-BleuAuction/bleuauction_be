@@ -142,4 +142,22 @@ public class Store {
     public void changeStoreStatusY() {
         this.setStatus(StoreStatus.Y);
     }
+
+    // === 연관관계 메서드 ===
+
+    /**
+     * Store와 Order는 1:N 관계이므로 Store가 Menu를 가지고 있어야 합니다.
+     *
+     * @param order
+     */
+    public void addOrder(Order order) {
+        this.orders.add(order);
+        order.setStore(this);
+    }
+
+    /** Store와 Member는 1:N 관계이므로 Store가 Menu를 가지고 있어야 합니다. */
+    public void addMember(Member member) {
+        this.member = member;
+        member.getStores().add(this);
+    }
 }

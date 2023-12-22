@@ -4,8 +4,6 @@ package bleuauction.bleuauction_be.server.attach.util;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.AttachVO;
 import bleuauction.bleuauction_be.server.attach.entity.MemberAttach;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 public class AttachUtilFactory {
 
@@ -50,15 +48,11 @@ public class AttachUtilFactory {
      */
     private static Attach ofDefaultAttach(
             String filePath, String originalFileName, String saveFileName) {
-        Attach attach =
-                new MemberAttach(
-                        AttachVO.builder()
-                                .filePath(filePath)
-                                .originFilename(originalFileName)
-                                .saveFileName(saveFileName)
-                                .build());
-        attach.setRegDatetime(Timestamp.valueOf(LocalDateTime.now()));
-        attach.setMdfDatetime(Timestamp.valueOf(LocalDateTime.now()));
-        return attach;
+        return new MemberAttach(
+                AttachVO.builder()
+                        .filePath(filePath)
+                        .originFilename(originalFileName)
+                        .saveFileName(saveFileName)
+                        .build());
     }
 }

@@ -33,6 +33,7 @@ public class ReviewModuleService {
 
     private final AttachComponentService attachComponentService;
     private final ReviewRepository reviewRepository;
+    private final SecurityUtils securityUtils;
 
     public List<Review> findAllByStoreAndReviewStatus(
             Store store, ReviewStatus status, int startPage) {
@@ -60,7 +61,7 @@ public class ReviewModuleService {
      * @return
      */
     public Review addReview(Review review, List<MultipartFile> multipartFiles) {
-        review.setMember(SecurityUtils.getAuthenticatedUserToMember());
+        review.setMember(securityUtils.getAuthenticatedUserToMember());
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             multipartFiles.forEach(
                     multipartFile -> {
@@ -79,7 +80,7 @@ public class ReviewModuleService {
                         .findById(review.getId())
                         .orElseThrow(() -> new ReviewNotFoundException(review.getId()));
 
-        SecurityUtils.checkOwnsByMemberNo(exitingReview.getMember().getId());
+        securityUtils.checkOwnsByMemberNo(exitingReview.getMember().getId());
 
         exitingReview.setContent(review.getContent());
         exitingReview.setFreshness(review.getFreshness());
@@ -93,7 +94,7 @@ public class ReviewModuleService {
                         .findByIdAndStatus(reviewNo, ReviewStatus.Y)
                         .orElseThrow(() -> new ReviewNotFoundException(reviewNo));
 
-        SecurityUtils.checkOwnsByMemberNo(exitingReview.getMember().getId());
+        securityUtils.checkOwnsByMemberNo(exitingReview.getMember().getId());
         exitingReview.deleteReview();
         return exitingReview;
     }

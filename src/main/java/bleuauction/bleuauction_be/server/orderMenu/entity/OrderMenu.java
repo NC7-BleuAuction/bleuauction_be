@@ -4,9 +4,11 @@ import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import bleuauction.bleuauction_be.server.common.entity.AbstractTimeStamp;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.order.entity.Order;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,23 +17,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.sql.Timestamp;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "ba_order_menu")
 @NoArgsConstructor(access = PROTECTED)
-public class OrderMenu {
+public class OrderMenu extends AbstractTimeStamp {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "order_menu_no")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
@@ -50,10 +50,6 @@ public class OrderMenu {
 
     @Enumerated(EnumType.STRING)
     private OrderMenuStatus orderMenuStatus; // 상태 [Y,N]
-
-    @CreationTimestamp private Timestamp regDatetime;
-
-    @UpdateTimestamp private Timestamp mdfDatetime;
 
     @Builder
     public OrderMenu(

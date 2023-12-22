@@ -15,7 +15,7 @@ public class SecurityUtils {
      *
      * @return
      */
-    public static Member getAuthenticatedUserToMember() {
+    public Member getAuthenticatedUserToMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         APIUserDTO apiUserDTO = (APIUserDTO) authentication.getPrincipal();
         return apiUserDTO.toMemberEntity();
@@ -28,7 +28,7 @@ public class SecurityUtils {
      * @param memberNo
      * @throws ForbiddenAccessException
      */
-    public static void checkOwnsByMemberNo(Long memberNo) {
+    public void checkOwnsByMemberNo(Long memberNo) {
         if (getAuthenticatedUserToMember().getId() != memberNo) {
             throw ForbiddenAccessException.EXCEPTION;
         }

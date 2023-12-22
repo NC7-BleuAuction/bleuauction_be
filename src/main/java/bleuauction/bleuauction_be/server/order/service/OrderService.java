@@ -51,7 +51,7 @@ public class OrderService {
 
         // TODO : Exception 적당한걸로 생성한 이후에 바꿔주세요 By.승현
         if (!MemberCategory.isMemberSeller(storeMember.getCategory())) {
-            throw new IllegalArgumentException("가게 주인이 아닙니다.");
+            throw new IllegalArgumentException("판매자가 아닙니다");
         }
 
         // TODO : Exception 적당한걸로 바꿔주세요 By.승현

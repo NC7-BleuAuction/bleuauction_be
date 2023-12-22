@@ -8,6 +8,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.MenuAttach;
+import bleuauction.bleuauction_be.server.common.entity.AbstractTimeStamp;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import jakarta.persistence.Entity;
@@ -19,22 +20,19 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "ba_menu")
 @NoArgsConstructor(access = PROTECTED)
-public class Menu {
+public class Menu extends AbstractTimeStamp {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -56,10 +54,6 @@ public class Menu {
 
     @Enumerated(STRING)
     private MenuStatus status; // 상태 [Y,N]
-
-    @CreationTimestamp private Timestamp regDatetime;
-
-    @UpdateTimestamp private Timestamp mdfDatetime;
 
     @OneToMany(mappedBy = "menu", cascade = ALL)
     private List<MenuAttach> attachs = new ArrayList<>();

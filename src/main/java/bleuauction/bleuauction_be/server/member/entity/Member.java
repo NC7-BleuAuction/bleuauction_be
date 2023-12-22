@@ -6,6 +6,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import bleuauction.bleuauction_be.server.attach.entity.MemberAttach;
+import bleuauction.bleuauction_be.server.common.entity.AbstractTimeStamp;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
@@ -21,22 +22,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Setter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "ba_member")
-public class Member {
+public class Member extends AbstractTimeStamp {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -62,10 +60,6 @@ public class Member {
 
     @Enumerated(STRING)
     private MemberStatus status;
-
-    @CreationTimestamp private Timestamp regDatetime;
-
-    @UpdateTimestamp private Timestamp mdfDatetime;
 
     @OneToMany(mappedBy = "member", cascade = ALL)
     private List<Order> orders = new ArrayList<>();

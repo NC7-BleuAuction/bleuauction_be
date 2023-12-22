@@ -7,10 +7,12 @@ import bleuauction.bleuauction_be.server.answer.entity.Answer;
 import bleuauction.bleuauction_be.server.answer.entity.AnswerStatus;
 import bleuauction.bleuauction_be.server.answer.repository.AnswerRepository;
 import bleuauction.bleuauction_be.server.answer.util.AnswerEntityFactory;
+import bleuauction.bleuauction_be.server.common.utils.SecurityUtils;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.util.MemberEntityFactory;
 import bleuauction.bleuauction_be.server.review.entity.Review;
+import bleuauction.bleuauction_be.server.review.repository.ReviewRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +29,16 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.test.context.support.WithMockUser;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
+@WithMockUser
 class AnswerServiceTest {
 
     @Mock private AnswerRepository answerRepository;
+    @Mock private ReviewRepository reviewRepository;
+    @Mock private SecurityUtils securityUtils;
     @InjectMocks private AnswerModuleService answerModuleService;
 
     private final Long TEST_MEMBER_NO = 1L;
@@ -88,6 +94,7 @@ class AnswerServiceTest {
         Page<Answer> mockPage = new PageImpl<>(mockAnswerList, pageable, 3L);
         given(answerRepository.findAllByReviewAndStatus(mockTestReview, AnswerStatus.Y, pageable))
                 .willReturn(mockPage);
+        given(reviewRepository.findById(TEST_REVIEW_NO)).willReturn(Optional.of(mockTestReview));
 
         List<Answer> answerList = mockPage.getContent();
         long totalRows = mockPage.getTotalElements(); // 전체 행 수
@@ -139,6 +146,10 @@ class AnswerServiceTest {
     @Test
     @DisplayName(
             "testUpdateAnswer(): TokenMember, Answer, Member 객체 등이 주어질 때 TokenMember.memberNo와 Memebr.memberNo가 같을 때 AnswerStatus.Y에 해당하는 답글 수정에 성공한다.")
+    @WithMockUser(
+            username = TEST_MAIL,
+            password = "sample",
+            roles = {"M"})
     void testUpdateAnswer() throws Exception {
         // given
         Review mockTestReview = Review.builder().build();
@@ -159,7 +170,6 @@ class AnswerServiceTest {
         Answer mockAnswer =
                 AnswerEntityFactory.of(
                         mockTestReview, mockCustomerMember, TEST_NAME, AnswerStatus.Y);
-
         given(
                         answerRepository.findByIdAndReviewAndStatus(
                                 mockAnswer.getId(), mockAnswer.getReview(), AnswerStatus.Y))

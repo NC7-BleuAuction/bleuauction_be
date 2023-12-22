@@ -8,7 +8,6 @@ import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
-import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
 import bleuauction.bleuauction_be.server.orderMenu.service.OrderMenuComponentService;
 import bleuauction.bleuauction_be.server.orderMenu.service.OrderMenuModuleService;
 import jakarta.servlet.http.HttpSession;
@@ -25,11 +24,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/ordermenu")
 public class OrderMenuController {
 
+    private final JwtUtils jwtUtils;
     private final OrderMenuComponentService orderMenuComponentService;
     private final OrderMenuModuleService orderMenuModuleService;
-
-    private final OrderMenuRepository orderMenuRepository;
-    private final JwtUtils jwtUtils;
     private final MemberComponentService memberComponentService;
 
     // 등록

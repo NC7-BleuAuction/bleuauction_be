@@ -5,10 +5,8 @@ import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.sql.Timestamp;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
@@ -43,8 +41,6 @@ public class UpdateMemberRequest {
     private String memberBank;
 
     private String memberAccount;
-
-    @CreationTimestamp private Timestamp mdfDatetime;
 
     private MultipartFile profileImage;
 }

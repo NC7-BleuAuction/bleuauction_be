@@ -268,6 +268,8 @@ class MenuServiceTest {
         // given
         Member mockSeller =
                 MemberEntityFactory.of("test@test.com", "1111111", "테스트아무개", MemberCategory.S);
+        mockSeller.setId(1L);
+
         Store mockStore = StoreUtilFactory.of(mockSeller, "노량진수산시장", "가게이름1", "111-11-11111");
         mockStore.setId(1L);
 

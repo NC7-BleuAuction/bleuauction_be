@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.pay.entity;
 
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

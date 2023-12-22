@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.answer.service;
 
+
 import bleuauction.bleuauction_be.server.answer.entity.Answer;
 import bleuauction.bleuauction_be.server.answer.entity.AnswerStatus;
 import bleuauction.bleuauction_be.server.answer.exception.AnswerNotFoundException;
@@ -10,6 +11,9 @@ import bleuauction.bleuauction_be.server.config.annotation.ModuleService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.repository.ReviewRepository;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,10 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Transactional
@@ -33,8 +33,14 @@ public class AnswerModuleService {
 
     @Transactional(readOnly = true)
     public Map<String, Object> selectAnswerList(Long reviewNo, int startPage) {
-        Pageable pageable = PageRequest.of(startPage, RowCountPerPage.ANSWER.getValue(), Sort.by(Sort.Order.desc("regDatetime")));
-        Page<Answer> page = answerRepository.findByReviewAndStatus(findReviewById(reviewNo), AnswerStatus.Y, pageable);
+        Pageable pageable =
+                PageRequest.of(
+                        startPage,
+                        RowCountPerPage.ANSWER.getValue(),
+                        Sort.by(Sort.Order.desc("regDatetime")));
+        Page<Answer> page =
+                answerRepository.findByReviewAndStatus(
+                        findReviewById(reviewNo), AnswerStatus.Y, pageable);
 
         List<Answer> answerList = page.getContent();
         long totalRows = page.getTotalElements(); // 전체 행 수
@@ -57,24 +63,29 @@ public class AnswerModuleService {
         SecurityUtils.checkOwnsByMemberNo(member.getId());
 
         answer.setMember(member);
-        Answer exitingAnswer = answerRepository.findByIdAndReviewAndStatus(answer.getId(), answer.getReview(), AnswerStatus.Y)
-                .orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
+        Answer exitingAnswer =
+                answerRepository
+                        .findByIdAndReviewAndStatus(
+                                answer.getId(), answer.getReview(), AnswerStatus.Y)
+                        .orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
         exitingAnswer.setContent(answer.getContent());
         return answerRepository.save(exitingAnswer);
     }
 
-  public Answer deleteAnswer(Long answerNo, Long memberNo) {
-    SecurityUtils.checkOwnsByMemberNo(memberNo);
+    public Answer deleteAnswer(Long answerNo, Long memberNo) {
+        SecurityUtils.checkOwnsByMemberNo(memberNo);
 
-      Answer exitingAnswer = answerRepository.findByIdAndStatus(answerNo, AnswerStatus.Y)
-              .orElseThrow(() -> new AnswerNotFoundException(answerNo));
-      exitingAnswer.setStatus(AnswerStatus.N);
-      return answerRepository.save(exitingAnswer);
-  }
-
-    private Review findReviewById(Long reviewId) {
-        return reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 존재하지 않습니다!"));
+        Answer exitingAnswer =
+                answerRepository
+                        .findByIdAndStatus(answerNo, AnswerStatus.Y)
+                        .orElseThrow(() -> new AnswerNotFoundException(answerNo));
+        exitingAnswer.setStatus(AnswerStatus.N);
+        return answerRepository.save(exitingAnswer);
     }
 
+    private Review findReviewById(Long reviewId) {
+        return reviewRepository
+                .findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 존재하지 않습니다!"));
+    }
 }

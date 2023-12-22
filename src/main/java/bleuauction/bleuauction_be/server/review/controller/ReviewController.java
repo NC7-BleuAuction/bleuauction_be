@@ -1,11 +1,11 @@
 package bleuauction.bleuauction_be.server.review.controller;
 
+
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
-import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
-import bleuauction.bleuauction_be.server.common.utils.SecurityUtils;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.service.ReviewModuleService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,60 +18,61 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/reviews")
 public class ReviewController {
-  private final ReviewModuleService reviewModuleService;
-  private final AttachComponentService attachComponentService;
+    private final ReviewModuleService reviewModuleService;
+    private final AttachComponentService attachComponentService;
 
-  @GetMapping
-  public ResponseEntity<List<Review>> reviewList(@RequestParam(value = "storeNo") Long storeNo,
-                                                 @RequestParam(value = "startPage", defaultValue = "0") int startPage) {
-    log.info("@GetMapping ===========> /api/reviews");
-    log.info("storeNo: {}", storeNo);
-    log.info("startPage: {}", startPage);
-    List<Review> reviewList = reviewModuleService.selectReviewList(storeNo, startPage);
-    log.info("reviewList: {}", reviewList);
+    @GetMapping
+    public ResponseEntity<List<Review>> reviewList(
+            @RequestParam(value = "storeNo") Long storeNo,
+            @RequestParam(value = "startPage", defaultValue = "0") int startPage) {
+        log.info("@GetMapping ===========> /api/reviews");
+        log.info("storeNo: {}", storeNo);
+        log.info("startPage: {}", startPage);
+        List<Review> reviewList = reviewModuleService.selectReviewList(storeNo, startPage);
+        log.info("reviewList: {}", reviewList);
 
-    return ResponseEntity.ok(reviewList);
-  }
+        return ResponseEntity.ok(reviewList);
+    }
 
-  @PostMapping
-  public ResponseEntity<Review> reviewAdd(Review review,
-                                          @RequestParam(name = "multipartFiles", required = false) List<MultipartFile> multipartFiles) {
-    log.info("@PostMapping ===========> /api/review");
-    log.info("Review: {}", review);
-    log.info("MultipartFile: {}", multipartFiles);
+    @PostMapping
+    public ResponseEntity<Review> reviewAdd(
+            Review review,
+            @RequestParam(name = "multipartFiles", required = false)
+                    List<MultipartFile> multipartFiles) {
+        log.info("@PostMapping ===========> /api/review");
+        log.info("Review: {}", review);
+        log.info("MultipartFile: {}", multipartFiles);
 
-    Review insertReview = reviewModuleService.addReview(review, multipartFiles);
-    log.info("insertReview: " + insertReview);
-    return ResponseEntity.ok(insertReview);
-  }
+        Review insertReview = reviewModuleService.addReview(review, multipartFiles);
+        log.info("insertReview: " + insertReview);
+        return ResponseEntity.ok(insertReview);
+    }
 
-  @PutMapping
-  public ResponseEntity<Review> reviewUpdate(Review review) {
-    log.info("@PutMapping ===========> /api/review");
+    @PutMapping
+    public ResponseEntity<Review> reviewUpdate(Review review) {
+        log.info("@PutMapping ===========> /api/review");
 
-    Review updateReview = reviewModuleService.updateReview(review);
-    return ResponseEntity.ok(updateReview);
-  }
+        Review updateReview = reviewModuleService.updateReview(review);
+        return ResponseEntity.ok(updateReview);
+    }
 
-  @DeleteMapping
-  public ResponseEntity<Review> reviewDelete(Long reviewNo) throws Exception {
-    log.info("@DeleteMapping ===========> /api/review");
-    log.info("reviewNo: {}", reviewNo);
+    @DeleteMapping
+    public ResponseEntity<Review> reviewDelete(Long reviewNo) throws Exception {
+        log.info("@DeleteMapping ===========> /api/review");
+        log.info("reviewNo: {}", reviewNo);
 
-    return ResponseEntity.ok(reviewModuleService.deleteReview(reviewNo));
-  }
+        return ResponseEntity.ok(reviewModuleService.deleteReview(reviewNo));
+    }
 
-  @DeleteMapping("/attach")
-  public ResponseEntity<Attach> reviewDeleteFile(Long fileNo) {
-    log.info("@DeleteMapping ===========> api/review/attach");
-    log.info("fileNo: {}", fileNo);
-    return ResponseEntity.ok(attachComponentService.changeFileStatusDeleteByFileNo(fileNo));
-  }
+    @DeleteMapping("/attach")
+    public ResponseEntity<Attach> reviewDeleteFile(Long fileNo) {
+        log.info("@DeleteMapping ===========> api/review/attach");
+        log.info("fileNo: {}", fileNo);
+        return ResponseEntity.ok(attachComponentService.changeFileStatusDeleteByFileNo(fileNo));
+    }
 }

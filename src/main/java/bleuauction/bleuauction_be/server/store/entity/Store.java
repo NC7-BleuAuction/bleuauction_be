@@ -1,5 +1,10 @@
 package bleuauction.bleuauction_be.server.store.entity;
 
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+
 import bleuauction.bleuauction_be.server.attach.entity.StoreAttach;
 import bleuauction.bleuauction_be.server.member.entity.Address;
 import bleuauction.bleuauction_be.server.member.entity.Member;
@@ -12,28 +17,20 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.List;
-
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
 @Setter
@@ -51,20 +48,17 @@ public class Store {
     @JoinColumn(name = "member_no")
     private Member member;
 
-    @NotNull
-    private String marketName; // (수산)시장명
+    @NotNull private String marketName; // (수산)시장명
 
-    @NotNull
-    private String storeName; // 가게명
+    @NotNull private String storeName; // 가게명
 
-    @NotNull
-    private String licenseNo;
+    @NotNull private String licenseNo;
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "zipCode", column = @Column(name = "store_zipcode")),
-            @AttributeOverride(name = "addr", column = @Column(name = "store_addr")),
-            @AttributeOverride(name = "detailAddr", column = @Column(name = "store_detail_addr"))
+        @AttributeOverride(name = "zipCode", column = @Column(name = "store_zipcode")),
+        @AttributeOverride(name = "addr", column = @Column(name = "store_addr")),
+        @AttributeOverride(name = "detailAddr", column = @Column(name = "store_detail_addr"))
     })
     private Address storeAddress;
 
@@ -85,7 +79,7 @@ public class Store {
     @OneToMany(mappedBy = "store", cascade = ALL)
     private List<Menu> menus = new ArrayList<>();
 
-    @OneToMany(mappedBy ="store", cascade = ALL)
+    @OneToMany(mappedBy = "store", cascade = ALL)
     private List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "store", cascade = ALL)
@@ -95,16 +89,30 @@ public class Store {
     private List<StoreAttach> attaches = new ArrayList<>();
 
     @Builder
-    public Store(Member member, @NotNull String marketName, @NotNull String storeName, @NotNull String licenseNo, @NotNull String storeZipcode, @NotNull String storeAddr, @NotNull String storeDetailAddr, Time weekdayStartTime, Time weekdayEndTime, Time weekendStartTime, Time weekendEndTime, UnsupportedType unsupportedType, StoreStatus storeStatus) {
+    public Store(
+            Member member,
+            @NotNull String marketName,
+            @NotNull String storeName,
+            @NotNull String licenseNo,
+            @NotNull String storeZipcode,
+            @NotNull String storeAddr,
+            @NotNull String storeDetailAddr,
+            Time weekdayStartTime,
+            Time weekdayEndTime,
+            Time weekendStartTime,
+            Time weekendEndTime,
+            UnsupportedType unsupportedType,
+            StoreStatus storeStatus) {
         this.member = member;
         this.marketName = marketName;
         this.storeName = storeName;
         this.licenseNo = licenseNo;
-        this.storeAddress = Address.builder()
-                .zipCode(storeZipcode)
-                .addr(storeAddr)
-                .detailAddr(storeDetailAddr)
-                .build();
+        this.storeAddress =
+                Address.builder()
+                        .zipCode(storeZipcode)
+                        .addr(storeAddr)
+                        .detailAddr(storeDetailAddr)
+                        .build();
         this.weekdayStartTime = weekdayStartTime;
         this.weekdayEndTime = weekdayEndTime;
         this.weekendStartTime = weekendStartTime;
@@ -114,11 +122,12 @@ public class Store {
     }
 
     public void setStoreAddress(String storeZipcode, String storeAddr, String storeDetailAddr) {
-        this.storeAddress = Address.builder()
-                .zipCode(storeZipcode)
-                .addr(storeAddr)
-                .detailAddr(storeDetailAddr)
-                .build();
+        this.storeAddress =
+                Address.builder()
+                        .zipCode(storeZipcode)
+                        .addr(storeAddr)
+                        .detailAddr(storeDetailAddr)
+                        .build();
     }
 
     public void changeStoreStatusN() {

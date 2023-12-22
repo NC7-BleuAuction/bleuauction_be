@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.config;
 
+
 import bleuauction.bleuauction_be.server.properties.IamportProperties;
 import com.siot.IamportRestClient.IamportClient;
 import lombok.RequiredArgsConstructor;

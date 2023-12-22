@@ -1,11 +1,17 @@
 package bleuauction.bleuauction_be.server.order.service;
 
+import static bleuauction.bleuauction_be.server.order.entity.OrderType.T;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberComponentService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.entity.OrderStatus;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,28 +21,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static bleuauction.bleuauction_be.server.order.entity.OrderType.T;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-
-
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
-    @Mock
-    private OrderRepository orderRepository;
+    @Mock private OrderRepository orderRepository;
 
-    @InjectMocks
-    private OrderService orderService;
+    @InjectMocks private OrderService orderService;
 
-    @Mock
-    private MemberComponentService memberComponentService;
+    @Mock private MemberComponentService memberComponentService;
 
     @Test
-    void testEnroll() throws Exception{
+    void testEnroll() throws Exception {
         // Given
         Order mockOrder = new Order();
         mockOrder.setOrderType(T);
@@ -54,7 +48,6 @@ class OrderServiceTest {
         // Then
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
         assertEquals("Order created successfully", responseEntity.getBody());
-
     }
 
     @Test
@@ -73,7 +66,8 @@ class OrderServiceTest {
         existingOrder.setRecipientDetailAddr("502-1호");
 
         // findOne 호출될 때 existingOrder를 리턴하도록 설정
-        when(orderRepository.findByOrderNo(existingOrder.getId())).thenReturn(Optional.of(existingOrder));
+        when(orderRepository.findByOrderNo(existingOrder.getId()))
+                .thenReturn(Optional.of(existingOrder));
 
         // 업데이트할 내용을 담은 새로운 Order 객체 생성
         Order updatedOrder = new Order();
@@ -97,49 +91,46 @@ class OrderServiceTest {
         assertEquals("Order updated successfully", responseEntity.getBody());
     }
 
+    @Test
+    @DisplayName("주문 삭제")
+    void testDeleteOrder() {
+        // Given
+        Order mockOrder = new Order();
+        mockOrder.setOrderType(T);
+        mockOrder.setOrderPrice(10000);
+        mockOrder.setOrderRequest("많이 주세요");
+        mockOrder.setRecipientPhone("010-3499-4444");
+        mockOrder.setRecipientName("박승현");
+        mockOrder.setRecipientZipcode("9999");
+        mockOrder.setRecipientAddr("서울시 강남구");
+        mockOrder.setRecipientDetailAddr("502-1호");
 
+        // findOne 메서드가 mockOrder를 반환하도록 설정
+        when(orderRepository.findByOrderNo(mockOrder.getId())).thenReturn(Optional.of(mockOrder));
 
-        @Test
-        @DisplayName("주문 삭제")
-        void testDeleteOrder() {
-            // Given
-            Order mockOrder = new Order();
-            mockOrder.setOrderType(T);
-            mockOrder.setOrderPrice(10000);
-            mockOrder.setOrderRequest("많이 주세요");
-            mockOrder.setRecipientPhone("010-3499-4444");
-            mockOrder.setRecipientName("박승현");
-            mockOrder.setRecipientZipcode("9999");
-            mockOrder.setRecipientAddr("서울시 강남구");
-            mockOrder.setRecipientDetailAddr("502-1호");
+        // When
+        orderService.deleteOrder(mockOrder.getId());
 
-
-            // findOne 메서드가 mockOrder를 반환하도록 설정
-            when(orderRepository.findByOrderNo(mockOrder.getId())).thenReturn(Optional.of(mockOrder));
-
-            // When
-            orderService.deleteOrder(mockOrder.getId());
-
-            // Then
-            // mockNotice의 status가 N인지 확인
-            assertEquals(OrderStatus.N, mockOrder.getOrderStatus());
+        // Then
+        // mockNotice의 status가 N인지 확인
+        assertEquals(OrderStatus.N, mockOrder.getOrderStatus());
     }
 
-        @Test
-        @DisplayName("가게 별 주문 조회 - 로그인 문제")
-        void testFindOrdersByMemberAndStore_NoOrders() {
-            // given
-            Long memberNo = 123L;
+    @Test
+    @DisplayName("가게 별 주문 조회 - 로그인 문제")
+    void testFindOrdersByMemberAndStore_NoOrders() {
+        // given
+        Long memberNo = 123L;
 
-            // 로그인한 사용자를 찾지 못하도록 설정
-            when(memberComponentService.findByMemberNo(memberNo)).thenReturn(Optional.empty());
+        // 로그인한 사용자를 찾지 못하도록 설정
+        when(memberComponentService.findByMemberNo(memberNo)).thenReturn(Optional.empty());
 
-            // when
-            ResponseEntity<?> responseEntity = orderService.findOrdersByMemberAndStore(memberNo);
+        // when
+        ResponseEntity<?> responseEntity = orderService.findOrdersByMemberAndStore(memberNo);
 
-            // then
-            assertEquals("로그인한 사용자가 아닙니다.", responseEntity.getBody());
-        }
+        // then
+        assertEquals("로그인한 사용자가 아닙니다.", responseEntity.getBody());
+    }
 
     @Test
     @DisplayName("가게 별 주문 조회 - 주문이 있는 경우")
@@ -150,7 +141,8 @@ class OrderServiceTest {
         Member fakeLoginUser = new Member();
         fakeLoginUser.setId(memberNo);
 
-        when(memberComponentService.findByMemberNo(memberNo)).thenReturn(Optional.of(fakeLoginUser));
+        when(memberComponentService.findByMemberNo(memberNo))
+                .thenReturn(Optional.of(fakeLoginUser));
 
         List<Order> fakeOrders = Arrays.asList(new Order(), new Order());
 
@@ -190,7 +182,8 @@ class OrderServiceTest {
         fakeLoginUser.setId(memberNo);
 
         // 로그인한 사용자를 찾았다고 설정
-        when(memberComponentService.findByMemberNo(memberNo)).thenReturn(Optional.of(fakeLoginUser));
+        when(memberComponentService.findByMemberNo(memberNo))
+                .thenReturn(Optional.of(fakeLoginUser));
 
         // 가짜 주문 리스트를 생성
         List<Order> fakeOrders = Arrays.asList(new Order(), new Order());
@@ -204,6 +197,4 @@ class OrderServiceTest {
         // then
         assertEquals(fakeOrders, responseEntity.getBody());
     }
-
-
 }

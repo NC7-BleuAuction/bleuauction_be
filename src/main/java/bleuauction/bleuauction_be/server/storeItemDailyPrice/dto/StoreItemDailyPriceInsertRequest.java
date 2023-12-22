@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.storeItemDailyPrice.dto;
 
+
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.DailyPriceStatus;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.ItemCode;
@@ -11,12 +12,11 @@ import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDai
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.WildFarmStatus;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import java.sql.Date;
+import java.sql.Timestamp;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.sql.Date;
-import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -63,6 +63,5 @@ public class StoreItemDailyPriceInsertRequest {
                 .daliyPriceDate(this.dailyPriceDate)
                 .dailyPriceStatus(this.dailyPriceStatus)
                 .build();
-
     }
 }

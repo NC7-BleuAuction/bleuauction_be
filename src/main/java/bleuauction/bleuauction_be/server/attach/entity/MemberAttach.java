@@ -1,5 +1,7 @@
 package bleuauction.bleuauction_be.server.attach.entity;
 
+import static lombok.AccessLevel.PROTECTED;
+
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -9,8 +11,6 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Setter

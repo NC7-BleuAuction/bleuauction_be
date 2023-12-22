@@ -1,20 +1,19 @@
 package bleuauction.bleuauction_be.server.order.entity;
 
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.pay.entity.Pay;
 import jakarta.persistence.*;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
@@ -44,11 +43,9 @@ public class Order {
 
     private String recipientDetailAddr;
 
-    @CreationTimestamp
-    private Timestamp regDatetime;
+    @CreationTimestamp private Timestamp regDatetime;
 
-    @UpdateTimestamp
-    private Timestamp mdfDatetime;
+    @UpdateTimestamp private Timestamp mdfDatetime;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus; // 상태 [Y,N]
@@ -66,7 +63,6 @@ public class Order {
                 .mapToInt(orderMenu -> orderMenu.getMenu().getMenuPrice())
                 .sum();
     }
-
 
     // 비지니스 로직
     // 공지사항 삭제

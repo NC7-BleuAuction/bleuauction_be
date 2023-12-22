@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.store.service;
 
+
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.member.entity.Member;
@@ -9,14 +10,13 @@ import bleuauction.bleuauction_be.server.store.dto.UpdateStoreRequest;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
 import bleuauction.bleuauction_be.server.store.exception.StoreUpdateUnAuthorizedException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -36,8 +36,12 @@ public class StoreComponentService {
      * @return
      */
     public List<Store> selectStoreList(StoreStatus storeStatus, int page, int limit) {
-        Page<Store> findResult = storeModuleService.findPageByStoreStatus(storeStatus, PageRequest.of(page, limit));
-        log.info("[{}] FindStoreList By StoreStatus, FindResult >>> {}", this.getClass().getName(), findResult);
+        Page<Store> findResult =
+                storeModuleService.findPageByStoreStatus(storeStatus, PageRequest.of(page, limit));
+        log.info(
+                "[{}] FindStoreList By StoreStatus, FindResult >>> {}",
+                this.getClass().getName(),
+                findResult);
         return findResult.getContent();
     }
 
@@ -57,7 +61,7 @@ public class StoreComponentService {
     /**
      * Store 정보 수정
      *
-     * @param loginUser          로그인된 판매자 사용자
+     * @param loginUser 로그인된 판매자 사용자
      * @param updateStoreRequest 수정하고자 하는 가게 정보
      */
     public void updateStore(Member loginUser, UpdateStoreRequest updateStoreRequest) {
@@ -65,13 +69,18 @@ public class StoreComponentService {
         Store updateStore = storeModuleService.findByMember(loginUser);
 
         // 첨부 파일 목록 추가
-        if (updateStoreRequest.getProfileImage() != null && updateStoreRequest.getProfileImage().getSize() > 0) {
+        if (updateStoreRequest.getProfileImage() != null
+                && updateStoreRequest.getProfileImage().getSize() > 0) {
             // 첨부 파일 저장 및 결과를 insertAttaches에 할당 및 Attach정보에 대해서는 Store객체에 추가
-            attachComponentService.saveWithStore(updateStore, FileUploadUsage.STORE, updateStoreRequest.getProfileImage());
+            attachComponentService.saveWithStore(
+                    updateStore, FileUploadUsage.STORE, updateStoreRequest.getProfileImage());
         }
 
-        log.info("[{}] Store Info Update Start, Store [ID : {}, Name : {}]",
-                this.getClass().getName(), updateStore.getId(), updateStoreRequest.getStoreName());
+        log.info(
+                "[{}] Store Info Update Start, Store [ID : {}, Name : {}]",
+                this.getClass().getName(),
+                updateStore.getId(),
+                updateStoreRequest.getStoreName());
         updateStore.setStoreName(updateStoreRequest.getStoreName());
         updateStore.setMarketName(updateStoreRequest.getMarketName());
         updateStore.setLicenseNo(updateStoreRequest.getLicenseNo());
@@ -84,15 +93,18 @@ public class StoreComponentService {
         updateStore.setWeekendEndTime(updateStoreRequest.getWeekendEndTime());
 
         storeModuleService.save(updateStore);
-        log.info("[{}] Store Info Update End, Store [ID : {}, Name : {}]",
-                this.getClass().getName(), updateStore.getId(), updateStore.getStoreName());
+        log.info(
+                "[{}] Store Info Update End, Store [ID : {}, Name : {}]",
+                this.getClass().getName(),
+                updateStore.getId(),
+                updateStore.getStoreName());
     }
 
     /**
      * 가게 폐업처리
      *
      * @param storeNo 폐업처리하고자 하는 가게의 ID
-     * @param member  폐업처리를 요청한 사용자
+     * @param member 폐업처리를 요청한 사용자
      */
     public void withDrawStore(Long storeNo, Member member) {
         Store store = storeModuleService.findById(storeNo);

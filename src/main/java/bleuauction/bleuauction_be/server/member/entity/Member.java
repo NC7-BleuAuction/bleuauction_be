@@ -1,5 +1,9 @@
 package bleuauction.bleuauction_be.server.member.entity;
 
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 import bleuauction.bleuauction_be.server.attach.entity.MemberAttach;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
@@ -16,21 +20,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Setter
@@ -48,20 +46,15 @@ public class Member {
     @Column(unique = true)
     private String email;
 
-    @NotNull
-    private String password;
+    @NotNull private String password;
 
-    @NotNull
-    private String name;
+    @NotNull private String name;
 
-    @NotNull
-    private String phone;
+    @NotNull private String phone;
 
-    @Embedded
-    private Address address;
+    @Embedded private Address address;
 
-    @Embedded
-    private BankAccount bankAccount;
+    @Embedded private BankAccount bankAccount;
 
     @Enumerated(STRING)
     private MemberCategory category;
@@ -69,11 +62,9 @@ public class Member {
     @Enumerated(STRING)
     private MemberStatus status;
 
-    @CreationTimestamp
-    private Timestamp regDatetime;
+    @CreationTimestamp private Timestamp regDatetime;
 
-    @UpdateTimestamp
-    private Timestamp mdfDatetime;
+    @UpdateTimestamp private Timestamp mdfDatetime;
 
     @OneToMany(mappedBy = "member", cascade = ALL)
     private List<Notice> notices = new ArrayList<>();
@@ -91,22 +82,26 @@ public class Member {
     private List<Store> stores = new ArrayList<>();
 
     @Builder
-    public Member(String email, String password, String name, String zipCode, String addr, String detailAddr, String phone, @Nullable String bankName, @Nullable String bankAccount, MemberCategory category, MemberStatus status) {
+    public Member(
+            String email,
+            String password,
+            String name,
+            String zipCode,
+            String addr,
+            String detailAddr,
+            String phone,
+            @Nullable String bankName,
+            @Nullable String bankAccount,
+            MemberCategory category,
+            MemberStatus status) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.phone = phone;
         this.category = category;
         this.status = status;
-        this.bankAccount = BankAccount.builder()
-                .bankName(bankName)
-                .bankAccount(bankAccount)
-                .build();
-        this.address = Address.builder()
-                .zipCode(zipCode)
-                .addr(addr)
-                .detailAddr(detailAddr)
-                .build();
+        this.bankAccount =
+                BankAccount.builder().bankName(bankName).bankAccount(bankAccount).build();
+        this.address = Address.builder().zipCode(zipCode).addr(addr).detailAddr(detailAddr).build();
     }
 }
-

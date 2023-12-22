@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.store.exception;
 
+
 import bleuauction.bleuauction_be.server.member.entity.Member;
 
 public class StoreNotFoundException extends RuntimeException {

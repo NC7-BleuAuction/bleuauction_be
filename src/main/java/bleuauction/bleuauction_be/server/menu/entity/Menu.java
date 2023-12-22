@@ -1,5 +1,10 @@
 package bleuauction.bleuauction_be.server.menu.entity;
 
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+
 import bleuauction.bleuauction_be.server.attach.entity.MenuAttach;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.store.entity.Store;
@@ -12,19 +17,13 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
 @Setter
@@ -48,14 +47,11 @@ public class Menu {
 
     private int menuPrice;
 
-    @Lob
-    private String menuContent;
+    @Lob private String menuContent;
 
-    @CreationTimestamp
-    private Timestamp regDatetime;
+    @CreationTimestamp private Timestamp regDatetime;
 
-    @UpdateTimestamp
-    private Timestamp mdfDatetime;
+    @UpdateTimestamp private Timestamp mdfDatetime;
 
     @Enumerated(STRING)
     private MenuStatus menuStatus; // 상태 [Y,N]

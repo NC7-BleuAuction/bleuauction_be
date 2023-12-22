@@ -1,5 +1,7 @@
 package bleuauction.bleuauction_be.server.attach.entity;
 
+import static lombok.AccessLevel.PROTECTED;
+
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -9,8 +11,6 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Setter
@@ -26,6 +26,7 @@ public class StoreAttach extends Attach {
     public StoreAttach(AttachVO attachVO) {
         super(attachVO);
     }
+
     public StoreAttach(AttachVO attachVO, Store store) {
         this(attachVO);
         this.store = store;

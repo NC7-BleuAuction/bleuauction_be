@@ -1,11 +1,15 @@
 package bleuauction.bleuauction_be.server.review.entity;
 
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+
 import bleuauction.bleuauction_be.server.answer.entity.Answer;
 import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.entity.ReviewAttach;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.store.entity.Store;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -16,6 +20,9 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,15 +30,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
 @Setter
@@ -45,8 +43,7 @@ public class Review {
     @Column(name = "review_no")
     private Long id;
 
-    @Lob
-    private String reviewContent;
+    @Lob private String reviewContent;
 
     @Enumerated(STRING)
     private ReviewFreshness reviewFreshness;
@@ -68,14 +65,18 @@ public class Review {
     @OneToMany(mappedBy = "review", fetch = LAZY, cascade = ALL)
     private List<Answer> answers = new ArrayList<>();
 
-    @CreationTimestamp
-    private Timestamp regDatetime;
+    @CreationTimestamp private Timestamp regDatetime;
 
-    @UpdateTimestamp
-    private Timestamp mdfDatetime;
+    @UpdateTimestamp private Timestamp mdfDatetime;
 
     @Builder
-    public Review(Store store, Member member, String reviewContent, ReviewFreshness reviewFreshness, List<Attach> attaches, ReviewStatus reviewStatus) {
+    public Review(
+            Store store,
+            Member member,
+            String reviewContent,
+            ReviewFreshness reviewFreshness,
+            List<Attach> attaches,
+            ReviewStatus reviewStatus) {
         this.store = store;
         this.member = member;
         this.reviewContent = reviewContent;

@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.member.dto;
 
+
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -43,9 +44,7 @@ public class UpdateMemberRequest {
 
     private String memberAccount;
 
-    @CreationTimestamp
-    private Timestamp mdfDatetime;
+    @CreationTimestamp private Timestamp mdfDatetime;
 
     private MultipartFile profileImage;
-
 }

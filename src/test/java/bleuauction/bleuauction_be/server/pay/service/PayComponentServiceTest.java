@@ -1,22 +1,5 @@
 package bleuauction.bleuauction_be.server.pay.service;
 
-import bleuauction.bleuauction_be.server.order.entity.Order;
-import bleuauction.bleuauction_be.server.order.entity.OrderStatus;
-import bleuauction.bleuauction_be.server.order.entity.OrderType;
-import bleuauction.bleuauction_be.server.pay.dto.PayInsertRequest;
-import bleuauction.bleuauction_be.server.pay.entity.Pay;
-import bleuauction.bleuauction_be.server.pay.entity.PayStatus;
-import bleuauction.bleuauction_be.server.pay.entity.PayType;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,17 +7,31 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 
+import bleuauction.bleuauction_be.server.order.entity.Order;
+import bleuauction.bleuauction_be.server.order.entity.OrderStatus;
+import bleuauction.bleuauction_be.server.order.entity.OrderType;
+import bleuauction.bleuauction_be.server.pay.dto.PayInsertRequest;
+import bleuauction.bleuauction_be.server.pay.entity.Pay;
+import bleuauction.bleuauction_be.server.pay.entity.PayStatus;
+import bleuauction.bleuauction_be.server.pay.entity.PayType;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 @ExtendWith(MockitoExtension.class)
 class PayComponentServiceTest {
-    @Mock
-    private PayModuleService payModuleService;
+    @Mock private PayModuleService payModuleService;
 
-    @InjectMocks
-    private PayComponentService payComponentService;
-
+    @InjectMocks private PayComponentService payComponentService;
 
     @Test
-    @DisplayName("결제정보를 생성 할 때, 파라미터로 받은 PayInsertRequest의 orderStatus가 N인 경우 RuntimeException이 발생한다.")
+    @DisplayName(
+            "결제정보를 생성 할 때, 파라미터로 받은 PayInsertRequest의 orderStatus가 N인 경우 RuntimeException이 발생한다.")
     void createPayment_WhenPayInsertRequestInOrderStatusIsN_ThrowRuntimeException() {
         // given
         Long orderNo = 1L;
@@ -46,7 +43,10 @@ class PayComponentServiceTest {
         payInsertRequest.setOrderStatus(OrderStatus.N);
 
         // when && then
-        RuntimeException e = assertThrows(RuntimeException.class, () -> payComponentService.createPayment(payInsertRequest, null));
+        RuntimeException e =
+                assertThrows(
+                        RuntimeException.class,
+                        () -> payComponentService.createPayment(payInsertRequest, null));
         assertEquals("주문을 완료해야 결제가 가능합니다.", e.getMessage());
     }
 
@@ -88,5 +88,4 @@ class PayComponentServiceTest {
         assertEquals(pay, createdPay);
         inOrder(payModuleService).verify(payModuleService, times(1)).save(any(Pay.class));
     }
-
 }

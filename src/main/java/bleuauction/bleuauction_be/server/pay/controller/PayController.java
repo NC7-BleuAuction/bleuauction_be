@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.pay.controller;
 
+
 import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
 import bleuauction.bleuauction_be.server.pay.dto.PayInsertRequest;
@@ -10,6 +11,7 @@ import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -35,8 +35,9 @@ public class PayController {
     private final PayModuleService payModuleService;
 
     /**
-     * 요청한 PayNo의 결제 정보 조회 <br />
+     * 요청한 PayNo의 결제 정보 조회 <br>
      * [TODO] : 인증, 인가가 필요 없는 기능인지?
+     *
      * @param payNo
      * @return
      * @throws Exception
@@ -56,27 +57,25 @@ public class PayController {
     @PostMapping
     public ResponseEntity<Pay> createPayment(
             @RequestHeader("Authorization") String authorizationHeader,
-            @RequestBody PayInsertRequest request
-    ) {
+            @RequestBody PayInsertRequest request) {
         jwtUtils.verifyToken(authorizationHeader);
         return ResponseEntity.ok(
                 payComponentService.createPayment(
-                        request, orderService.findOrderById(request.getOrderNo())
-                )
-        );
+                        request, orderService.findOrderById(request.getOrderNo())));
     }
 
     /**
-     * 아임포트에 iamportUid를 요청시 결제여부 검증을 진행하는 기능<br />
+     * 아임포트에 iamportUid를 요청시 결제여부 검증을 진행하는 기능<br>
      * https://github.com/iamport/iamport-rest-client-java/blob/master/README.md
+     *
      * @param imp_uid
      * @return
      * @throws IamportResponseException
      * @throws IOException
      */
     @PostMapping("/verifyIamport/{iamportUid}")
-    public IamportResponse<Payment> paymentByImpUid(@PathVariable("iamportUid") String imp_uid) throws
-            IamportResponseException, IOException {
+    public IamportResponse<Payment> paymentByImpUid(@PathVariable("iamportUid") String imp_uid)
+            throws IamportResponseException, IOException {
         return iamportClient.paymentByImpUid(imp_uid);
     }
 }

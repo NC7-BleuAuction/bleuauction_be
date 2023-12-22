@@ -1,18 +1,17 @@
 package bleuauction.bleuauction_be.server.store.dto;
 
+
+import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
+import bleuauction.bleuauction_be.server.common.utils.CustomTimeDeserializer;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.entity.MemberStatus;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.entity.StoreStatus;
-
-import bleuauction.bleuauction_be.server.common.utils.CustomTimeDeserializer;
-import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.sql.Time;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,20 +29,15 @@ public class StoreSignUpRequest {
 
     private String memberEmail;
 
-    @NotNull
-    private String memberName;
+    @NotNull private String memberName;
 
-    @NotNull
-    private String memberZipcode;
+    @NotNull private String memberZipcode;
 
-    @NotNull
-    private String memberAddr;
+    @NotNull private String memberAddr;
 
-    @NotNull
-    private String memberDetailAddr;
+    @NotNull private String memberDetailAddr;
 
-    @NotNull
-    private String memberPhone;
+    @NotNull private String memberPhone;
 
     private Long storeNo;
 

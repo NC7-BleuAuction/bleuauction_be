@@ -1,5 +1,8 @@
 package bleuauction.bleuauction_be.server.pay.entity;
 
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,17 +15,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.sql.Timestamp;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
-
-import java.sql.Timestamp;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
@@ -37,14 +36,13 @@ public class Pay {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="order_no")
+    @JoinColumn(name = "order_no")
     private Order order;
 
     @Enumerated(EnumType.STRING)
     private PayType payType;
 
-    @NotNull
-    private Integer payPrice;
+    @NotNull private Integer payPrice;
 
     @Enumerated(EnumType.STRING)
     private PayStatus payStatus;
@@ -58,7 +56,13 @@ public class Pay {
     private Timestamp payCancelDatetime;
 
     @Builder
-    public Pay(Order order, PayType payType, Integer payPrice, PayStatus payStatus, Timestamp payDatetime, Timestamp payCancelDatetime){
+    public Pay(
+            Order order,
+            PayType payType,
+            Integer payPrice,
+            PayStatus payStatus,
+            Timestamp payDatetime,
+            Timestamp payCancelDatetime) {
         this.order = order;
         this.payType = payType;
         this.payPrice = payPrice;

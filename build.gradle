@@ -3,6 +3,7 @@ plugins {
 	id 'java-library'
 	id 'org.springframework.boot' version '3.1.4'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'com.diffplug.spotless' version '6.11.0'
 }
 
 group = 'bleuauction'
@@ -82,4 +83,16 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// spotless 설정
+spotless {
+	java {
+		target("**/*.java")
+		googleJavaFormat().aosp()
+		importOrder()
+		removeUnusedImports()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
 }

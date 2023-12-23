@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.pay.dto;
 
+
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.entity.OrderStatus;
 import bleuauction.bleuauction_be.server.order.entity.OrderType;
@@ -10,7 +11,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,8 +34,7 @@ public class PayInsertRequest {
     private Integer payPrice;
 
     // TODO : payStatus 확인하기
-    @NotNull
-    private PayStatus payStatus;
+    @NotNull private PayStatus payStatus;
 
     private Timestamp payDatetime;
 
@@ -43,10 +42,10 @@ public class PayInsertRequest {
 
     public Pay getPayEntity(Order order) {
         return Pay.builder()
-                .orderNo(order)
+                .order(order)
                 .payType(PayType.C)
-                .payPrice(this.payPrice)
-                .payStatus(this.payStatus)
+                .price(this.payPrice)
+                .status(this.payStatus)
                 .payDatetime(this.payDatetime)
                 .payCancelDatetime(this.payCancelDatetime)
                 .build();

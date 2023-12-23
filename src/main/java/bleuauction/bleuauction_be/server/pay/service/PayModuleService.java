@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.pay.service;
 
+
 import bleuauction.bleuauction_be.server.config.annotation.ModuleService;
 import bleuauction.bleuauction_be.server.pay.entity.Pay;
 import bleuauction.bleuauction_be.server.pay.exception.PayHistoryNotFoundException;
@@ -16,13 +17,14 @@ public class PayModuleService {
     private final PayRepository payRepository;
 
     /**
-     * 결제 정보를 조회하며,
-     * 존재하지 않는 history인 경우에는 PayHistoryNotFoundException이 발생한다.
+     * 결제 정보를 조회하며, 존재하지 않는 history인 경우에는 PayHistoryNotFoundException이 발생한다.
+     *
      * @param payNo
      * @return
      */
     public Pay findById(Long payNo) {
-        return payRepository.findById(payNo)
+        return payRepository
+                .findById(payNo)
                 .orElseThrow(() -> new PayHistoryNotFoundException(payNo));
     }
 

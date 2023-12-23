@@ -1,64 +1,69 @@
 package bleuauction.bleuauction_be.server.notice.entity;
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
+import bleuauction.bleuauction_be.server.attach.entity.NoticeAttach;
+import bleuauction.bleuauction_be.server.common.entity.AbstractTimeStamp;
 import bleuauction.bleuauction_be.server.member.entity.Member;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.sql.Timestamp;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-@DynamicInsert
 @Table(name = "ba_notice")
-public class Notice {
+@NoArgsConstructor(access = PROTECTED)
+public class Notice extends AbstractTimeStamp {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long noticeNo;
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "notice_no")
+    private Long id;
 
-  private String noticeTitle;
+    private String noticeTitle;
 
-  @Column(columnDefinition = "LONGTEXT")
-  private String noticeContent;
+    @Lob private String noticeContent;
 
-  @JsonBackReference
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name ="member_no")
-  private Member memberNo;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "member_no")
+    private Member member;
 
-  @CreationTimestamp
-  private Timestamp regDatetime;
+    @Enumerated(STRING)
+    private NoticeStatus noticeStatus; // 상태 [Y,N]
 
-  @UpdateTimestamp
-  private Timestamp mdfDatetime;
+    @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL)
+    private List<NoticeAttach> attaches = new ArrayList<>();
 
-  @Enumerated(EnumType.STRING)
-  private NoticeStatus noticeStatus; // 상태 [Y,N]
+    @Builder
+    public Notice(
+            String noticeTitle, String noticeContent, Member member, NoticeStatus noticeStatus) {
+        this.noticeTitle = noticeTitle;
+        this.noticeContent = noticeContent;
+        this.member = member;
+        this.noticeStatus = noticeStatus;
+    }
 
-  @JsonManagedReference
-  @OneToMany(mappedBy = "noticeNo", cascade=CascadeType.ALL)
-  private List<Attach> noticeAttaches = new ArrayList<>();
-
-  // 비지니스 로직
-  // 공지사항 삭제
-  public void delete(){
-    this.setNoticeStatus(NoticeStatus.N);
-  }
-
-  // 이미지 추가를 위한 메서드
-  public void addNoticeAttach(Attach attach) {
-    noticeAttaches.add(attach);
-    attach.setNoticeNo(this); // 이미지와 메뉴를 연결
-  }
+    // 비지니스 로직
+    // 공지사항 삭제
+    public void delete() {
+        this.setNoticeStatus(NoticeStatus.N);
+    }
 }

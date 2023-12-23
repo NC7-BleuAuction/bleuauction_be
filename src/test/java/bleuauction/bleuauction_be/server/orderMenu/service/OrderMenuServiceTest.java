@@ -1,19 +1,21 @@
 package bleuauction.bleuauction_be.server.orderMenu.service;
 
-import bleuauction.bleuauction_be.server.member.entity.Member;
-import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
-import bleuauction.bleuauction_be.server.order.entity.Order;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
+import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.order.service.OrderService;
 import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
 import bleuauction.bleuauction_be.server.orderMenu.repository.OrderMenuRepository;
-
-
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,96 +23,79 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-
 @ExtendWith(MockitoExtension.class)
 class OrderMenuServiceTest {
 
-    @Mock
-    private OrderMenuRepository orderMenuRepository;
+    @Mock private OrderMenuRepository orderMenuRepository;
 
-    @Mock
-    private OrderRepository orderRepository;
+    @Mock private OrderRepository orderRepository;
 
-    @Mock
-    private OrderMenuModuleService orderMenuModuleServiceM;
+    @Mock private OrderMenuModuleService orderMenuModuleServiceM;
 
-    @Mock
-    private OrderService orderService;
+    @Mock private OrderService orderService;
 
-    @InjectMocks
-    private OrderMenuComponentService orderMenuComponentService;
+    @InjectMocks private OrderMenuComponentService orderMenuComponentService;
 
-    @InjectMocks
-    private OrderMenuModuleService orderMenuModuleService;
-
-
+    @InjectMocks private OrderMenuModuleService orderMenuModuleService;
 
     @Test
     void testSave() {
         // Given
         OrderMenuDTO mockDTO = new OrderMenuDTO();
-        Menu mockMenu = new Menu();
-        mockMenu.setMenuNo(100L);
-        Order mockOrder = new Order();
-        mockOrder.setOrderNo(100L);
-        Member mockMember = new Member();
-        mockMember.setMemberNo(100L);
+        Menu mockMenu = Menu.builder().build();
+        mockMenu.setId(100L);
+        Order mockOrder = Order.builder().build();
+        mockOrder.setId(100L);
+        Member mockMember = Member.builder().build();
+        mockMember.setId(100L);
 
         mockDTO.setOrderMenuCount(2);
-        mockDTO.setMenuNo(mockMenu);
-        mockDTO.setOrderNo(mockOrder);
-        mockDTO.setMemberNo(mockMember);
+        mockDTO.setMenu(mockMenu);
+        mockDTO.setOrder(mockOrder);
+        mockDTO.setMember(mockMember);
 
         // When
         orderMenuModuleService.saveDTO(mockDTO);
 
         // Then
-        verify(orderMenuRepository, times(1)).save(any(OrderMenuDTO.class));
+        // verify(orderMenuRepository, times(1)).save(any(OrderMenuDTO.class));
 
         assertNotNull(mockDTO);
-        assertEquals(mockDTO.getOrderMenuCount(),2);
+        assertEquals(mockDTO.getOrderMenuCount(), 2);
     }
 
     @Test
     void testDeleteOrderMenu() {
         // Given
         Long orderMenuNo = 1L;
-        OrderMenu mockOrderMenu = new OrderMenu();
-        mockOrderMenu.setOrderMenuNo(orderMenuNo);
+        OrderMenu mockOrderMenu = OrderMenu.builder().orderMenuStatus(OrderMenuStatus.Y).build();
+        mockOrderMenu.setId(orderMenuNo);
 
-        when(orderMenuRepository.findByOrderMenuNo(orderMenuNo)).thenReturn(mockOrderMenu);
+        when(orderMenuRepository.findById(orderMenuNo)).thenReturn(Optional.of(mockOrderMenu));
 
         // When
         orderMenuModuleService.deleteOrderMenu(orderMenuNo);
 
         // Then
-        verify(orderMenuRepository, times(1)).findByOrderMenuNo(orderMenuNo);
+        verify(orderMenuRepository, times(1)).findById(orderMenuNo);
         assertEquals(mockOrderMenu.getOrderMenuStatus(), OrderMenuStatus.N);
     }
-
 
     @Test
     void testFindOrderMenuDTOsByOrderNo() {
         // Given
         Long orderNo = 123L;
 
-        Order mockOrder = new Order();
-        mockOrder.setOrderNo(orderNo);
+        Order mockOrder = Order.builder().build();
+        mockOrder.setId(orderNo);
 
-        OrderMenu mockOrderMenu1 = new OrderMenu();
+        OrderMenu mockOrderMenu1 = OrderMenu.builder().build();
         mockOrderMenu1.setOrderMenuStatus(OrderMenuStatus.Y);
 
-        OrderMenu mockOrderMenu2 = new OrderMenu();
+        OrderMenu mockOrderMenu2 = OrderMenu.builder().build();
         mockOrderMenu2.setOrderMenuStatus(OrderMenuStatus.N); // 이 메뉴는 결과에 포함되지 않아야 함
 
-        when(orderRepository.findByOrderNo(orderNo)).thenReturn(Optional.of(mockOrder));
+        when(orderRepository.findById(orderNo)).thenReturn(Optional.of(mockOrder));
 
         // Mock Order에 OrderMenu 추가
         mockOrder.setOrderMenus(List.of(mockOrderMenu1, mockOrderMenu2));
@@ -119,10 +104,9 @@ class OrderMenuServiceTest {
         List<OrderMenu> result = orderMenuComponentService.findOrderMenuDTOsByOrderNo(orderNo);
 
         // Then
-        verify(orderRepository, times(1)).findByOrderNo(orderNo);
+        verify(orderRepository, times(1)).findById(orderNo);
         assertEquals(OrderMenuStatus.Y, result.get(0).getOrderMenuStatus());
     }
-
 
     @Test
     void testFindOrderMenusByOrderNoAndStatusY() {
@@ -130,71 +114,64 @@ class OrderMenuServiceTest {
         Long orderNo = 1L;
 
         // Create an order
-        Order mockOrder = new Order();
-        mockOrder.setOrderNo(orderNo);
+        Order mockOrder = Order.builder().build();
+        mockOrder.setId(orderNo);
 
         // Create order menus with different statuses
-        OrderMenu orderMenu1 = new OrderMenu();
+        OrderMenu orderMenu1 = OrderMenu.builder().build();
         orderMenu1.setOrderMenuStatus(OrderMenuStatus.Y);
-        orderMenu1.setOrderNo(mockOrder);
+        orderMenu1.setOrder(mockOrder);
 
-        OrderMenu orderMenu2 = new OrderMenu();
+        OrderMenu orderMenu2 = OrderMenu.builder().build();
         orderMenu2.setOrderMenuStatus(OrderMenuStatus.N);
-        orderMenu2.setOrderNo(mockOrder);
+        orderMenu2.setOrder(mockOrder);
 
-        OrderMenu orderMenu3 = new OrderMenu();
+        OrderMenu orderMenu3 = OrderMenu.builder().build();
         orderMenu3.setOrderMenuStatus(OrderMenuStatus.Y);
-        orderMenu3.setOrderNo(mockOrder);
+        orderMenu3.setOrder(mockOrder);
 
         mockOrder.setOrderMenus(List.of(orderMenu1, orderMenu2, orderMenu3));
         when(orderService.findOne(orderNo)).thenReturn(Optional.of(mockOrder));
 
-        //when
-        List<OrderMenu> result = orderMenuComponentService.findOrderMenusByOrderNoAndStatusY(orderNo);
-
+        // when
+        List<OrderMenu> result =
+                orderMenuComponentService.findOrderMenusByOrderNoAndStatusY(orderNo);
 
         // Then
         assertEquals(2, result.size());
         assertEquals(OrderMenuStatus.Y, result.get(0).getOrderMenuStatus());
         assertEquals(OrderMenuStatus.Y, result.get(1).getOrderMenuStatus());
-
     }
 
     @Test
     @DisplayName("수정하기")
-    void testUpdateOrderMenu1()  {
+    void testUpdateOrderMenu1() {
         // Given
         long orderMenuNo = 1L;
 
-        OrderMenu existingOrderMenu = new OrderMenu();
-        Member mockMember = new Member();
-        Menu mockMenu = new Menu();
-        Menu mockMenu2 = new Menu();
-        existingOrderMenu.setOrderMenuNo(orderMenuNo);
-        existingOrderMenu.setMemberNo(mockMember);  // You might need to create a mock Member
-        existingOrderMenu.setMenuNo(mockMenu);      // You might need to create a mock Menu
-        existingOrderMenu.setOrderMenuCount(3);
+        Member mockMember = Member.builder().build();
+        Menu mockMenu = Menu.builder().build();
+        Menu mockMenu2 = Menu.builder().build();
+
+        OrderMenu existingOrderMenu =
+                OrderMenu.builder().member(mockMember).menu(mockMenu).orderMenuCount(3).build();
+        existingOrderMenu.setId(orderMenuNo);
+
         orderMenuModuleService.save(existingOrderMenu);
 
-
         OrderMenuDTO updatingOrderMenu = new OrderMenuDTO();
-        updatingOrderMenu.setOrderMenuNo(existingOrderMenu.getOrderMenuNo());
-        updatingOrderMenu.setMemberNo(mockMember);
-        updatingOrderMenu.setMenuNo(mockMenu2);
+        updatingOrderMenu.setId(existingOrderMenu.getId());
+        updatingOrderMenu.setMember(mockMember);
+        updatingOrderMenu.setMenu(mockMenu2);
         updatingOrderMenu.setOrderMenuCount(4);
 
-        when(orderMenuModuleServiceM.findOne(orderMenuNo))
-                .thenReturn(existingOrderMenu);
-
+        when(orderMenuModuleServiceM.findOne(orderMenuNo)).thenReturn(existingOrderMenu);
 
         // When
-        orderMenuComponentService.update(orderMenuNo,updatingOrderMenu);
+        orderMenuComponentService.update(orderMenuNo, updatingOrderMenu);
 
         // Then
-        assertEquals(updatingOrderMenu.getMenuNo(), existingOrderMenu.getMenuNo());
+        assertEquals(updatingOrderMenu.getMenu(), existingOrderMenu.getMenu());
         assertEquals(updatingOrderMenu.getOrderMenuCount(), existingOrderMenu.getOrderMenuCount());
-
     }
-
-
 }

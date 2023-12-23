@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.store.service;
 
+
 import bleuauction.bleuauction_be.server.config.annotation.ModuleService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.store.entity.Store;
@@ -26,7 +27,9 @@ public class StoreModuleService {
      * @return
      */
     public Store findById(Long storeNo) {
-        return storeRepository.findById(storeNo).orElseThrow(() -> new StoreNotFoundException(storeNo));
+        return storeRepository
+                .findById(storeNo)
+                .orElseThrow(() -> new StoreNotFoundException(storeNo));
     }
 
     /**
@@ -36,22 +39,25 @@ public class StoreModuleService {
      * @return
      */
     public Store findByMember(Member member) {
-        return storeRepository.findByMemberNo(member).orElseThrow(() -> new StoreNotFoundException(member));
+        return storeRepository
+                .findByMember(member)
+                .orElseThrow(() -> new StoreNotFoundException(member));
     }
 
     /**
      * 가게의 상태에 맞춰서 가게정보를 반환한다
+     *
      * @param storeStatus 조회하고자 하는 가게의 상태
      * @param pageable 조회하고자 하는 페이지 정보
      * @return
      */
     public Page<Store> findPageByStoreStatus(StoreStatus storeStatus, Pageable pageable) {
-        return storeRepository.findAllByStoreStatus(storeStatus, pageable);
+        return storeRepository.findAllByStatus(storeStatus, pageable);
     }
-
 
     /**
      * 가게 정보 수정 및 저장
+     *
      * @param store 수정또는 저장하고자 하는 가게의 정보
      */
     public Store save(Store store) {
@@ -60,6 +66,7 @@ public class StoreModuleService {
 
     /**
      * 가게 정보 삭제
+     *
      * @param storeNo 삭제하고자 하는 STORE의 ID
      */
     public void delete(Long storeNo) {
@@ -68,6 +75,7 @@ public class StoreModuleService {
 
     /**
      * 가게 이름 중복 검사
+     *
      * @param storeName 중복 검사를 하고자 하는 가게 이름
      * @return
      */

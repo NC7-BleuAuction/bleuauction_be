@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.member.dto;
 
+
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

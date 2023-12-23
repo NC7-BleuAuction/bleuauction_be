@@ -1,14 +1,22 @@
 package bleuauction.bleuauction_be.server.review.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.BDDMockito.given;
 
-import bleuauction.bleuauction_be.server.answer.repository.AnswerRepository;
-import bleuauction.bleuauction_be.server.attach.repository.AttachRepository;
+import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
+import bleuauction.bleuauction_be.server.common.utils.SecurityUtils;
 import bleuauction.bleuauction_be.server.member.util.MemberEntityFactory;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.entity.ReviewFreshness;
 import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
 import bleuauction.bleuauction_be.server.review.repository.ReviewRepository;
 import bleuauction.bleuauction_be.server.review.util.ReviewEntityFactory;
+import bleuauction.bleuauction_be.server.store.entity.Store;
+import bleuauction.bleuauction_be.server.store.util.StoreUtilFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,125 +28,172 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.BDDMockito.given;
-
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
+    @Mock private ReviewRepository reviewRepository;
 
-  @Mock
-  private AnswerRepository answerRepository;
-  @Mock
-  private AttachRepository attachRepository;
-  @Mock
-  private ReviewRepository reviewRepository;
-  @InjectMocks
-  private ReviewModuleService reviewModuleService;
+    @Mock private SecurityUtils securityUtils;
 
-  private final Long TEST_MEMBER_NO = 1L;
-  private final Long TEST_STORE_NO = 1L;
-  private final Long TEST_REVIEW_NO = 1L;
-  private final String TEST_REVIEW_CONTENT = "테스트 리뷰 내용";
-  private final String TEST_REVIEW_FRESHNESS = "M";
+    @Mock private AttachComponentService attachComponentService;
+    @InjectMocks private ReviewModuleService reviewModuleService;
 
-  @Test
-  @DisplayName("testSelectReviewList(): 리뷰 리스트를 조회시 StoreNo와 startPage를 파라미터로 제공할 때, 해당 가게에 대한 리뷰 리스트를 반환한다.")
-  void testSelectReviewList() {
-    // given
-    final Long TEST_STORE_NO = 1L;
-    final int TEST_START_PAGE = 0;
-    final int PAGE_ROW_COUNT = 4;
+    private final Long TEST_MEMBER_NO = 1L;
+    private final Long TEST_STORE_NO = 1L;
+    private final Long TEST_REVIEW_NO = 1L;
+    private final String TEST_REVIEW_CONTENT = "테스트 리뷰 내용";
+    private final String TEST_REVIEW_FRESHNESS = "M";
 
-    List<Review> mockReviewList = List.of(
-            ReviewEntityFactory.of(MemberEntityFactory.mockSellerMember, TEST_STORE_NO, "테스트 리뷰 내용1", ReviewFreshness.L, ReviewStatus.Y),
-            ReviewEntityFactory.of(MemberEntityFactory.mockSellerMember, TEST_STORE_NO, "테스트 리뷰 내용2", ReviewFreshness.M, ReviewStatus.Y),
-            ReviewEntityFactory.of(MemberEntityFactory.mockSellerMember, TEST_STORE_NO, "테스트 리뷰 내용3", ReviewFreshness.H, ReviewStatus.Y),
-            ReviewEntityFactory.of(MemberEntityFactory.mockSellerMember, TEST_STORE_NO, "테스트 리뷰 내용4", ReviewFreshness.L, ReviewStatus.Y)
-    );
-    Pageable pageable = PageRequest.of(TEST_START_PAGE, PAGE_ROW_COUNT);
-    given(reviewRepository.findAllReviewsWithMembersByReviewStatus(TEST_STORE_NO, ReviewStatus.Y, pageable)).willReturn(mockReviewList);
+    private final String TEST_MARKETNAME = "노량진 쑤산시장";
+    private final String TEST_STORENAME = "블루오크션";
+    private final String TEST_LICENSE = "111-111-111111";
 
-    // when
-    List<Review> selectReviewList = reviewModuleService.selectReviewList(TEST_STORE_NO, TEST_START_PAGE);
+    @Test
+    @DisplayName(
+            "testSelectReviewList(): 리뷰 리스트를 조회시 StoreNo와 startPage를 파라미터로 제공할 때, 해당 가게에 대한 리뷰 리스트를 반환한다.")
+    void testSelectReviewList() {
+        // given
+        final Long TEST_STORE_NO = 1L;
+        final int TEST_START_PAGE = 0;
+        final int PAGE_ROW_COUNT = 4;
 
-    //then
-    assertEquals(mockReviewList, selectReviewList);
-  }
+        Store mockStore = StoreUtilFactory.of(TEST_MARKETNAME, TEST_STORENAME, TEST_LICENSE);
+        mockStore.setId(TEST_STORE_NO);
 
-  @Test
-  @DisplayName("testAddReview(): 리뷰 등록에 성공한다. [첨부파일 미첨부]")
-  void testAddReview() throws Exception {
-    // given
+        List<Review> mockReviewList =
+                List.of(
+                        ReviewEntityFactory.of(
+                                MemberEntityFactory.mockSellerMember,
+                                mockStore,
+                                "테스트 리뷰 내용1",
+                                ReviewFreshness.L,
+                                ReviewStatus.Y),
+                        ReviewEntityFactory.of(
+                                MemberEntityFactory.mockSellerMember,
+                                mockStore,
+                                "테스트 리뷰 내용2",
+                                ReviewFreshness.M,
+                                ReviewStatus.Y),
+                        ReviewEntityFactory.of(
+                                MemberEntityFactory.mockSellerMember,
+                                mockStore,
+                                "테스트 리뷰 내용3",
+                                ReviewFreshness.H,
+                                ReviewStatus.Y),
+                        ReviewEntityFactory.of(
+                                MemberEntityFactory.mockSellerMember,
+                                mockStore,
+                                "테스트 리뷰 내용4",
+                                ReviewFreshness.L,
+                                ReviewStatus.Y));
+        Pageable pageable = PageRequest.of(TEST_START_PAGE, PAGE_ROW_COUNT);
+        given(
+                        reviewRepository.findAllByStoreAndStatusOrderByRegDatetimeDesc(
+                                mockStore, ReviewStatus.Y, pageable))
+                .willReturn(mockReviewList);
 
-    List<MultipartFile> mockFileList = new ArrayList<>();
+        // when
+        List<Review> selectReviewList =
+                reviewModuleService.findAllByStoreAndReviewStatus(
+                        mockStore, ReviewStatus.Y, TEST_START_PAGE);
 
-    Review mockReview = ReviewEntityFactory.of(MemberEntityFactory.mockSellerMember, TEST_STORE_NO, TEST_REVIEW_CONTENT, ReviewFreshness.M, ReviewStatus.Y);
+        // then
+        assertEquals(mockReviewList, selectReviewList);
+    }
 
-    given(reviewRepository.save(mockReview)).willAnswer(invocation -> {
-      Review param = invocation.getArgument(0);
-      param.setReviewNo(TEST_REVIEW_NO);
-      return param;
-    });
+    @Test
+    @DisplayName("testAddReview(): 리뷰 등록에 성공한다. [첨부파일 미첨부]")
+    void testAddReview() throws Exception {
+        // given
+        Store mockStore = StoreUtilFactory.of(TEST_MARKETNAME, TEST_STORENAME, TEST_LICENSE);
+        mockStore.setId(TEST_STORE_NO);
 
-    // when
-    Review addReview = reviewModuleService.addReview(mockReview, mockFileList);
+        List<MultipartFile> mockFileList = new ArrayList<>();
 
-    // then
-    assertNotNull(addReview);
+        Review mockReview =
+                ReviewEntityFactory.of(
+                        MemberEntityFactory.mockSellerMember,
+                        mockStore,
+                        TEST_REVIEW_CONTENT,
+                        ReviewFreshness.M,
+                        ReviewStatus.Y);
 
-    assertEquals(TEST_REVIEW_NO, addReview.getReviewNo());
-    assertEquals(TEST_MEMBER_NO, addReview.getMember().getMemberNo());
-    assertEquals(TEST_STORE_NO, addReview.getStoreNo());
-    assertEquals(TEST_REVIEW_CONTENT, addReview.getReviewContent());
-    assertEquals(ReviewFreshness.M, addReview.getReviewFreshness());
-    assertEquals(ReviewStatus.Y, mockReview.getReviewStatus());
-  }
+        given(reviewRepository.save(mockReview))
+                .willAnswer(
+                        invocation -> {
+                            Review param = invocation.getArgument(0);
+                            param.setId(TEST_REVIEW_NO);
+                            return param;
+                        });
 
+        // when
+        Review addReview = reviewModuleService.addReview(mockReview, mockFileList);
 
+        // then
+        assertNotNull(addReview);
 
-  @Test
-  @DisplayName("testUpdateReview(): 리뷰 수정에 성공한다.")
-  void testUpdateReview() throws Exception {
-    // given
-    Review mockOriginReview = ReviewEntityFactory.of(MemberEntityFactory.mockSellerMember, TEST_STORE_NO, TEST_REVIEW_CONTENT, ReviewFreshness.M, ReviewStatus.Y);
-    mockOriginReview.setReviewNo(TEST_REVIEW_NO);
+        assertEquals(TEST_REVIEW_NO, addReview.getId());
+        assertEquals(TEST_STORE_NO, addReview.getStore().getId());
+        assertEquals(mockStore, addReview.getStore());
+        assertEquals(TEST_REVIEW_CONTENT, addReview.getContent());
+        assertEquals(ReviewFreshness.M, addReview.getFreshness());
+        assertEquals(ReviewStatus.Y, mockReview.getStatus());
+    }
 
-    given(reviewRepository.findById(mockOriginReview.getReviewNo())).willReturn(Optional.of(mockOriginReview));
-    
-    mockOriginReview.setReviewContent(TEST_REVIEW_CONTENT + "수정");
-    mockOriginReview.setReviewFreshness(ReviewFreshness.H);
+    @Test
+    @DisplayName("testUpdateReview(): 리뷰 수정에 성공한다.")
+    void testUpdateReview() throws Exception {
+        // given
+        Store mockStore = StoreUtilFactory.of(TEST_MARKETNAME, TEST_STORENAME, TEST_LICENSE);
+        mockStore.setId(TEST_STORE_NO);
 
-    given(reviewRepository.save(mockOriginReview)).willReturn(mockOriginReview);
+        Review mockOriginReview =
+                ReviewEntityFactory.of(
+                        MemberEntityFactory.mockSellerMember,
+                        mockStore,
+                        TEST_REVIEW_CONTENT,
+                        ReviewFreshness.M,
+                        ReviewStatus.Y);
+        mockOriginReview.setId(TEST_REVIEW_NO);
 
-    // when
-    Review updateReview = reviewModuleService.updateReview(mockOriginReview);
+        given(reviewRepository.findById(mockOriginReview.getId()))
+                .willReturn(Optional.of(mockOriginReview));
 
-    // then
-    assertEquals(mockOriginReview, updateReview);
-  }
+        mockOriginReview.setContent(TEST_REVIEW_CONTENT + "수정");
+        mockOriginReview.setFreshness(ReviewFreshness.H);
 
+        given(reviewRepository.save(mockOriginReview)).willReturn(mockOriginReview);
 
-  @Test
-  @DisplayName("testDeleteReview(): 리뷰를 삭제 상태로 변경한다.")
-  void testDeleteReview() throws Exception {
-    // given
-    Review mockReview = ReviewEntityFactory.of(MemberEntityFactory.mockSellerMember, TEST_STORE_NO, TEST_REVIEW_CONTENT, ReviewFreshness.M, ReviewStatus.Y);
-    mockReview.setReviewNo(TEST_REVIEW_NO);
-    given(reviewRepository.findByReviewNoAndReviewStatus(mockReview.getReviewNo(), mockReview.getReviewStatus())).willReturn(Optional.of(mockReview));
-    mockReview.setReviewStatus(ReviewStatus.N);
-    given(reviewRepository.save(mockReview)).willReturn(mockReview);
+        // when
+        Review updateReview = reviewModuleService.updateReview(mockOriginReview);
 
-    // when
-    Review deleteReview = reviewModuleService.deleteReview(mockReview.getReviewNo());
+        // then
+        assertEquals(mockOriginReview, updateReview);
+    }
 
-    // then
-    assertEquals(mockReview, deleteReview);
-  }
+    @Test
+    @DisplayName("testDeleteReview(): 리뷰를 삭제 상태로 변경한다.")
+    void testDeleteReview() throws Exception {
+        // given
+        Store mockStore = StoreUtilFactory.of(TEST_MARKETNAME, TEST_STORENAME, TEST_LICENSE);
+        mockStore.setId(TEST_STORE_NO);
+
+        Review mockReview =
+                ReviewEntityFactory.of(
+                        MemberEntityFactory.mockSellerMember,
+                        mockStore,
+                        TEST_REVIEW_CONTENT,
+                        ReviewFreshness.M,
+                        ReviewStatus.Y);
+        mockReview.setId(TEST_REVIEW_NO);
+
+        given(reviewRepository.findByIdAndStatus(mockReview.getId(), mockReview.getStatus()))
+                .willReturn(Optional.of(mockReview));
+
+        // when
+        Review deleteReview = reviewModuleService.deleteReview(mockReview.getId());
+
+        // then
+        assertEquals(mockReview, deleteReview);
+    }
 }
-

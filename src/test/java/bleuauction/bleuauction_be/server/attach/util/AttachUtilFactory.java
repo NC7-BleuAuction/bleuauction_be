@@ -1,11 +1,13 @@
 package bleuauction.bleuauction_be.server.attach.util;
 
-import bleuauction.bleuauction_be.server.attach.entity.Attach;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import bleuauction.bleuauction_be.server.attach.entity.Attach;
+import bleuauction.bleuauction_be.server.attach.entity.AttachVO;
+import bleuauction.bleuauction_be.server.attach.entity.MemberAttach;
 
 public class AttachUtilFactory {
+
+    // TODO : 일단 실행이 1순위니까 돌아가게만 하기위해 MemberAttach로 다 때려박음
 
     /**
      * FileStatus가 Y인 객체 생성 공장
@@ -17,7 +19,7 @@ public class AttachUtilFactory {
      */
     public static Attach ofUseCase(String filePath, String originalFileName, String saveFileName) {
         Attach attach = ofDefaultAttach(filePath, originalFileName, saveFileName);
-        attach.changeFileStatusToUsecase();
+        attach.useAttach();
         return attach;
     }
 
@@ -29,9 +31,10 @@ public class AttachUtilFactory {
      * @param saveFileName
      * @return
      */
-    public static Attach ofDeleteCase(String filePath, String originalFileName, String saveFileName) {
+    public static Attach ofDeleteCase(
+            String filePath, String originalFileName, String saveFileName) {
         Attach attach = ofDefaultAttach(filePath, originalFileName, saveFileName);
-        attach.changeFileStatusToDelete();
+        attach.deleteAttach();
         return attach;
     }
 
@@ -43,14 +46,13 @@ public class AttachUtilFactory {
      * @param saveFileName
      * @return
      */
-    private static Attach ofDefaultAttach(String filePath, String originalFileName, String saveFileName) {
-        Attach attach = Attach.builder()
-                .filePath(filePath)
-                .originFilename(originalFileName)
-                .saveFilename(saveFileName)
-                .build();
-        attach.setRegDatetime(Timestamp.valueOf(LocalDateTime.now()));
-        attach.setMdfDatetime(Timestamp.valueOf(LocalDateTime.now()));
-        return attach;
+    private static Attach ofDefaultAttach(
+            String filePath, String originalFileName, String saveFileName) {
+        return new MemberAttach(
+                AttachVO.builder()
+                        .filePath(filePath)
+                        .originFilename(originalFileName)
+                        .saveFileName(saveFileName)
+                        .build());
     }
 }

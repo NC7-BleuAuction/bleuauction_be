@@ -6,9 +6,11 @@ import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
 import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
+import bleuauction.bleuauction_be.server.menu.dto.MenuDTO;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.service.MenuComponentService;
 import bleuauction.bleuauction_be.server.menu.service.MenuModuleService;
+import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.store.service.StoreModuleService;
 import java.util.List;
@@ -111,6 +113,7 @@ public class MenuController {
     public ResponseEntity<String> updateMenu(
             @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable("menuNo") Long menuNo,
+            @RequestBody MenuDTO request,
             @RequestParam(name = "multipartFiles", required = false)
                     List<MultipartFile> multipartFiles) {
         jwtUtils.verifyToken(authorizationHeader);
@@ -119,7 +122,7 @@ public class MenuController {
 
         Store store = storeModuleService.findByMember(loginUser);
 
-        menuComponentService.update(menuNo, multipartFiles, store);
+        menuComponentService.update(menuNo, multipartFiles, store, request);
         return ResponseEntity.ok("Menu updated successfully");
     }
 }

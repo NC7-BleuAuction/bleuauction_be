@@ -38,31 +38,6 @@ class OrderMenuServiceTest {
 
     @InjectMocks private OrderMenuModuleService orderMenuModuleService;
 
-    @Test
-    void testSave() {
-        // Given
-        OrderMenuDTO mockDTO = new OrderMenuDTO();
-        Menu mockMenu = Menu.builder().build();
-        mockMenu.setId(100L);
-        Order mockOrder = Order.builder().build();
-        mockOrder.setId(100L);
-        Member mockMember = Member.builder().build();
-        mockMember.setId(100L);
-
-        mockDTO.setOrderMenuCount(2);
-        mockDTO.setMenu(mockMenu);
-        mockDTO.setOrder(mockOrder);
-        mockDTO.setMember(mockMember);
-
-        // When
-        orderMenuModuleService.saveDTO(mockDTO);
-
-        // Then
-        // verify(orderMenuRepository, times(1)).save(any(OrderMenuDTO.class));
-
-        assertNotNull(mockDTO);
-        assertEquals(mockDTO.getOrderMenuCount(), 2);
-    }
 
     @Test
     void testDeleteOrderMenu() {

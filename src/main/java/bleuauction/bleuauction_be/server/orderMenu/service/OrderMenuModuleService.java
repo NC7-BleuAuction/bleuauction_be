@@ -18,17 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderMenuModuleService {
     private final OrderMenuRepository orderMenuRepository;
 
-    /**
-     * TODO:이거 안될거같은데 테스트 진행여부 확인 필요 By.승현
-     *
-     * @param orderMenuDTO
-     * @return
-     */
-    // DTO 등록
-    //    public OrderMenuDTO saveDTO(OrderMenuDTO orderMenuDTO) {
-    public void saveDTO(OrderMenuDTO orderMenuDTO) {
-        //        return orderMenuRepository.save(orderMenuDTO);
-    }
 
     public OrderMenu save(OrderMenu orderMenu) {
         return orderMenuRepository.save(orderMenu);

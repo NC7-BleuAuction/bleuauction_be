@@ -1,7 +1,7 @@
 package bleuauction.bleuauction_be.server.store.exception;
 
-import bleuauction.bleuauction_be.server.member.entity.Member;
 
+import bleuauction.bleuauction_be.server.member.entity.Member;
 import java.time.LocalDateTime;
 
 public class StoreRequestUnAuthorizationException extends RuntimeException {
@@ -14,9 +14,10 @@ public class StoreRequestUnAuthorizationException extends RuntimeException {
     public StoreRequestUnAuthorizationException(Member requestMember) {
         super(
                 String.format(
-                        MESSAGE+"UpdateUser, requestUser >>> [ID : %d, Email : %s], exceptionTime : %s",
-                        requestMember.getMemberNo(), requestMember.getMemberEmail(), LocalDateTime.now()
-                )
-        );
+                        MESSAGE
+                                + "UpdateUser, requestUser >>> [ID : %d, Email : %s], exceptionTime : %s",
+                        requestMember.getId(),
+                        requestMember.getEmail(),
+                        LocalDateTime.now()));
     }
 }

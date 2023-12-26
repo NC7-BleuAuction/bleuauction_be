@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.attach.Controller;
 
+
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ public class AttachController {
 
     /**
      * fileNo를 제공할 경우 해당 fileNo를 가진 파일의 상태를 삭제상태로 변경한다.
+     *
      * @param fileNo
      * @return
      */
@@ -27,5 +29,4 @@ public class AttachController {
         attachComponentService.changeFileStatusDeleteByFileNo(fileNo);
         return ResponseEntity.ok("File deleted successfully");
     }
-
 }

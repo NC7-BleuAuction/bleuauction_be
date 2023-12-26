@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.common.exception;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,5 +8,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class BaseException extends RuntimeException {
 
-  private BaseErrorCode errorCode;
+    private BaseErrorCode errorCode;
 }

@@ -1,18 +1,17 @@
 package bleuauction.bleuauction_be.server.notice.service;
 
+
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
-import bleuauction.bleuauction_be.server.notice.repository.NoticeRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Slf4j
 @ComponentService
@@ -21,47 +20,50 @@ import java.util.List;
 public class NoticeComponentService {
 
     private final NoticeModuleService noticeModuleService;
-    private final NoticeRepository noticeRepository;
     private final AttachComponentService attachComponentService;
-
 
     @Transactional
     public Long enroll(Notice notice, List<MultipartFile> multipartFiles, Member member) {
 
-        isMemberAdmin(member.getMemberCategory());
-        notice.setMemberNo(member);
+        isMemberAdmin(member.getCategory());
+        notice.setMember(member);
 
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             multipartFiles.stream()
                     .filter(file -> file.getSize() > 0)
-                    .forEach(multipartFile ->
-                            attachComponentService.saveWithNotice(notice, FileUploadUsage.NOTICE, multipartFile)
-                    );
+                    .forEach(
+                            multipartFile ->
+                                    attachComponentService.saveWithNotice(
+                                            notice, FileUploadUsage.NOTICE, multipartFile));
         }
-        return noticeModuleService.save(notice).getNoticeNo();
-
+        return noticeModuleService.save(notice).getId();
     }
 
-    //노티스 삭제(N)
+    // 노티스 삭제(N)
     @Transactional
     public void deleteNotice(Long noticeNo, Member member) {
-        isMemberAdmin(member.getMemberCategory());
+        isMemberAdmin(member.getCategory());
 
-        Notice notice = noticeRepository.findByNoticeNo(noticeNo);
+        Notice notice = noticeModuleService.findOne(noticeNo);
         notice.delete();
-        if (notice.getNoticeAttaches() != null && !notice.getNoticeAttaches().isEmpty()) {
-            notice.getNoticeAttaches().forEach(attach -> attachComponentService.changeFileStatusDeleteByFileNo(attach.getFileNo()));
+        if (notice.getAttaches() != null && !notice.getAttaches().isEmpty()) {
+            notice.getAttaches()
+                    .forEach(
+                            attach ->
+                                    attachComponentService.changeFileStatusDeleteByFileNo(
+                                            attach.getId()));
         }
     }
 
-    //노티스 수정
+    // 노티스 수정
     @Transactional
-    public Notice update(long noticeNo, Member member, List<MultipartFile> multipartFiles) throws Exception{
+    public Notice update(long noticeNo, Member member, List<MultipartFile> multipartFiles)
+            throws Exception {
 
         Notice updatedNotice = noticeModuleService.findOne(noticeNo);
-        Notice existingnotice = noticeRepository.findByNoticeNo(noticeNo);
+        Notice existingnotice = noticeModuleService.findOne(noticeNo);
 
-        isMemberAdmin(member.getMemberCategory());
+        isMemberAdmin(member.getCategory());
 
         existingnotice.setNoticeTitle(updatedNotice.getNoticeTitle());
         existingnotice.setNoticeContent(updatedNotice.getNoticeContent());
@@ -69,14 +71,13 @@ public class NoticeComponentService {
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             multipartFiles.stream()
                     .filter(file -> file.getSize() > 0)
-                    .forEach(multipartFile ->
-                            attachComponentService.saveWithNotice(existingnotice, FileUploadUsage.NOTICE, multipartFile)
-                    );
+                    .forEach(
+                            multipartFile ->
+                                    attachComponentService.saveWithNotice(
+                                            existingnotice, FileUploadUsage.NOTICE, multipartFile));
         }
 
         return noticeModuleService.save(existingnotice);
-
-
     }
 
     private void isMemberAdmin(MemberCategory memberCategory) {
@@ -84,7 +85,4 @@ public class NoticeComponentService {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
     }
-
 }
-
-

@@ -1,63 +1,69 @@
 package bleuauction.bleuauction_be.server.answer.entity;
 
+import static bleuauction.bleuauction_be.server.answer.entity.AnswerStatus.N;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
+import bleuauction.bleuauction_be.server.common.entity.AbstractTimeStamp;
 import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.review.entity.Review;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Timestamp;
-
-@Entity
 @Getter
 @Setter
-@DynamicInsert
-@Slf4j
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 @Table(name = "ba_answer")
-public class Answer {
+@NoArgsConstructor(access = PROTECTED)
+public class Answer extends AbstractTimeStamp {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long answerNo;
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "answer_no")
+    private Long id;
 
-  private Long reviewNo;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "review_no")
+    private Review review;
 
-  @OneToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name ="member_no")
-  private Member member;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "member_no")
+    private Member member;
 
-  private String answerContent;
+    @Lob private String content;
 
-  @CreationTimestamp
-  private Timestamp regDatetime;
+    @Enumerated(STRING)
+    private AnswerStatus status;
 
-  @UpdateTimestamp
-  private Timestamp mdfDatetime;
+    @Builder
+    public Answer(Review review, Member member, String content, AnswerStatus status) {
+        this.review = review;
+        this.member = member;
+        this.content = content;
+        this.status = status;
+    }
 
-  @Enumerated(EnumType.STRING)
-  private AnswerStatus answerStatus;
+    // === 연관관계 편의 메서드 ===
+    public void setReview(Review review) {
+        this.review = review;
+        review.getAnswers().add(this);
+    }
 
-  @Builder
-  public Answer(Long reviewNo, Member member, String answerContent,  AnswerStatus answerStatus) {
-    this.reviewNo = reviewNo;
-    this.member = member;
-    this.answerContent = answerContent;
-    this.answerStatus = answerStatus;
-  }
+    // === 비즈니스 로직 ===
+    public void deleteAnswer() {
+        this.status = N;
+    }
 }

@@ -1,82 +1,157 @@
 package bleuauction.bleuauction_be.server.order.entity;
 
-import bleuauction.bleuauction_be.server.menu.entity.Menu;
-import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.UpdateTimestamp;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
-import java.sql.Timestamp;
+import bleuauction.bleuauction_be.server.common.entity.AbstractTimeStamp;
+import bleuauction.bleuauction_be.server.member.entity.Address;
+import bleuauction.bleuauction_be.server.member.entity.Member;
+import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
+import bleuauction.bleuauction_be.server.pay.entity.Pay;
+import bleuauction.bleuauction_be.server.store.entity.Store;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-@DynamicInsert
 @Table(name = "ba_order")
-public class Order {
+@NoArgsConstructor(access = PROTECTED)
+public class Order extends AbstractTimeStamp {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long orderNo;
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "order_no")
+    private Long id;
 
-  @Enumerated(EnumType.STRING)
-  private OrderType orderType; // Q:퀵배송, T:포장
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "member_no")
+    private Member member; // 주문자 정보
 
-  private int orderPrice;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "store_no")
+    private Store store; // 주문한 가게 정보
 
-  private String orderRequest;
+    private int orderPrice;
 
-  private String recipientPhone;
+    private String orderRequest;
 
-  private String recipientName;
+    private String recipientPhone;
 
-  private String recipientZipcode;
+    private String recipientName;
 
-  private String recipientAddr;
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "zipCode", column = @Column(name = "recipient_zipcode")),
+        @AttributeOverride(name = "addr", column = @Column(name = "recipient_addr")),
+        @AttributeOverride(name = "detailAddr", column = @Column(name = "recipient_detail_addr"))
+    })
+    private Address recipientAddress;
 
-  private String recipientDetailAddr;
+    @Enumerated(EnumType.STRING)
+    private OrderType orderType; // Q:퀵배송, T:포장
 
-  @CreationTimestamp
-  private Timestamp regDatetime;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus; // 상태 [Y,N]
 
-  @UpdateTimestamp
-  private Timestamp mdfDatetime;
+    @OneToOne(mappedBy = "order", fetch = LAZY, cascade = ALL)
+    private Pay pay;
 
-  @Enumerated(EnumType.STRING)
-  private OrderStatus orderStatus; // 상태 [Y,N]
+    @OneToMany(mappedBy = "order", cascade = ALL)
+    private List<OrderMenu> orderMenus = new ArrayList<>();
 
-  @JsonManagedReference
-  @OneToMany(mappedBy = "orderNo", cascade = CascadeType.ALL)
-  private List<OrderMenu> orderMenus= new ArrayList<>();
-
-  public int calculateOrderPrice() {
-    int totalPrice = 0;
-
-    for (OrderMenu orderMenu : orderMenus) {
-      Menu menu = orderMenu.getMenuNo();
-      if (menu != null) {
-        totalPrice += menu.getMenuPrice();
-      }
+    @Builder
+    public Order(
+            Member member,
+            Store store,
+            int orderPrice,
+            String orderRequest,
+            String recipientPhone,
+            String recipientName,
+            String recipientZipcode,
+            String recipientAddr,
+            String recipientDetailAddr,
+            OrderType orderType,
+            OrderStatus orderStatus,
+            Pay pay) {
+        this.member = member;
+        this.store = store;
+        this.orderPrice = orderPrice;
+        this.orderRequest = orderRequest;
+        this.recipientPhone = recipientPhone;
+        this.recipientName = recipientName;
+        this.recipientAddress =
+                Address.builder()
+                        .zipCode(recipientZipcode)
+                        .addr(recipientAddr)
+                        .detailAddr(recipientDetailAddr)
+                        .build();
+        this.orderType = orderType;
+        this.orderStatus = orderStatus;
+        this.pay = pay;
     }
 
-    return totalPrice;
-  }
-
-
-  // 비지니스 로직
-  // 공지사항 삭제
-  public void delete(){
-    this.setOrderStatus(OrderStatus.N);
-
-    for (OrderMenu orderMenu : this.getOrderMenus()) {
-      orderMenu.delete(); // 주문 메뉴 상태 변경
+    public Long calculOrderPrice() {
+        return this.orderMenus.stream()
+                .filter(orderMenu -> orderMenu.getMenu() != null)
+                .mapToLong(orderMenu -> orderMenu.getMenu().getPrice())
+                .sum();
     }
-  }
+
+    // ===  편의 메서드 ===
+    /** 주문자 정보 변경 */
+    public void setMember(Member member) {
+        this.member = member;
+        member.getOrders().add(this);
+    }
+
+    /** 주문한 가게 정보 변경 */
+    public void setStore(Store store) {
+        this.store = store;
+        store.getOrders().add(this);
+    }
+
+    /**
+     * 주문 주소 변경 (혹시 몰라서)
+     *
+     * @param recipientZipCode
+     * @param recipientAddr
+     * @param recipientDetailAddr
+     */
+    public void setRecipientAddress(
+            String recipientZipCode, String recipientAddr, String recipientDetailAddr) {
+        setRecipientAddress(
+                Address.builder()
+                        .zipCode(recipientZipCode)
+                        .addr(recipientAddr)
+                        .detailAddr(recipientDetailAddr)
+                        .build());
+    }
+
+    // === 비지니스 로직 ===
+    /** 주문 취소 */
+    public void deleteOrder() {
+        this.setOrderStatus(OrderStatus.N);
+        this.orderMenus.forEach(OrderMenu::delete);
+    }
 }

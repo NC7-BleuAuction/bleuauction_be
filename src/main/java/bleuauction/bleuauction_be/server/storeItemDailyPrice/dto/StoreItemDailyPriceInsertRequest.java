@@ -1,5 +1,7 @@
 package bleuauction.bleuauction_be.server.storeItemDailyPrice.dto;
 
+
+import bleuauction.bleuauction_be.server.store.entity.Store;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.DailyPriceStatus;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.ItemCode;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.ItemName;
@@ -10,21 +12,19 @@ import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDai
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.WildFarmStatus;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.sql.Date;
-import java.sql.Timestamp;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class StoreItemDailyPriceInsertRequest {
-
-    private Long storeNo;
-
     private int dailyPrice;
+
+    private Long storeId;
 
     @Enumerated(EnumType.STRING)
     private ItemCode itemCode;
@@ -44,7 +44,7 @@ public class StoreItemDailyPriceInsertRequest {
     @Enumerated(EnumType.STRING)
     private WildFarmStatus wildFarmStatus;
 
-    private Date dailyPriceDate;
+    private LocalDateTime dailyPriceDate;
 
     private Timestamp regDatetime;
 
@@ -52,9 +52,9 @@ public class StoreItemDailyPriceInsertRequest {
 
     private DailyPriceStatus dailyPriceStatus = DailyPriceStatus.Y;
 
-    public StoreItemDailyPrice toEntity() {
+    public StoreItemDailyPrice toEntity(Store store) {
         return StoreItemDailyPrice.builder()
-                .storeNo(this.getStoreNo())
+                .store(store)
                 .dailyPrice(this.dailyPrice)
                 .itemCode(this.itemCode)
                 .itemName(this.itemName)
@@ -65,6 +65,5 @@ public class StoreItemDailyPriceInsertRequest {
                 .daliyPriceDate(this.dailyPriceDate)
                 .dailyPriceStatus(this.dailyPriceStatus)
                 .build();
-
     }
 }

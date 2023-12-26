@@ -1,7 +1,8 @@
 package bleuauction.bleuauction_be.server.store.dto;
 
-import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
+
 import bleuauction.bleuauction_be.server.common.jwt.TokenMember;
+import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.sql.Time;
@@ -18,20 +19,15 @@ public class UpdateStoreRequest {
 
     private Long memberNo;
 
-    @NotNull
-    private String memberName;
+    @NotNull private String memberName;
 
-    @NotNull
-    private String memberZipcode;
+    @NotNull private String memberZipcode;
 
-    @NotNull
-    private String memberAddr;
+    @NotNull private String memberAddr;
 
-    @NotNull
-    private String memberDetailAddr;
+    @NotNull private String memberDetailAddr;
 
-    @NotNull
-    private String memberPhone;
+    @NotNull private String memberPhone;
 
     private Long storeNo;
 
@@ -66,5 +62,4 @@ public class UpdateStoreRequest {
     // TODO : 주문 불가 유형 넣을지 생각해보기
 
     private MultipartFile profileImage;
-
 }

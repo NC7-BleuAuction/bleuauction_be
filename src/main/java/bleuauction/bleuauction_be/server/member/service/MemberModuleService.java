@@ -1,16 +1,16 @@
 package bleuauction.bleuauction_be.server.member.service;
 
+
 import bleuauction.bleuauction_be.server.config.annotation.ModuleService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.exception.MemberNotFoundException;
 import bleuauction.bleuauction_be.server.member.repository.MemberRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Slf4j
 @ModuleService
@@ -31,17 +31,20 @@ public class MemberModuleService {
      * @return
      */
     public Member findById(Long memberNo) {
-        return memberRepository.findById(memberNo)
+        return memberRepository
+                .findById(memberNo)
                 .orElseThrow(() -> new MemberNotFoundException(memberNo));
     }
 
     /**
      * Email로 사용자 정보 조회후 반환하며, 존재하지 않는 경우 MemberNotFoundException 발생
+     *
      * @param email
      * @return
      */
     public Member findByEmail(String email) {
-        return memberRepository.findByMemberEmail(email)
+        return memberRepository
+                .findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("Bad Request Email"));
     }
 
@@ -59,27 +62,33 @@ public class MemberModuleService {
 
     /**
      * 사용자 정보 Insert, Update
+     *
      * @param member
      * @return
      */
     public Member save(Member member) {
-        log.info("[MemberModuleService] Member Save,Request Member Info : RequestEmail >>> {}, RequestName >>> {} , RequestPhone >>> {}",
-                member.getMemberEmail(), member.getMemberEmail(), member.getMemberPhone());
+        log.info(
+                "[MemberModuleService] Member Save,Request Member Info : RequestEmail >>> {}, RequestName >>> {} , RequestPhone >>> {}",
+                member.getEmail(),
+                member.getEmail(),
+                member.getPhone());
 
         return memberRepository.save(member);
     }
 
     /**
      * 사용자 Email 존재유무 확인
+     *
      * @param email 사용자 Email
      * @return
      */
-    public boolean isExistsByEmail(String email){
-        return memberRepository.existsByMemberEmail(email);
+    public boolean isExistsByEmail(String email) {
+        return memberRepository.existsByEmail(email);
     }
 
     /**
      * 사용자의 MemberNo가 존재하는지 유무 확인
+     *
      * @param memberNo 사용자 Entity의 Id
      * @return
      */
@@ -89,10 +98,11 @@ public class MemberModuleService {
 
     /**
      * 사용자 정보 삭제 처리, 해당 사용자가 존재하지 않는 사용자인 경우 MemberNotFoundException 발생
+     *
      * @param memberNo
      */
     public void deleteById(Long memberNo) {
-        if(this.isExistsByMemberNo(memberNo)) {
+        if (this.isExistsByMemberNo(memberNo)) {
             memberRepository.deleteById(memberNo);
             return;
         }

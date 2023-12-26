@@ -1,78 +1,88 @@
 package bleuauction.bleuauction_be.server.storeItemDailyPrice.entity;
 
-import jakarta.persistence.*;
-import lombok.AccessLevel;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
+import bleuauction.bleuauction_be.server.common.entity.AbstractTimeStamp;
+import bleuauction.bleuauction_be.server.store.entity.Store;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.sql.Date;
-import java.sql.Timestamp;
 
 @Entity
 @Getter
 @Setter
-@DynamicInsert
-@DynamicUpdate
-@Slf4j
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 @Table(name = "ba_store_item_daily_price")
-public class StoreItemDailyPrice {
+public class StoreItemDailyPrice extends AbstractTimeStamp {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long dailyPriceNo;
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "daily_price_no")
+    private Long id;
 
-  private Long storeNo;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "store_no")
+    private Store store;
 
-  private int dailyPrice;
+    private int dailyPrice;
 
-  @Enumerated(EnumType.STRING)
-  private ItemCode itemCode;
+    @Enumerated(STRING)
+    private ItemCode itemCode;
 
-  @Enumerated(EnumType.STRING)
-  private ItemName itemName;
+    @Enumerated(STRING)
+    private ItemName itemName;
 
-  @Enumerated(EnumType.STRING)
-  private ItemSize itemSize;
+    @Enumerated(STRING)
+    private ItemSize itemSize;
 
-  @Enumerated(EnumType.STRING)
-  private OriginStatus originStatus;
+    @Enumerated(STRING)
+    private OriginStatus originStatus;
 
-  @Enumerated(EnumType.STRING)
-  private OriginPlaceStatus originPlaceStatus;
+    @Enumerated(STRING)
+    private OriginPlaceStatus originPlaceStatus;
 
-  @Enumerated(EnumType.STRING)
-  private WildFarmStatus wildFarmStatus;
+    @Enumerated(STRING)
+    private WildFarmStatus wildFarmStatus;
 
-  private Date daliyPriceDate;
+    @Enumerated(STRING)
+    private DailyPriceStatus dailyPriceStatus;
 
-  @CreationTimestamp
-  private Timestamp regDatetime;
+    private LocalDateTime daliyPriceDate;
 
-  @UpdateTimestamp
-  private Timestamp mdfDatetime;
-
-  @Enumerated(EnumType.STRING)
-  private DailyPriceStatus dailyPriceStatus;
-
-  @Builder
-  public StoreItemDailyPrice(Long storeNo, int dailyPrice, ItemCode itemCode, ItemName itemName, ItemSize itemSize, OriginStatus originStatus, OriginPlaceStatus originPlaceStatus, WildFarmStatus wildFarmStatus, Date daliyPriceDate, DailyPriceStatus dailyPriceStatus) {
-    this.storeNo = storeNo;
-    this.dailyPrice = dailyPrice;
-    this.itemCode = itemCode;
-    this.itemName = itemName;
-    this.itemSize = itemSize;
-    this.originStatus = originStatus;
-    this.originPlaceStatus = originPlaceStatus;
-    this.wildFarmStatus = wildFarmStatus;
-    this.daliyPriceDate = daliyPriceDate;
-    this.dailyPriceStatus = dailyPriceStatus;
-  }
+    @Builder
+    public StoreItemDailyPrice(
+            Store store,
+            int dailyPrice,
+            ItemCode itemCode,
+            ItemName itemName,
+            ItemSize itemSize,
+            OriginStatus originStatus,
+            OriginPlaceStatus originPlaceStatus,
+            WildFarmStatus wildFarmStatus,
+            LocalDateTime daliyPriceDate,
+            DailyPriceStatus dailyPriceStatus) {
+        this.store = store;
+        this.dailyPrice = dailyPrice;
+        this.itemCode = itemCode;
+        this.itemName = itemName;
+        this.itemSize = itemSize;
+        this.originStatus = originStatus;
+        this.originPlaceStatus = originPlaceStatus;
+        this.wildFarmStatus = wildFarmStatus;
+        this.daliyPriceDate = daliyPriceDate;
+        this.dailyPriceStatus = dailyPriceStatus;
+    }
 }

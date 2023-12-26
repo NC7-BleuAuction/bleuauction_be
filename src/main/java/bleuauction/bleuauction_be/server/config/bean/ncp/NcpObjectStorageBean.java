@@ -1,5 +1,6 @@
 package bleuauction.bleuauction_be.server.config.bean.ncp;
 
+
 import bleuauction.bleuauction_be.server.config.properties.NcpConfigProperties;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -26,22 +27,14 @@ public class NcpObjectStorageBean {
                 .build();
     }
 
-
-
     private AwsClientBuilder.EndpointConfiguration getEndpointConfig() {
         return new AwsClientBuilder.EndpointConfiguration(
-                this.ncpConfigProperties.getEndPoint(),
-                this.ncpConfigProperties.getRegionName()
-        );
+                this.ncpConfigProperties.getEndPoint(), this.ncpConfigProperties.getRegionName());
     }
 
     private AWSStaticCredentialsProvider getCredentialsProvier() {
         return new AWSStaticCredentialsProvider(
                 new BasicAWSCredentials(
-                        ncpConfigProperties.getAccessKey(),
-                        ncpConfigProperties.getSecretKey()
-                )
-        );
+                        ncpConfigProperties.getAccessKey(), ncpConfigProperties.getSecretKey()));
     }
-
 }

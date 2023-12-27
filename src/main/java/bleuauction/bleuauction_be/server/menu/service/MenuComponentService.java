@@ -4,6 +4,7 @@ package bleuauction.bleuauction_be.server.menu.service;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
+import bleuauction.bleuauction_be.server.menu.dto.MenuDTO;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.exception.MenuNotFoundException;
 import bleuauction.bleuauction_be.server.menu.repository.MenuRepository;
@@ -58,17 +59,16 @@ public class MenuComponentService {
 
     // 메뉴 수정
     // TODO : 로직이 어구가 맞지 않네요, 수정필요합니다. 아니면 파일만 수정하는건가요?
-    public Menu update(Long menuId, List<MultipartFile> multipartFiles, Store store) {
-        Menu updatedMenu = menuModuleService.findOne(menuId);
-        Menu existingMenu = menuModuleService.findOne(updatedMenu.getId());
+    public Menu update(Long menuId, List<MultipartFile> multipartFiles, Store store, MenuDTO request) {
+        Menu existingMenu = menuModuleService.findOne(menuId);
 
         if (!existingMenu.getStore().equals(store)) {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
         }
-        existingMenu.setName(updatedMenu.getName());
-        existingMenu.setSize(updatedMenu.getSize());
-        existingMenu.setPrice(updatedMenu.getPrice());
-        existingMenu.setContent(updatedMenu.getContent());
+        existingMenu.setName(request.getName());
+        existingMenu.setSize(request.getSize());
+        existingMenu.setPrice(request.getPrice());
+        existingMenu.setContent(request.getContent());
 
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             multipartFiles.stream()

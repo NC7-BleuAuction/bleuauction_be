@@ -37,8 +37,9 @@ class OrderServiceTest {
     @Mock private OrderRepository orderRepository;
 
     @Mock private MemberModuleService memberModuleService;
+    @InjectMocks private OrderModuleService orderModuleService;
 
-    @InjectMocks private OrderService orderService;
+    @InjectMocks private OrderComponentService orderComponentService;
 
     private final String TEST_MAIL = "test@test.com";
     private final String TEST_PWD = "testpassword123!";
@@ -60,7 +61,7 @@ class OrderServiceTest {
                         .build();
 
         // When
-        ResponseEntity<?> responseEntity = orderService.addOrder(mockOrder);
+        ResponseEntity<?> responseEntity = orderModuleService.addOrder(mockOrder);
 
         // Then
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
@@ -133,7 +134,7 @@ class OrderServiceTest {
         when(orderRepository.findById(mockOrder.getId())).thenReturn(Optional.of(mockOrder));
 
         // When
-        orderService.deleteOrder(mockOrder.getId());
+        orderModuleService.deleteOrder(mockOrder.getId());
 
         // Then
         // mockNotice의 status가 N인지 확인
@@ -154,7 +155,7 @@ class OrderServiceTest {
         // when && then
         assertThrows(
                 MemberNotFoundException.class,
-                () -> orderService.findOrdersByMemberAndStore(memberNo, storeNo));
+                () -> orderComponentService.findOrdersByMemberAndStore(memberNo, storeNo));
     }
 
     @Test
@@ -260,7 +261,7 @@ class OrderServiceTest {
 
         // when
         List<Order> result =
-                orderService.findOrdersByMemberAndStore(
+                orderComponentService.findOrdersByMemberAndStore(
                         mockSellerMember.getId(), mockStore.getId());
 
         // then
@@ -279,7 +280,7 @@ class OrderServiceTest {
 
         // when && then
         assertThrows(
-                MemberNotFoundException.class, () -> orderService.findOrdersByMemberNo(memberNo));
+                MemberNotFoundException.class, () -> orderComponentService.findOrdersByMemberNo(memberNo));
     }
 
     @Test
@@ -385,7 +386,7 @@ class OrderServiceTest {
                 .thenReturn(fakeOrders);
 
         // when
-        List<Order> result = orderService.findOrdersByMemberNo(memberNo);
+        List<Order> result = orderComponentService.findOrdersByMemberNo(memberNo);
 
         // then
         assertEquals(fakeOrders, result);

@@ -2,7 +2,7 @@ package bleuauction.bleuauction_be.server.pay.controller;
 
 
 import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
-import bleuauction.bleuauction_be.server.order.service.OrderService;
+import bleuauction.bleuauction_be.server.order.service.OrderModuleService;
 import bleuauction.bleuauction_be.server.pay.dto.PayInsertRequest;
 import bleuauction.bleuauction_be.server.pay.entity.Pay;
 import bleuauction.bleuauction_be.server.pay.service.PayComponentService;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/pay")
 public class PayController {
     private final IamportClient iamportClient;
-    private final OrderService orderService;
+    private final OrderModuleService orderModuleService;
     private final JwtUtils jwtUtils;
     private final PayComponentService payComponentService;
     private final PayModuleService payModuleService;
@@ -61,7 +61,7 @@ public class PayController {
         jwtUtils.verifyToken(authorizationHeader);
         return ResponseEntity.ok(
                 payComponentService.createPayment(
-                        request, orderService.findOrderById(request.getOrderNo())));
+                        request, orderModuleService.findOrderById(request.getOrderNo())));
     }
 
     /**

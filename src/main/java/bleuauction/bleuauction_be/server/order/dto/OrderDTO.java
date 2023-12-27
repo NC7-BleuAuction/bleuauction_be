@@ -1,6 +1,7 @@
 package bleuauction.bleuauction_be.server.order.dto;
 
 
+import bleuauction.bleuauction_be.server.member.entity.Address;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.entity.OrderType;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,11 @@ public class OrderDTO {
     private String recipientAddr;
     private String recipientDetailAddr;
 
+
+
+    public Address buildRecipientAddress() {
+        return new Address(recipientZipcode, recipientAddr, recipientDetailAddr);
+    }
     public static Order toEntity(OrderDTO orderDTO) {
         return Order.builder()
                 .orderType(orderDTO.getOrderType())

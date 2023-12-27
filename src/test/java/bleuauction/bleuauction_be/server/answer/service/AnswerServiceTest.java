@@ -39,6 +39,9 @@ class AnswerServiceTest {
     @Mock private AnswerRepository answerRepository;
     @Mock private ReviewRepository reviewRepository;
     @Mock private SecurityUtils securityUtils;
+
+    @Mock private AnswerComponentService answerComponentService;
+
     @InjectMocks private AnswerModuleService answerModuleService;
 
     private final Long TEST_MEMBER_NO = 1L;
@@ -107,7 +110,7 @@ class AnswerServiceTest {
 
         // when
         Map<String, Object> selectAnswerMap =
-                answerModuleService.selectAnswerList(TEST_REVIEW_NO, TEST_START_PAGE);
+                answerComponentService.selectAnswerList(TEST_REVIEW_NO, TEST_START_PAGE);
 
         // then
         assertEquals(mockAnswerMap, selectAnswerMap);
@@ -178,7 +181,7 @@ class AnswerServiceTest {
         given(answerRepository.save(mockAnswer)).willReturn(mockAnswer);
 
         // when
-        Answer updateAnswer = answerModuleService.updateAnswer(mockAnswer, mockCustomerMember);
+        Answer updateAnswer = answerComponentService.updateAnswer(mockAnswer, mockCustomerMember);
 
         // then
         assertEquals(mockAnswer, updateAnswer);
@@ -214,7 +217,7 @@ class AnswerServiceTest {
         given(answerRepository.save(mockAnswer)).willReturn(mockAnswer);
 
         // when
-        Answer deleteAnswer = answerModuleService.deleteAnswer(TEST_ANSWER_NO, TEST_MEMBER_NO);
+        Answer deleteAnswer = answerComponentService.deleteAnswer(mockAnswer, mockMember);
 
         // then
         assertEquals(mockAnswer, deleteAnswer);

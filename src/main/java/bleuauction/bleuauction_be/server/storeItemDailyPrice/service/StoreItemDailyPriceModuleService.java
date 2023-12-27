@@ -2,31 +2,30 @@ package bleuauction.bleuauction_be.server.storeItemDailyPrice.service;
 
 
 import bleuauction.bleuauction_be.server.config.annotation.ModuleService;
-import bleuauction.bleuauction_be.server.store.entity.Store;
-import bleuauction.bleuauction_be.server.storeItemDailyPrice.dto.StoreItemDailyPriceInsertRequest;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.DailyPriceStatus;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDailyPrice;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.repository.StoreItemDailyPriceRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+@Transactional
 @ModuleService
 @RequiredArgsConstructor
-@Transactional
 public class StoreItemDailyPriceModuleService {
-    private final StoreItemDailyPriceRepository storeItemDailyPriceRepository;
+    private final StoreItemDailyPriceRepository sidpRepository;
+
+    public StoreItemDailyPrice findByIdAndDailyPriceStatus(Long sidpNo, DailyPriceStatus dailyPriceStatus) {
+        return sidpRepository.findByIdAndDailyPriceStatus(sidpNo, dailyPriceStatus);
+    }
 
     public List<StoreItemDailyPrice> findAllByDailyPriceStatus(DailyPriceStatus dailyPriceStatus) {
-        return storeItemDailyPriceRepository.findAllByDailyPriceStatus(dailyPriceStatus);
+        return sidpRepository.findAllByDailyPriceStatus(dailyPriceStatus);
     }
 
-    public StoreItemDailyPrice addStoreItemDailyPrice(StoreItemDailyPrice storeItemDailyPrice) {
-        return storeItemDailyPriceRepository.save(storeItemDailyPrice);
+    public StoreItemDailyPrice save(StoreItemDailyPrice sidp) {
+        return sidpRepository.save(sidp);
     }
 
-    public StoreItemDailyPrice addStoreItemDailyPrice(
-            StoreItemDailyPriceInsertRequest request, Store store) {
-        return storeItemDailyPriceRepository.save(request.toEntity(store));
-    }
 }

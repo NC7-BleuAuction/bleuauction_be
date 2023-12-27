@@ -36,6 +36,7 @@ class ReviewServiceTest {
     @Mock private SecurityUtils securityUtils;
 
     @Mock private AttachComponentService attachComponentService;
+    @Mock private ReviewComponentService reviewComponentService;
     @InjectMocks private ReviewModuleService reviewModuleService;
 
     private final Long TEST_MEMBER_NO = 1L;
@@ -95,7 +96,7 @@ class ReviewServiceTest {
         // when
         List<Review> selectReviewList =
                 reviewModuleService.findAllByStoreAndReviewStatus(
-                        mockStore, ReviewStatus.Y, TEST_START_PAGE);
+                        mockStore, ReviewStatus.Y, pageable);
 
         // then
         assertEquals(mockReviewList, selectReviewList);
@@ -127,7 +128,7 @@ class ReviewServiceTest {
                         });
 
         // when
-        Review addReview = reviewModuleService.addReview(mockReview, mockFileList);
+        Review addReview = reviewComponentService.addReview(mockReview, mockFileList);
 
         // then
         assertNotNull(addReview);
@@ -191,7 +192,7 @@ class ReviewServiceTest {
                 .willReturn(Optional.of(mockReview));
 
         // when
-        Review deleteReview = reviewModuleService.deleteReview(mockReview.getId());
+        Review deleteReview = reviewComponentService.deleteReview(mockReview);
 
         // then
         assertEquals(mockReview, deleteReview);

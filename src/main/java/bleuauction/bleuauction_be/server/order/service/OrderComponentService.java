@@ -1,43 +1,40 @@
 package bleuauction.bleuauction_be.server.order.service;
 
-
+import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
+import bleuauction.bleuauction_be.server.order.dto.OrderDTO;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.entity.OrderStatus;
 import bleuauction.bleuauction_be.server.order.exception.OrderNotFoundException;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.store.entity.Store;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+import java.util.List;
+
 @Slf4j
-@Transactional(readOnly = true)
+@ComponentService
+@Transactional
 @RequiredArgsConstructor
-public class OrderService {
+public class OrderComponentService {
 
-    private final OrderRepository orderRepository;
-    private final MemberModuleService memberModuleService;
+    private MemberModuleService memberModuleService;
+    private OrderRepository orderRepository;
+    private OrderModuleService orderModuleService;
 
-    // 등록
-    public ResponseEntity<?> addOrder(Order order) throws Exception {
-        orderRepository.save(order);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully");
+    // 회원 별 주문 조회
+    public List<Order> findOrdersByMemberNo(Long memberNo) {
+        Member loginMember = memberModuleService.findById(memberNo);
+
+        return orderRepository.findAllByMemberOrderByRegDatetimeDesc(loginMember);
     }
 
-    // 주문 1건 조회
-    @Transactional(readOnly = true)
-    public Optional<Order> findOne(Long orderNo) {
-        return orderRepository.findById(orderNo);
-    }
+
 
     /**
      * 가게에 주문이 들어온 목록에 대해서 조회가 필요하기 떄문에 다음과 같이 구현하였습니다.
@@ -65,52 +62,26 @@ public class OrderService {
                 findStore, OrderStatus.Y);
     }
 
-    // 회원 별 주문 조회
-    public List<Order> findOrdersByMemberNo(Long memberNo) {
-        Member loginMember = memberModuleService.findById(memberNo);
 
-        return orderRepository.findAllByMemberOrderByRegDatetimeDesc(loginMember);
-    }
-
-    // 메뉴 삭제(N)
-    public ResponseEntity<String> deleteOrder(Long orderNo) {
-        Order order =
-                orderRepository
-                        .findById(orderNo)
-                        .orElseThrow(() -> new OrderNotFoundException(orderNo));
-        order.deleteOrder();
-        return ResponseEntity.ok("Order deleted successfully");
-    }
 
     // TODO : 기능은 이전과 동일하게 만들었는데, 조회를 위한 NO만 있고, 수정을 하는 정보도 모두 DB에서 가져와서 기능이 아얘 없는거나 마찬가지. 수정필요
     // By.승현
     // 메뉴 수정
-    public ResponseEntity<String> update(Long orderNo) {
-        Order order =
+    public ResponseEntity<String> update(Long orderNo, OrderDTO request) {
+        Order existingorder =
                 orderRepository
                         .findById(orderNo)
                         .orElseThrow(() -> new OrderNotFoundException(orderNo));
 
-        Order updateorder =
-                orderRepository
-                        .findById(orderNo)
-                        .orElseThrow(() -> new OrderNotFoundException(orderNo));
-
-        updateorder.setOrderType(order.getOrderType());
+        existingorder.setOrderType(request.getOrderType());
         // existingOrder.setOrderPrice(order.getOrderPrice()); // 필요하다면 주석 해제
-        updateorder.setOrderRequest(order.getOrderRequest());
-        updateorder.setRecipientPhone(order.getRecipientPhone());
-        updateorder.setRecipientName(order.getRecipientName());
-        updateorder.setRecipientAddress(order.getRecipientAddress());
+        existingorder.setOrderRequest(request.getOrderRequest());
+        existingorder.setRecipientPhone(request.getRecipientPhone());
+        existingorder.setRecipientName(request.getRecipientName());
+        existingorder.setRecipientAddress(request.buildRecipientAddress());
+
+        orderModuleService.addOrder(existingorder);
 
         return ResponseEntity.ok("Order updated successfully");
-    }
-
-    // 주문 1건 조회
-    @Transactional(readOnly = true)
-    public Order findOrderById(Long orderNo) {
-        return orderRepository
-                .findById(orderNo)
-                .orElseThrow(() -> new OrderNotFoundException(orderNo));
     }
 }

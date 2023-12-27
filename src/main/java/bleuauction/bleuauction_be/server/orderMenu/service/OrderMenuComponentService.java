@@ -7,7 +7,7 @@ import bleuauction.bleuauction_be.server.menu.entity.Menu;
 import bleuauction.bleuauction_be.server.menu.service.MenuModuleService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
-import bleuauction.bleuauction_be.server.order.service.OrderService;
+import bleuauction.bleuauction_be.server.order.service.OrderModuleService;
 import bleuauction.bleuauction_be.server.orderMenu.dto.OrderMenuDTO;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenu;
 import bleuauction.bleuauction_be.server.orderMenu.entity.OrderMenuStatus;
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderMenuComponentService {
     private final OrderRepository orderRepository;
-    private final OrderService orderService;
+    private final OrderModuleService orderModuleService;
     private final MenuModuleService menuModuleService;
     private final OrderMenuModuleService orderMenuModuleService;
 
@@ -49,7 +49,7 @@ public class OrderMenuComponentService {
     @Transactional(readOnly = true)
     public List<OrderMenu> findOrderMenusByOrderNoAndStatusY(Long orderNo) {
 
-        Optional<Order> orderOptional = orderService.findOne(orderNo);
+        Optional<Order> orderOptional = orderModuleService.findOne(orderNo);
 
         if (orderOptional.isEmpty()) {
             return new ArrayList<>();

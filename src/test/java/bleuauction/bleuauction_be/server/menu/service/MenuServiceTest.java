@@ -41,8 +41,6 @@ class MenuServiceTest {
 
     @Mock MenuModuleService menuModuleServiceM;
 
-    @Mock AttachComponentService attachComponentService;
-
     @InjectMocks MenuModuleService menuModuleService;
 
     @InjectMocks MenuComponentService menuComponentService;

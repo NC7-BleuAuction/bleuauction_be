@@ -6,6 +6,7 @@ import bleuauction.bleuauction_be.server.attach.type.FileUploadUsage;
 import bleuauction.bleuauction_be.server.config.annotation.ComponentService;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
+import bleuauction.bleuauction_be.server.notice.dto.NoticeDTO;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -57,16 +58,15 @@ public class NoticeComponentService {
 
     // 노티스 수정
     @Transactional
-    public Notice update(long noticeNo, Member member, List<MultipartFile> multipartFiles)
+    public Notice update(long noticeNo, Member member, List<MultipartFile> multipartFiles, NoticeDTO request)
             throws Exception {
 
-        Notice updatedNotice = noticeModuleService.findOne(noticeNo);
         Notice existingnotice = noticeModuleService.findOne(noticeNo);
 
         isMemberAdmin(member.getCategory());
 
-        existingnotice.setNoticeTitle(updatedNotice.getNoticeTitle());
-        existingnotice.setNoticeContent(updatedNotice.getNoticeContent());
+        existingnotice.setNoticeTitle(request.getNoticeTitle());
+        existingnotice.setNoticeContent(request.getNoticeContent());
 
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             multipartFiles.stream()

@@ -7,6 +7,7 @@ import bleuauction.bleuauction_be.server.common.utils.JwtUtils;
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.member.entity.MemberCategory;
 import bleuauction.bleuauction_be.server.member.service.MemberModuleService;
+import bleuauction.bleuauction_be.server.notice.dto.NoticeDTO;
 import bleuauction.bleuauction_be.server.notice.entity.Notice;
 import bleuauction.bleuauction_be.server.notice.entity.NoticeStatus;
 import bleuauction.bleuauction_be.server.notice.service.NoticeComponentService;
@@ -18,15 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -107,16 +100,16 @@ public class NoticeController {
     public ResponseEntity<String> updateNotice(
             @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable("noticeNo") Long noticeNo,
+            @RequestBody NoticeDTO request,
             @RequestParam(name = "multipartFiles", required = false)
                     List<MultipartFile> multipartFiles)
             throws Exception {
-        // Notice updatedNotice = noticeModuleService.findOne(noticeNo);
 
         jwtUtils.verifyToken(authorizationHeader);
         TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
         Member loginUser = memberModuleService.findById(tokenMember.getMemberNo());
 
-        noticeComponentService.update(noticeNo, loginUser, multipartFiles);
+        noticeComponentService.update(noticeNo, loginUser, multipartFiles, request);
 
         return ResponseEntity.ok("Notice updated successfully");
     }

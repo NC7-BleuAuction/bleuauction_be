@@ -5,6 +5,7 @@ import bleuauction.bleuauction_be.server.attach.entity.Attach;
 import bleuauction.bleuauction_be.server.attach.service.AttachComponentService;
 import bleuauction.bleuauction_be.server.review.entity.Review;
 import bleuauction.bleuauction_be.server.review.entity.ReviewStatus;
+import bleuauction.bleuauction_be.server.review.service.ReviewComponentService;
 import bleuauction.bleuauction_be.server.review.service.ReviewModuleService;
 import bleuauction.bleuauction_be.server.store.service.StoreModuleService;
 import java.util.List;
@@ -25,8 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RequestMapping("/api/reviews")
 public class ReviewController {
-    private final ReviewModuleService reviewModuleService;
     private final StoreModuleService storeModuleService;
+    private final ReviewComponentService reviewComponentService;
     private final AttachComponentService attachComponentService;
 
     @GetMapping
@@ -37,7 +38,7 @@ public class ReviewController {
         log.info("storeNo: {}", storeNo);
         log.info("startPage: {}", startPage);
         List<Review> reviewList =
-                reviewModuleService.findAllByStoreAndReviewStatus(
+                reviewComponentService.findAllByStoreAndReviewStatus(
                         storeModuleService.findById(storeNo), ReviewStatus.Y, startPage);
         log.info("reviewList: {}", reviewList);
 
@@ -48,12 +49,12 @@ public class ReviewController {
     public ResponseEntity<Review> reviewAdd(
             Review review,
             @RequestParam(name = "multipartFiles", required = false)
-                    List<MultipartFile> multipartFiles) {
+            List<MultipartFile> multipartFiles) {
         log.info("@PostMapping ===========> /api/review");
         log.info("Review: {}", review);
         log.info("MultipartFile: {}", multipartFiles);
 
-        Review insertReview = reviewModuleService.addReview(review, multipartFiles);
+        Review insertReview = reviewComponentService.addReview(review, multipartFiles);
         log.info("insertReview: " + insertReview);
         return ResponseEntity.ok(insertReview);
     }
@@ -62,16 +63,16 @@ public class ReviewController {
     public ResponseEntity<Review> reviewUpdate(Review review) {
         log.info("@PutMapping ===========> /api/review");
 
-        Review updateReview = reviewModuleService.updateReview(review);
+        Review updateReview = reviewComponentService.updateReview(review);
         return ResponseEntity.ok(updateReview);
     }
 
     @DeleteMapping
-    public ResponseEntity<Review> reviewDelete(Long reviewNo) throws Exception {
+    public ResponseEntity<Review> reviewDelete(Review review) {
         log.info("@DeleteMapping ===========> /api/review");
-        log.info("reviewNo: {}", reviewNo);
+        log.info("reviewNo: {}", review);
 
-        return ResponseEntity.ok(reviewModuleService.deleteReview(reviewNo));
+        return ResponseEntity.ok(reviewComponentService.deleteReview(review));
     }
 
     @DeleteMapping("/attach")

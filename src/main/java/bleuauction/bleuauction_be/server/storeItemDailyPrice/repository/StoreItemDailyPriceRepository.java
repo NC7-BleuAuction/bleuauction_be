@@ -7,5 +7,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StoreItemDailyPriceRepository extends JpaRepository<StoreItemDailyPrice, Long> {
+
+    StoreItemDailyPrice findByIdAndDailyPriceStatus(Long id, DailyPriceStatus dailyPriceStatus);
+
     List<StoreItemDailyPrice> findAllByDailyPriceStatus(DailyPriceStatus dailyPriceStatus);
 }

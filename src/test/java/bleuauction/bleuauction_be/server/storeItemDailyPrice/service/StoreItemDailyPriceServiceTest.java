@@ -33,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class StoreItemDailyPriceServiceTest {
     @Mock private StoreItemDailyPriceRepository storeItemDailyPriceRepository;
+    @Mock private StoreItemDailyPriceComponentService storeItemDailyPriceComponentService;
     @InjectMocks private StoreItemDailyPriceModuleService storeItemDailyPriceModuleService;
 
     private final Long TEST_STORE_NO = 1L;
@@ -113,7 +114,7 @@ class StoreItemDailyPriceServiceTest {
 
         // when
         StoreItemDailyPrice addStoreItemDailyPrice =
-                storeItemDailyPriceModuleService.addStoreItemDailyPrice(sidp);
+                storeItemDailyPriceModuleService.save(sidp);
 
         // then
         verify(storeItemDailyPriceRepository, times(1)).save(any(StoreItemDailyPrice.class));

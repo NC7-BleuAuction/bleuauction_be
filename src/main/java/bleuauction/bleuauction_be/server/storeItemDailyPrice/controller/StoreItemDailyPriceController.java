@@ -5,6 +5,7 @@ import bleuauction.bleuauction_be.server.store.service.StoreModuleService;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.dto.StoreItemDailyPriceInsertRequest;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.DailyPriceStatus;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.entity.StoreItemDailyPrice;
+import bleuauction.bleuauction_be.server.storeItemDailyPrice.service.StoreItemDailyPriceComponentService;
 import bleuauction.bleuauction_be.server.storeItemDailyPrice.service.StoreItemDailyPriceModuleService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,30 +23,28 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/sidp")
 public class StoreItemDailyPriceController {
-    private final StoreItemDailyPriceModuleService storeItemDailyPriceModuleService;
-    private final StoreModuleService storeModuleService;
+
+    private final StoreItemDailyPriceComponentService sidpComponentService;
 
     @GetMapping
     public ResponseEntity<List<StoreItemDailyPrice>> sidpList() {
         List<StoreItemDailyPrice> sidpList =
-                storeItemDailyPriceModuleService.findAllByDailyPriceStatus(DailyPriceStatus.Y);
+                sidpComponentService.findAllByDailyPriceStatus(DailyPriceStatus.Y);
         log.info("storeItemDailyPriceList: {}", sidpList);
         return ResponseEntity.ok(sidpList);
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('S')")
+    @PreAuthorize("hasAuthority('S')")
     public ResponseEntity<StoreItemDailyPrice> sidpAdd(
             @RequestBody StoreItemDailyPriceInsertRequest request) {
         log.info("@PostMapping ===========> /api/sidp");
         log.info("StoreItemDailyPriceInsertRequest: {}", request);
 
-        StoreItemDailyPrice insertStoreItemDailyPrice =
-                storeItemDailyPriceModuleService.addStoreItemDailyPrice(
-                        request.toEntity(storeModuleService.findById(request.getStoreId())));
+        StoreItemDailyPrice insertedSidp = sidpComponentService.addStoreItemDailyPrice(request);
 
-        log.info("insertStoreItemDailyPrice: {} ", insertStoreItemDailyPrice);
+        log.info("insertedSidp: {} ", insertedSidp);
 
-        return ResponseEntity.ok(insertStoreItemDailyPrice);
+        return ResponseEntity.ok(insertedSidp);
     }
 }

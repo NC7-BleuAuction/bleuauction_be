@@ -2,6 +2,7 @@ package bleuauction.bleuauction_be.server.answer.controller;
 
 
 import bleuauction.bleuauction_be.server.answer.entity.Answer;
+import bleuauction.bleuauction_be.server.answer.service.AnswerComponentService;
 import bleuauction.bleuauction_be.server.answer.service.AnswerModuleService;
 import bleuauction.bleuauction_be.server.common.utils.SecurityUtils;
 import bleuauction.bleuauction_be.server.member.entity.Member;
@@ -22,10 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/answer")
 public class AnswerController {
-
-    private final AnswerModuleService answerModuleService;
     private final SecurityUtils securityUtils;
-
+    private final AnswerComponentService answerComponentService;
     @GetMapping
     public ResponseEntity<Map<String, Object>> answerList(
             Long reviewNo, @RequestParam(value = "startPage", defaultValue = "0") int startPage) {
@@ -33,7 +32,7 @@ public class AnswerController {
         log.info("reivewNo: {}", reviewNo);
         log.info("startPage: {}", startPage);
 
-        return ResponseEntity.ok(answerModuleService.selectAnswerList(reviewNo, startPage));
+        return ResponseEntity.ok(answerComponentService.selectAnswerList(reviewNo, startPage));
     }
 
     @PostMapping
@@ -42,25 +41,25 @@ public class AnswerController {
         log.info("Answer: {}", answer);
 
         answer.setMember(securityUtils.getAuthenticatedUserToMember());
-        Answer insertAnswer = answerModuleService.addAnswer(answer);
+        Answer insertAnswer = answerComponentService.addAnswer(answer);
         return ResponseEntity.ok(insertAnswer);
     }
 
     @PutMapping
-    public ResponseEntity<Answer> answerUpdate(Answer answer, Member member) throws Exception {
+    public ResponseEntity<Answer> answerUpdate(Answer answer, Member member) {
         log.info("@PutMapping ===========> /api/answer");
         log.info("answer: {}", answer);
         log.info("member: {}", member);
 
-        return ResponseEntity.ok(answerModuleService.updateAnswer(answer, member));
+        return ResponseEntity.ok(answerComponentService.updateAnswer(answer, member));
     }
 
     @DeleteMapping
-    public ResponseEntity<Answer> answerDelete(Long answerNo, Long memberNo) throws Exception {
-        log.info("@DeleteMapping ===========> /api/answer/delete");
-        log.info("answerNo: {}", answerNo);
-        log.info("memberNo: {}", memberNo);
+    public ResponseEntity<Answer> answerDelete(Answer answer, Member member) {
+        log.info("@DeleteMapping ===========> /api/answer");
+        log.info("answer: {}", answer);
+        log.info("member: {}", member);
 
-        return ResponseEntity.ok(answerModuleService.deleteAnswer(answerNo, memberNo));
+        return ResponseEntity.ok(answerComponentService.deleteAnswer(answer, member));
     }
 }

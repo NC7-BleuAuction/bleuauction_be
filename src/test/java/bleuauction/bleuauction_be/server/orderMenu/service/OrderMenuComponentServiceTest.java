@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import bleuauction.bleuauction_be.server.member.entity.Member;
 import bleuauction.bleuauction_be.server.menu.entity.Menu;
+import bleuauction.bleuauction_be.server.menu.service.MenuModuleService;
 import bleuauction.bleuauction_be.server.order.entity.Order;
 import bleuauction.bleuauction_be.server.order.repository.OrderRepository;
 import bleuauction.bleuauction_be.server.order.service.OrderModuleService;
@@ -20,21 +21,41 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class OrderMenuComponentServiceTest {
 
 
     @Mock private OrderRepository orderRepository;
-
     @Mock private OrderModuleService orderModuleService;
-
+    @Mock private MenuModuleService menuModuleService;
     @Mock private OrderMenuModuleService orderMenuModuleService;
 
     @InjectMocks private OrderMenuComponentService orderMenuComponentService;
 
+    @Test
+    void enroll() {
+        Member mockMember = Member.builder().build();
+        Order mockOrder = Order.builder().build();
+        Menu mockMenu = Menu.builder().build();
+        mockMenu.setId(1L);
 
 
+        OrderMenu mockorderMenu = OrderMenu.builder()
+                .member(mockMember)
+                .order(mockOrder)
+                .menu(mockMenu)
+                .build();
+
+
+        when(orderMenuModuleService.save(mockorderMenu)).thenReturn(mockorderMenu);
+
+
+        ResponseEntity<String> result = orderMenuComponentService.addOrderMenu(mockMember,mockOrder,mockorderMenu);
+
+        assertEquals(result.getBody(),"OrderMenu created successfully");
+    }
     @Test
     void testFindOrderMenuDTOsByOrderNo() {
         // Given

@@ -26,20 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderMenuComponentService {
     private final OrderRepository orderRepository;
     private final OrderModuleService orderModuleService;
-    private final MenuModuleService menuModuleService;
     private final OrderMenuModuleService orderMenuModuleService;
 
-    public ResponseEntity<String> addOrderMenuDTO(
-            Member member, Order order, OrderMenuDTO orderMenuDTO) {
-        Menu selectedMenu = menuModuleService.findOne(orderMenuDTO.getMenu().getId());
-        OrderMenu orderMenu =
-                OrderMenu.builder()
-                        .member(member)
-                        .order(order)
-                        .orderMenuCount(orderMenuDTO.getOrderMenuCount())
-                        .menu(selectedMenu)
-                        .build();
-
+    public ResponseEntity<String> addOrderMenu(Member member, Order order, OrderMenu orderMenu) {
+        orderMenu.setMember(member);
+        orderMenu.setOrder(order);
         orderMenuModuleService.save(orderMenu);
         log.info("ordermenu/postnew");
         return ResponseEntity.ok("OrderMenu created successfully");

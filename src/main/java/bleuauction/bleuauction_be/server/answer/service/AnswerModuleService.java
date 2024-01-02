@@ -30,58 +30,26 @@ public class AnswerModuleService {
 
     private final AnswerRepository answerRepository;
     private final ReviewRepository reviewRepository;
-    private final SecurityUtils securityUtils;
+
+    public Answer findByIdAndReviewAndStatus(Long answerNo, Review review, AnswerStatus answerStatus) {
+        return answerRepository.findByIdAndReviewAndStatus(answerNo, review, answerStatus).orElseThrow(() -> new AnswerNotFoundException("해당 답글이 존재하지 않습니다!"));
+    }
 
     @Transactional(readOnly = true)
-    public Map<String, Object> selectAnswerList(Long reviewNo, int startPage) {
-        Pageable pageable =
-                PageRequest.of(
-                        startPage,
-                        RowCountPerPage.ANSWER.getValue(),
-                        Sort.by(Sort.Order.desc("regDatetime")));
-        Page<Answer> page =
-                answerRepository.findAllByReviewAndStatus(
-                        findReviewById(reviewNo), AnswerStatus.Y, pageable);
-
-        List<Answer> answerList = page.getContent();
-        long totalRows = page.getTotalElements(); // 전체 행 수
-        int totalPages = page.getTotalPages(); // 전체 페이지 수
-
-        Map<String, Object> answerMap = new HashMap<>();
-        answerMap.put("answerList", answerList);
-        answerMap.put("totalRows", totalRows);
-        answerMap.put("totalPages", totalPages);
-        log.info("answerMap: ", answerMap);
-
-        return answerMap;
+    public Page<Answer> findAllByReviewAndStatus(Long reviewNo, AnswerStatus answerStatus, Pageable pageable) {
+        return answerRepository.findAllByReviewAndStatus(findReviewById(reviewNo), answerStatus, pageable);
     }
 
     public Answer addAnswer(Answer answer) {
         return answerRepository.save(answer);
     }
 
-    public Answer updateAnswer(Answer answer, Member member) throws Exception {
-        securityUtils.checkOwnsByMemberNo(member.getId());
-
-        answer.setMember(member);
-        Answer exitingAnswer =
-                answerRepository
-                        .findByIdAndReviewAndStatus(
-                                answer.getId(), answer.getReview(), AnswerStatus.Y)
-                        .orElseThrow(() -> new Exception("해당 답글이 존재하지 않습니다!"));
-        exitingAnswer.setContent(answer.getContent());
-        return answerRepository.save(exitingAnswer);
+    public Answer updateAnswer(Answer answer) {
+        return answerRepository.save(answer);
     }
 
-    public Answer deleteAnswer(Long answerNo, Long memberNo) {
-        securityUtils.checkOwnsByMemberNo(memberNo);
-
-        Answer exitingAnswer =
-                answerRepository
-                        .findByIdAndStatus(answerNo, AnswerStatus.Y)
-                        .orElseThrow(() -> new AnswerNotFoundException(answerNo));
-        exitingAnswer.setStatus(AnswerStatus.N);
-        return answerRepository.save(exitingAnswer);
+    public Answer deleteAnswer(Answer answer) {
+        return answerRepository.save(answer);
     }
 
     private Review findReviewById(Long reviewId) {

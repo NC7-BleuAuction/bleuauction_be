@@ -34,7 +34,7 @@ public class OrderMenuController {
     public ResponseEntity<?> orderMenu(
             @RequestHeader("Authorization") String authorizationHeader,
             HttpSession session,
-            OrderMenuDTO orderMenuDTO)
+            OrderMenu orderMenu)
             throws Exception {
         jwtUtils.verifyToken(authorizationHeader);
         TokenMember tokenMember = jwtUtils.getTokenMember(authorizationHeader);
@@ -43,7 +43,7 @@ public class OrderMenuController {
 
         Order order = (Order) session.getAttribute("order");
 
-        return orderMenuComponentService.addOrderMenuDTO(loginUser.get(), order, orderMenuDTO);
+        return orderMenuComponentService.addOrderMenu(loginUser.get(), order, orderMenu);
     }
 
     // 주문 번호별 주문메뉴 조회, 둘 중에 하나 삭제

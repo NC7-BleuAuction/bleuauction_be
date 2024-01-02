@@ -24,6 +24,7 @@ public class MenuComponentService {
     private final MenuModuleService menuModuleService;
     private final AttachComponentService attachComponentService;
 
+
     // 등록
     public Long enroll(Menu menu, Store store, List<MultipartFile> multipartFiles) {
 

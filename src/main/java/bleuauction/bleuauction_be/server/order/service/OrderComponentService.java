@@ -23,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderComponentService {
 
+
     private MemberModuleService memberModuleService;
     private OrderRepository orderRepository;
     private OrderModuleService orderModuleService;
@@ -74,7 +75,7 @@ public class OrderComponentService {
                         .orElseThrow(() -> new OrderNotFoundException(orderNo));
 
         existingorder.setOrderType(request.getOrderType());
-        // existingOrder.setOrderPrice(order.getOrderPrice()); // 필요하다면 주석 해제
+        existingorder.setOrderPrice(request.getOrderPrice()); // 필요하다면 주석 해제
         existingorder.setOrderRequest(request.getOrderRequest());
         existingorder.setRecipientPhone(request.getRecipientPhone());
         existingorder.setRecipientName(request.getRecipientName());
